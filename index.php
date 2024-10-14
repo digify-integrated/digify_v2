@@ -1,73 +1,64 @@
+<?php
+    require('components/configurations/config.php');
+    require('components/model/database-model.php');
+
+    $databaseModel = new DatabaseModel();
+
+    $pageTitle = 'Digify';
+
+    require('components/configurations/session-check.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Metronic - The World's #1 Selling Tailwind CSS & Bootstrap Admin Template by KeenThemes</title>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="shortcut icon" type="image/png" href="./assets/media/logos/favicon.svg" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
-        <link href="./assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-        <link href="./assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
-    </head>
-    <body id="kt_body" class="app-blank bgi-size-cover bgi-attachment-fixed bgi-position-center">
-        
-        <div class="d-flex flex-column flex-root" id="kt_app_root">
-            <!--begin::Page bg image-->
-            <style>
-                body {
-                    background-image: url("./assets/media/backgrounds/login-bg.jpg");
-                }
-            </style>
-            <!--end::Page bg image-->
 
-            <!--begin::Authentication - Sign-in -->
-             <div class="position-relative overflow-hidden auth-bg min-vh-100 w-100 d-flex align-items-center justify-content-center">
-                <div class="d-flex align-items-center justify-content-center w-100">
-                    <div class="row justify-content-center w-100 my-5 my-xl-0">
-                        <div class="col-md-5 d-flex flex-column justify-content-center">
-                            <div class="card mb-0 bg-body auth-login m-auto w-100">
-                                <div class="row gx-0">
-                                    <div class="col-xl-12">
-                                        <div class="row justify-content-center py-4">
-                                            <div class="col-lg-11">
-                                                <div class="card-body">
-                                                    <a href="index.php" class="text-nowrap logo-img d-block mb-3">
-                                                        <img src="./assets/media/logos/logo-dark.svg" class="dark-logo" alt="Logo-Dark" />
-                                                    </a>
-                                                    <h2 class="mb-2 mt-4 fs-6 fw-bolder">Welcome to <span class="text-primary">Digify Integrated Solutions</span></h2>
-                                                    <p class="mb-9">Your Partner in Progress, Redefining Digital Excellence</p>
-                                                    <form id="signin-form" method="post" action="#">
-                                                        <div class="mb-3">
-                                                            <label for="username" class="form-label">Username</label>
-                                                            <input type="text" class="form-control" id="username" name="username" autocomplete="off">
-                                                        </div>
-                                                        <div class="position-relative mb-3">    
-                                                            <input class="form-control bg-transparent" type="password" placeholder="Password" name="password" autocomplete="off"/>
+<head>
+    <?php 
+        require_once('components/view/_head_meta_tags.php'); 
+        require_once('components/view/_head_stylesheet.php');
+    ?>
+</head>
 
-                                                            <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2" data-kt-password-meter-control="visibility">
-                                                                <i class="ki-outline ki-eye-slash fs-2"></i>                    <i class="ki-outline ki-eye fs-2 d-none"></i>                </span>
-                                                        </div>
-                                                        <button id="signin" type="submit" class="btn btn-primary w-100">Login</button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+<body id="kt_body" class="app-blank bgi-size-cover bgi-attachment-fixed bgi-position-center bgi-no-repeat">
+    <div class="d-flex flex-column flex-root" id="kt_app_root" style="background-image: url('./assets/images/backgrounds/login-bg.jpg');">
+        <div class="d-flex flex-column flex-column-fluid flex-lg-row align-items-center justify-content-center">
+            <div class="d-flex flex-column-fluid flex-lg-row-auto justify-content-center justify-content-lg-end p-12">
+                <div class="bg-body d-flex flex-column align-items-stretch flex-center rounded-4 w-md-600px p-10">
+                    <div class="d-flex flex-center flex-column flex-column-fluid px-lg-10 pb-10 pb-lg-10">
+                        <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" data-kt-redirect-url="./index.html" action="#">
+                            <img src="./assets/images/logos/logo-dark.svg" class="mb-5" alt="Logo-Dark" />
+                            <h2 class="mb-2 mt-4 fs-2 fw-bolder">Welcome to <span class="text-primary">Digify Integrated Solutions</span></h2>
+                            <p class="mb-10">Your Partner in Progress, Redefining Digital Excellence</p>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" autocomplete="off">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="password" name="password">
+                                    <button class="btn btn-primary rounded-end d-flex align-items-center password-addon" type="button">
+                                        <i class="ki-outline ki-eye-slash fs-4"></i>
+                                    </button>
                                 </div>
                             </div>
-                        </div>
+                            <div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
+                                <a href="forgot-password.php" class="link-primary">Forgot Password?</a>
+                            </div>
+
+                            <div class="d-grid mb-10">
+                                <button type="submit" id="kt_sign_in_submit" class="btn btn-primary">Sign In</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <!--end::Authentication - Sign-in-->
         </div>
+    </div>
 
-        <!--begin::Global Javascript Bundle(mandatory for all pages)-->
-        <script src="./assets/plugins/global/plugins.bundle.js"></script>
-        <script src="./assets/js/scripts.bundle.js"></script>
-        <!--end::Global Javascript Bundle-->
+    <?php require_once('components/view/_error_modal.php'); ?>
+    <?php require_once('components/view/_required_js.php'); ?>
 
-        <!--end::Javascript-->
-    </body>
-    <!--end::Body-->
+
+    <script src="./apps/security/authentication/js/index.js?v=<?php echo rand(); ?>"></script>
+</body>
 </html>
