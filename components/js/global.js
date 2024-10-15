@@ -4,10 +4,6 @@
     $(function() {
         checkNotification();
         passwordAddOn();
-        maxLength();
-
-        sessionStorage.setItem('Layout', 'vertical');
-        sessionStorage.setItem('Direction', 'ltr');
 
         $(document).on('click','#discard-create',function() {
             const page_link = document.getElementById('page-link').getAttribute('href'); 
@@ -28,27 +24,6 @@
         $(document).on('click','.datatable-checkbox-children',function() {
             toggleActionDropdown();
         });
-
-        var defaultThemeMode = 'light';
-        var themeMode;
-
-        if (document.documentElement) {
-            if (document.documentElement.hasAttribute('data-bs-theme-mode')) {
-                themeMode = document.documentElement.getAttribute('data-bs-theme-mode');
-            } else {
-                if (localStorage.getItem('data-bs-theme') !== null) {
-                    themeMode = localStorage.getItem('data-bs-theme');
-                } else {
-                    themeMode = defaultThemeMode;
-                }
-            }
-
-            if (themeMode === 'system') {
-                themeMode = window.matchimages('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            }
-
-            document.documentElement.setAttribute('data-bs-theme', themeMode);
-        }
     });
 })(jQuery);
 
@@ -81,21 +56,11 @@ function passwordAddOn(){
             if (inputField.length) {
                 const isPassword = inputField.attr('type') === 'password';
                 inputField.attr('type', isPassword ? 'text' : 'password');
-                eyeIcon.toggleClass('ti-eye ti-eye-off');
+                eyeIcon.toggleClass('ki-eye-slash ki-eye');
             }
         });
 
         $('.password-addon').attr('tabindex', -1);
-    }
-}
-
-function maxLength(){
-    if ($('[maxlength]').length) {
-        $('[maxlength]').maxlength({
-            alwaysShow: true,
-            warningClass: 'badge rounded-pill bg-info fs-1 mt-0',
-            limitReachedClass: 'badge rounded-pill bg-danger fs-1 mt-0',
-        });
     }
 }
 
@@ -235,10 +200,10 @@ function showNotification(notificationTitle, notificationMessage, notificationTy
     const toastrOptions = {
         closeButton: true,
         progressBar: true,
-        newestOnTop: false,
+        newestOnTop: true,
         preventDuplicates: true,
         preventOpenDuplicates: true,
-        positionClass: 'toast-top-right',
+        positionClass: 'toastr-top-right',
         timeOut: timeOut,
         showMethod: 'fadeIn',
         hideMethod: 'fadeOut',
@@ -254,8 +219,8 @@ function showNotification(notificationTitle, notificationMessage, notificationTy
 function isDuplicateNotification(message) {
     let isDuplicate = false;
     
-    $('.toast').each(function() {
-        if ($(this).find('.toast-message').text() === message[0].innerText) {
+    $('.toastr').each(function() {
+        if ($(this).find('.toastr-message').text() === message[0].innerText) {
             isDuplicate = true;
             return false;
         }
