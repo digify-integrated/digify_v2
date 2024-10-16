@@ -1,8 +1,8 @@
 <?php
-    if (!isset($_GET['page_id']) || empty($_GET['page_id']) || !isset($_GET['app_module_id']) || empty($_GET['app_module_id'])) {
+    /*if (!isset($_GET['page_id']) || empty($_GET['page_id']) || !isset($_GET['app_module_id']) || empty($_GET['app_module_id'])) {
         header('location: apps.php');
         exit;
-    }
+    }*/
 
     $appModuleID = $securityModel->decryptData($_GET['app_module_id']);
     $pageID = $securityModel->decryptData($_GET['page_id']);
@@ -44,6 +44,7 @@
     }
     
     $newRecord = isset($_GET['new']);
+    $importRecord = isset($_GET['import']);
 
     $writeAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'write');
     $deleteAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'delete');

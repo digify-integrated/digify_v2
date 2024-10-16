@@ -35,7 +35,9 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 $appModuleIDEncrypted = $securityModel->encryptData($appModuleID);
 
                 $response[] = [
-                    'CHECK_BOX' => '<input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $appModuleID .'">',
+                    'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $appModuleID .'">
+                                    </div>',
                     'APP_MODULE_NAME' => '<div class="d-flex align-items-center">
                                             <img src="'. $appLogo .'" alt="app-logo" width="45" />
                                             <div class="ms-3">

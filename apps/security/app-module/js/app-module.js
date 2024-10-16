@@ -163,7 +163,7 @@ function appModuleTable(datatable_name) {
     ];
 
     const columnDefs = [
-        { width: '1%', bSortable: false, targets: 0, responsivePriority: 1 },
+        { width: '5%', bSortable: false, targets: 0, responsivePriority: 1 },
         { width: 'auto', targets: 1, responsivePriority: 2 }
     ];
 
@@ -184,24 +184,11 @@ function appModuleTable(datatable_name) {
                 handleSystemError(xhr, status, error);
             }
         },
-        dom: 'Brtip',
         lengthChange: false,
         order: [[1, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,
-        responsive: {
-            details: {
-                type: 'inline',
-                display: $.fn.dataTable.Responsive.display.childRow,
-                renderer: function (api, rowIdx, columns) {
-                    let data = $.map(columns, function (col) {
-                        return col.hidden ? `<tr><td>${col.title}:</td><td>${col.data}</td></tr>` : '';
-                    }).join('');
-                    return data ? $('<table/>').append(data) : false;
-                }
-            }
-        },
         autoWidth: false,
         language: {
             emptyTable: 'No data found',
