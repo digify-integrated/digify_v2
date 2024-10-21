@@ -29,9 +29,10 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 $sql->bindValue(':referenceID', $referenceID, PDO::PARAM_INT);
                 $sql->execute();
                 $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+                $count = count($options);
                 $sql->closeCursor();
 
-                foreach ($options as $row) {
+                foreach ($options as $index => $row) {
                     $attachment = '';
                     $internalNotesID = $row['internal_notes_id'];
                     $internalNote = $row['internal_note'];
@@ -42,12 +43,10 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                     $fileAs = $userDetails['file_as'];
                     $profilePicture = $systemModel->checkImage($userDetails['profile_picture'] ?? null, 'profile');
 
-                    if(!empty($internalNote)){
-                        $internalNote = '<p class="my-3">'. $internalNote .'</p>';
-                    }
-
-                    $internalNotesAttachments = $globalModel->getInternalNotesAttachment($internalNotesID);
+                    $internalNotesAttachments = $authenticationModel->getInternalNotesAttachment($internalNotesID);
                     $numberOfValues = count($internalNotesAttachments);
+
+                    $marginClass = ($index === $count - 1) ? 'mb-0' : 'mb-10';
 
                     if($numberOfValues > 0){
                         foreach ($internalNotesAttachments as $internalNotesAttachment) {
@@ -59,34 +58,66 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                                 $fileExtension = pathinfo($attachmentPathFile, PATHINFO_EXTENSION);                                
                                 $attachmentImage = ' <img src="'. $systemModel->getFileExtensionIcon($fileExtension) .'" alt="attachment" width="30">';
         
-                                $attachment .= '<a href="'. $attachmentPathFile .'" target="_blank">
-                                                    <div class="mt-2 mb-0 card p-3 rounded shadow-none border">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="position-relative">
-                                                                '. $attachmentImage .'
+                                $attachment .= ' <div class="d-flex flex-aligns-center pe-10 pe-lg-20">
+                                                    <img alt="" class="w-30px me-3" src="'. $systemModel->getFileExtensionIcon($fileExtension) .'" />
+                                                    <div class="ms-1 fw-semibold">
+                                                        <a href="'. $attachmentPathFile .'" class="fs-6 text-hover-primary fw-bold" target="_blank" >'. $attachmentFileName .'</a>
+                                                            <div class="text-gray-500">
+                                                               '. $attachmentFileSize .'
+                                                             </div>
+                                                        </div>
+                                                    </div>';
+                            }
+                        }
+
+                        $internalNoteList .= '<div class="timeline-item">
+                                                <div class="timeline-line"></div>
+                                                <div class="timeline-icon">
+                                                    <i class="ki-outline ki-disconnect fs-2 text-gray-500"></i>
+                                                </div>
+                                                <div class="timeline-content '. $marginClass .' mt-n1">
+                                                    <div class="mb-5 pe-3">
+                                                        <a href="javascript:void(0);" class="fs-5 fw-semibold text-gray-800 text-hover-primary mb-2">'. $internalNote .'</a>
+                                                        <div class="d-flex align-items-center mt-1 fs-6">
+                                                            <div class="text-muted me-2 fs-7">
+                                                                '. $timeElapsed .'
                                                             </div>
-                                                            <div class="ms-3">
-                                                                <h6 class="mb-0 fs-5">'. $attachmentFileName .'</h6>
-                                                                <small>'. $attachmentFileSize .'</small>
+                                                            <div class="symbol symbol-circle symbol-25px" data-bs-toggle="tooltip" data-bs-boundary="window" data-bs-placement="top" title="'. $fileAs .'">
+                                                                <img src="'. $profilePicture .'" alt="img" />
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </a>';
-                            }
-                        }
-                    }                    
-                    
-                    $internalNoteList .= '<div class="p-4 rounded-4 text-bg-light mb-3">
-                                    <div class="d-flex align-items-center gap-6 flex-wrap">
-                                        <img src="'. $profilePicture .'" alt="user" class="rounded-circle" width="33" height="33">
-                                        <h6 class="mb-0">'. $fileAs .'</h6>
-                                        <span class="fs-2">
-                                            <span class="p-1 text-bg-muted rounded-circle d-inline-block me-2"></span> '. $timeElapsed .'
-                                        </span>
-                                    </div>
-                                    '. $internalNote .'
-                                    '. $attachment .'
-                                </div>';
+                                                    <div class="overflow-auto pb-5">
+                                                        <div class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-700px p-5">
+                                                        '. $attachment .'
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>';
+                    }
+                    else{
+                        $internalNoteList .= '<div class="timeline-item">
+                                                <div class="timeline-line"></div>
+                                                <div class="timeline-icon">
+                                                    <i class="ki-outline ki-message-text-2 fs-2 text-gray-500"></i>
+                                                </div>
+                                                <div class="timeline-content '. $marginClass .' mt-n1">
+                                                    <div class="pe-3 mb-5">
+                                                        <div class="fs-5 fw-semibold mb-2">
+                                                            '. $internalNote .'
+                                                        </div>
+                                                        <div class="d-flex align-items-center mt-1 fs-6">
+                                                            <div class="text-muted me-2 fs-7">
+                                                                '. $timeElapsed .'
+                                                            </div>
+                                                            <div class="symbol symbol-circle symbol-25px" data-bs-toggle="tooltip" data-bs-boundary="window" data-bs-placement="top" title="'. $fileAs .'">
+                                                                <img src="'. $profilePicture .'" alt="img" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>';
+                    }
                 }
 
                 if(empty($internalNoteList)){

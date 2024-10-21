@@ -11,7 +11,7 @@ require_once '../../security-setting/model/security-setting-model.php';
 require_once '../../menu-item/model/menu-item-model.php';
 require_once '../../upload-setting/model/upload-setting-model.php';
 
-require_once '../../../../assets/libs/PhpSpreadsheet/autoload.php';
+require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
 $controller = new AppModuleController(new AppModuleModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new MenuItemModel(new DatabaseModel), new UploadSettingModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();

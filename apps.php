@@ -15,7 +15,10 @@
     require_once('components/view/_theme_script.php');
 ?>
 
-<body  id="kt_app_body" data-kt-app-header-fixed-mobile="true" data-kt-app-toolbar-enabled="true"  class="app-default" >
+<body  id="kt_app_body" data-kt-app-header-fixed-mobile="true" data-kt-app-toolbar-enabled="true" class="app-default" data-kt-app-page-loading-enabled="true" data-kt-app-page-loading="on">
+    <?php 
+        require_once('components/view/_preloader.php');
+    ?>
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
             <div class="app-wrapper flex-column flex-row-fluid mt-0" id="kt_app_wrapper">
@@ -26,18 +29,11 @@
                                 <div class="page-title me-5">
                                     <h1 class="page-heading d-flex text-white fw-bold fs-2 flex-column justify-content-center my-0">
                                         <?php echo $pageTitle; ?>
-                                        <span class="page-desc text-gray-600 fw-semibold fs-6 pt-3">
-                                            Page Description
-                                        </span>
                                     </h1>
                                 </div>
                                 <div class="d-flex align-self-center flex-center flex-shrink-0">
-                                    <a href="#" class="btn btn-flex btn-sm btn-outline btn-active-color-primary btn-custom px-4" data-bs-toggle="modal" data-bs-target="#kt_modal_invite_friends">
-                                        <i class="ki-outline ki-plus-square fs-4 me-2"></i> Invite
-                                    </a>
-
-                                    <a href="#" class="btn btn-sm btn-active-color-primary btn-outline btn-custom ms-3 px-4" data-bs-toggle="modal" data-bs-target="#kt_modal_new_target">
-                                        Set Your Target
+                                    <a href="app-installer.php" class="btn btn-flex btn-sm btn-outline btn-active-color-primary btn-custom px-4">
+                                        <i class="ki-outline ki-plus-square fs-4 me-2"></i> Install Apps
                                     </a>
                                 </div>
                             </div>
@@ -71,7 +67,7 @@
                                                     $menuItemURL = $menuItemDetails['menu_item_url'] ?? null;
                                                         
                                                     $apps .= ' <div class="col-lg-3" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="'. $appModuleDescription .'">
-                                                                    <a class="card d-flex justify-content-between flex-column flex-center w-100 text-gray-800 text-hover-primary p-10 text-center" href="'. $menuItemURL .'?app_module_id='. $securityModel->encryptData($appModuleID) .'&page_id='. $securityModel->encryptData($menuItemID) .'">
+                                                                    <a class="card d-flex justify-content-between flex-column flex-center w-100 text-gray-800 p-10 text-center" href="'. $menuItemURL .'?app_module_id='. $securityModel->encryptData($appModuleID) .'&page_id='. $securityModel->encryptData($menuItemID) .'">
                                                                         <img src="'. $appLogo .'" alt="app-logo" class="img-fluid position-relative mb-5" width="75" height="75">
                                                                         <span class="fs-2 fw-bold">'. $appModuleName .'</span>
                                                                     </a>

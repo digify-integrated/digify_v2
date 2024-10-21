@@ -39,10 +39,6 @@
                                                 <i class="ki-outline ki-exit-up fs-2"></i> Export
                                             </button>';
                     }
-
-                    echo $importAccess['total'] > 0 ? '<a href="' . $pageLink . '&import='. $securityModel->encryptData('app_module') .'" class="btn btn-light-primary me-3"><i class="ki-outline ki-exit-down fs-2"></i> Import</a>' : '';
-
-                    echo $createAccess['total'] > 0 ? '<a href="' . $pageLink . '&new" class="btn btn-primary">New</a>' : '';
                 ?>
             </div>
         </div>

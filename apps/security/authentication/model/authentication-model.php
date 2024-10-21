@@ -34,6 +34,15 @@ class AuthenticationModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    public function getInternalNotesAttachment($p_internal_notes_id) {
+        $stmt = $this->db->getConnection()->prepare('CALL getInternalNotesAttachment(:p_internal_notes_id)');
+        $stmt->bindValue(':p_internal_notes_id', $p_internal_notes_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Check exist methods
     # -------------------------------------------------------------
 
@@ -210,12 +219,12 @@ class AuthenticationModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function buildMenuItem($p_user_account_id, $p_menu_group_id) {
+    public function buildMenuItem($p_user_account_id, $p_app_module_id) {
         $menuItems = [];
     
-        $stmt = $this->db->getConnection()->prepare('CALL buildMenuItem(:p_user_account_id, :p_menu_group_id)');
+        $stmt = $this->db->getConnection()->prepare('CALL buildMenuItem(:p_user_account_id, :p_app_module_id)');
         $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
-        $stmt->bindValue(':p_menu_group_id', $p_menu_group_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_app_module_id', $p_app_module_id, PDO::PARAM_INT);
         $stmt->execute();
         $count = $stmt->rowCount();
     
@@ -265,7 +274,7 @@ class AuthenticationModel {
             return $html;
         }
     
-        return ''; // Return empty if no items are found
+        return '';
     }
     
     # -------------------------------------------------------------
@@ -284,54 +293,55 @@ class AuthenticationModel {
     
         if ($level === 1) {
             if (empty($children)) {
-                $html .= '<li class="sidebar-item">
-                                <a class="sidebar-link" href="'. $menuItemURL .'" aria-expanded="false">
-                                    <span>
-                                        <i class="'. $menuItemIcon .'"></i>
-                                    </span>
-                                    <span class="hide-menu">'. $menuItemName .'</span>
-                                </a>
-                            </li>';
+                $html .= ' <div data-kt-menu-trigger="{default: \'click\', lg: \'hover\'}" data-kt-menu-placement="bottom-start" class="menu-item menu-here-bg menu-lg-down-accordion me-0 me-lg-2">
+                            <a class="menu-link" href="'. $menuItemURL .'">            
+                                <span class="menu-title">'. $menuItemName .'</span>
+                            </a>
+                        </div>';
             }
             else {
-                $html .= '<li class="sidebar-item">
-                                <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                                    <i class="'. $menuItemIcon .'"></i>
-                                    <span class="hide-menu">'. $menuItemName .'</span>
-                                </a>
-                                <ul aria-expanded="false" class="collapse first-level">';
-    
+                $html .= '<div data-kt-menu-trigger="{default: \'click\', lg: \'hover\'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion menu-sub-lg-down-indention me-0 me-lg-2">
+                                <span class="menu-link">
+                                    <span class="menu-title">'. $menuItemName .'</span>
+                                    <span class="menu-arrow d-lg-none"></span>
+                                </span>
+                                <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-250px" style="">';
+
                 foreach ($children as $child) {
                     $html .= $this->buildMenuItemHTML($child, $level + 1);
                 }
     
-                $html .= '</ul>
-                        </li>';
+                $html .= '</div>
+                        </div>';
             }
         }
         else {
             if (empty($children)) {
-                $html .= '<li class="sidebar-item">
-                                <a class="sidebar-link" href="'. $menuItemURL .'">
-                                    <span class="icon-small"></span>
-                                    '. $menuItemName .'
+                $html .= ' <div data-kt-menu-trigger="{default: \'click\', lg: \'hover\'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion">
+                                <a class="menu-link" href="'. $menuItemURL .'">
+                                    <span class="menu-icon">
+                                        <i class="'. $menuItemIcon .' fs-2"></i>
+                                    </span>
+                                    <span class="menu-title">'. $menuItemName .'</span>
                                 </a>
-                            </li>';
+                            </div>';
             }
             else {
-                $html .= ' <li class="sidebar-item">
-                                <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                                    <span class="icon-small"></span>
-                                    <span class="hide-menu">'. $menuItemName .'</span>
-                                </a>
-                                <ul aria-expanded="false" class="collapse two-level">';
-    
+                $html .= '  <div data-kt-menu-trigger="{default: \'click\', lg: \'hover\'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion">
+                                <span class="menu-link">
+                                    <span class="menu-bullet">
+                                        <span class="bullet bullet-dot">/span>
+                                    </span>
+                                    <span class="menu-title">'. $menuItemName .'</span>
+                                    <span class="menu-arrow"></span>
+                                </span>
+                                <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown menu-active-bg px-lg-2 py-lg-4 w-lg-225px">';
+
                 foreach ($children as $child) {
                     $html .= $this->buildMenuItemHTML($child, $level + 1);
                 }
     
-                $html .= '</ul>
-                        </li>';
+                $html .= '</div>';
             }
         }
     

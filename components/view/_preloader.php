@@ -1,3 +1,5 @@
-<div class="preloader">
-    <img src="./assets/images/logos/favicon.svg" alt="loader" class="lds-ripple img-fluid" />
+<div class="page-loader">
+	<span class="spinner-border text-primary" role="status">
+		<span class="visually-hidden">Loading...</span>
+	</span>
 </div>

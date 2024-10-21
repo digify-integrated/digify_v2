@@ -2,6 +2,8 @@
     'use strict';
 
     $(function() {
+        setHereClassForMenu('.menu-item');
+
         checkNotification();
         passwordAddOn();
 
@@ -26,6 +28,43 @@
         });
     });
 })(jQuery);
+
+function setHereClassForMenu(menuSelector) {
+    var currentUrl = window.location.href.split('?')[0];
+
+    var firstLevelMenuItems = document.querySelectorAll(menuSelector);
+
+    firstLevelMenuItems.forEach(function(menuItem) {
+        var hasChildMatch = false;
+
+        var childLinks = menuItem.querySelectorAll('.menu-sub .menu-link');
+
+        if (childLinks.length > 0) {
+            childLinks.forEach(function(childLink) {
+                if (childLink && childLink.href) {
+                    var childLinkHref = childLink.href.split('?')[0];
+                    if (childLinkHref === currentUrl) {
+                        hasChildMatch = true; 
+                        childLink.classList.add('active');
+                    }
+                }
+            });
+
+            if (hasChildMatch) {
+                menuItem.classList.add('here');
+                menuItem.classList.add('show');
+            }
+        }
+        else {
+            var menuLink = menuItem.querySelector('.menu-link');
+
+            if (menuLink && menuLink.closest('a') && menuLink.closest('a').href.split('?')[0] === currentUrl) {
+                menuItem.classList.add('here');
+            }
+        }
+    });
+}
+
 
 function discardCreate(windows_location){
     Swal.fire({
@@ -260,21 +299,7 @@ function logNotes(databaseTable, referenceID){
         dataType: 'json',
         data: { type: type, 'database_table': databaseTable, 'reference_id': referenceID },
         success: function (result) {
-            document.getElementById('log-notes').innerHTML = result[0].LOG_NOTE;
-        }
-    });
-}
-
-function logNotesMain(databaseTable, referenceID){
-    const type = 'log notes main';
-
-    $.ajax({
-        type: 'POST',
-        url: 'components/view/_log_notes_generation.php',
-        dataType: 'json',
-        data: { type: type, 'database_table': databaseTable, 'reference_id': referenceID },
-        success: function (result) {
-            document.getElementById('log-notes-main').innerHTML = result[0].LOG_NOTE;
+            document.getElementById('log-notes').innerHTML = result[0].LOG_NOTES;
         },
         error: function(xhr, status, error) {
             handleSystemError(xhr, status, error);

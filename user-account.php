@@ -15,10 +15,7 @@
     require_once('components/view/_theme_script.php');
 ?>
 
-<body id="kt_app_body" data-kt-app-header-fixed-mobile="true" data-kt-app-toolbar-enabled="true"  class="app-default" data-kt-app-page-loading-enabled="true" data-kt-app-page-loading="on">
-    <?php 
-        require_once('components/view/_preloader.php');
-    ?>
+<body id="kt_app_body" data-kt-app-header-fixed-mobile="true" data-kt-app-toolbar-enabled="true"  class="app-default" >
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
             <?php 

@@ -1,4 +1,4 @@
-<div id="system-error-modal" class="modal fade" tabindex="-1" aria-labelledby="system-error-modalLabel" aria-hidden="true">
+<div id="system-error-modal" class="modal fade" tabindex="-1" aria-labelledby="system-error-modal-label" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
         <div class="modal-content">
             <div class="modal-header">

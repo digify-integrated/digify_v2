@@ -12,7 +12,7 @@ class SystemModel {
         $diffSeconds = $currentTimestamp - $timestamp;
     
         if ($diffSeconds > 86400) {
-            return date('M j, Y \a\t h:i A', $timestamp);
+            return date('M j, Y \a\t h:i:s A', $timestamp);
         }
     
         $intervals = [
@@ -36,7 +36,7 @@ class SystemModel {
             }
         }
     
-        return date('M j, Y \a\t h:i A', $timestamp);
+        return date('M j, Y \a\t h:i:s A', $timestamp);
     }    
     # -------------------------------------------------------------
 

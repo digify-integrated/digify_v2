@@ -73,11 +73,11 @@
             });
         });
 
-        if($('#log-notes-main').length){
+        $(document).on('click','#log-notes-main',function() {
             const app_module_id = $('#details-id').text();
 
-            logNotesMain('app_module', app_module_id);
-        }
+            logNotes('app_module', app_module_id);
+        });
 
         if($('#internal-notes').length){
             const app_module_id = $('#details-id').text();
@@ -280,7 +280,7 @@ function displayDetails(transaction){
                         
                         $('#menu_item_id').val(response.menuItemID).trigger('change');
 
-                        document.getElementById('app_module_logo').src = response.appLogo;
+                        //document.getElementById('app_module_logo').src = response.appLogo;
                         
                         $('#app_module_name_summary').text(response.appModuleName);
                         $('#app_module_description_summary').text(response.appModuleDescription);
@@ -322,10 +322,9 @@ function generateDropdownOptions(type){
                 },
                 success: function(response) {
                     $('#menu_item_id').select2({
-                        data: response,
-                        dropdownParent: $('#menu_item_id').closest('.modal')
+                        data: response
                     }).on('change', function (e) {
-                        $(e.target).valid()
+                        $(this).valid()
                     });
                 },
                 error: function(xhr, status, error) {
