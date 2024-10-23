@@ -108,10 +108,15 @@ function checkOptionExist(element, option) {
 }
 
 function initializeDualListBoxIcon(){
-    $('.moveall i').removeClass().addClass('ti ti-chevron-right');
-    $('.removeall i').removeClass().addClass('ti ti-chevron-left');
-    $('.move i').removeClass().addClass('ti ti-chevron-right');
-    $('.remove i').removeClass().addClass('ti ti-chevron-left');
+    $('.moveall i').removeClass().addClass('ki-duotone ki-right');
+    $('.removeall i').removeClass().addClass('ki-duotone ki-left');
+    $('.move i').removeClass().addClass('ki-duotone ki-right');
+    $('.remove i').removeClass().addClass('ki-duotone ki-left');
+
+    $('.moveall').removeClass('btn-default').addClass('btn-primary');
+    $('.removeall').removeClass('btn-default').addClass('btn-primary');
+    $('.move').removeClass('btn-default').addClass('btn-primary');
+    $('.remove').removeClass('btn-default').addClass('btn-primary');
 }
 
 function resetModalForm(form_id) {
@@ -405,7 +410,7 @@ let selectedColumnsOrder = [];
 
 function exportData(table_name) {
     const transaction = 'export data';
-    var export_to = $('#export_to').val();
+    var export_to = $('input[name="export_to"]:checked').val();
 
     var table_column = selectedColumnsOrder;
 

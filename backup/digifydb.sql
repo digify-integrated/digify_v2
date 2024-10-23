@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 21, 2024 at 04:43 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Oct 23, 2024 at 11:32 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -298,6 +298,19 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteSystemAction` (IN `p_system_a
     DELETE FROM system_action WHERE system_action_id = p_system_action_id;
 
     COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `exportData`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `exportData` (IN `p_table_name` VARCHAR(255), IN `p_columns` TEXT, IN `p_ids` TEXT)   BEGIN
+    SET @sql = CONCAT('SELECT ', p_columns, ' FROM ', p_table_name);
+
+    IF p_table_name = 'app_module' THEN
+        SET @sql = CONCAT(@sql, ' WHERE app_module_id IN (', p_ids, ')');
+    END IF;
+
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateAppModuleOptions`$$
@@ -693,6 +706,19 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveAppModule` (IN `p_app_module_id
     END IF;
 
     COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveImport`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveImport` (IN `p_table_name` VARCHAR(255), IN `p_columns` TEXT, IN `p_placeholders` TEXT, IN `p_updateFields` TEXT, IN `p_values` TEXT)   BEGIN
+    SET @sql = CONCAT(
+        'INSERT INTO ', p_table_name, ' (', p_columns, ') ',
+        'VALUES ', p_values, ' ',
+        'ON DUPLICATE KEY UPDATE ', p_updateFields
+    );
+
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 END$$
 
 DROP PROCEDURE IF EXISTS `saveMenuGroup`$$
@@ -1109,7 +1135,7 @@ CREATE TABLE `app_module` (
 --
 
 INSERT INTO `app_module` (`app_module_id`, `app_module_name`, `app_module_description`, `app_logo`, `menu_item_id`, `menu_item_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../security/app-module/image/logo/1/setting.png', 1, 'App Module', 3, '2024-10-13 16:19:59', 2),
+(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../security/app-module/image/logo/1/fm981w.png', 1, 'App Module', 3, '2024-10-13 16:19:59', 2),
 (2, 'Employees', 'Centralize employee information', '../security/app-module/image/logo/2/kwDc.png', 23, 'Inventory Overview', 1, '2024-10-13 16:19:59', 1),
 (3, 'Customer', 'Bring all your customer information into one easy-to-access location', '../security/app-module/image/logo/3/rL4r.png', 50, 'Customer', 3, '2024-10-13 16:19:59', 1),
 (4, 'Website Studio', 'Create and customize your website', '../security/app-module/image/logo/4/TnX0.png', 54, 'Websites', 1, '2024-10-13 16:19:59', 1),
@@ -1191,7 +1217,8 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (10, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 2 -> 1<br/>', 2, '2024-10-21 16:53:26', '2024-10-21 16:53:26'),
 (11, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 1 -> 12<br/>', 2, '2024-10-21 16:53:29', '2024-10-21 16:53:29'),
 (12, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 12 -> 3<br/>', 2, '2024-10-21 16:53:30', '2024-10-21 16:53:30'),
-(13, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 15:25:07 -> 2024-10-21 21:04:17<br/>', 1, '2024-10-21 21:04:17', '2024-10-21 21:04:17');
+(13, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 15:25:07 -> 2024-10-21 21:04:17<br/>', 1, '2024-10-21 21:04:17', '2024-10-21 21:04:17'),
+(14, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 21:04:17 -> 2024-10-23 14:09:19<br/>', 1, '2024-10-23 14:09:19', '2024-10-23 14:09:19');
 
 -- --------------------------------------------------------
 
@@ -2342,7 +2369,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `linked_id`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, NULL, '2024-10-13 16:12:00', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-10-21 21:04:17', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '5rhZb8JKQc6Y3Z766auuhIMSraKFr%2B%2BLtdZYshUVqLQ%3D', NULL, '2024-10-13 16:12:00', 1);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-10-23 14:09:19', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'BfM3C3J5X7x3N%2B0un4fb1KhHrFmzxHAgm1tfvpTQK6s%3D', NULL, '2024-10-13 16:12:00', 1);
 
 --
 -- Triggers `user_account`
@@ -2605,7 +2632,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -2810,58 +2837,12 @@ ALTER TABLE `role`
   ADD CONSTRAINT `role_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
--- Constraints for table `role_permission`
---
-ALTER TABLE `role_permission`
-  ADD CONSTRAINT `role_permission_ibfk_1` FOREIGN KEY (`menu_item_id`) REFERENCES `menu_item` (`menu_item_id`),
-  ADD CONSTRAINT `role_permission_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
-  ADD CONSTRAINT `role_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
 -- Constraints for table `role_system_action_permission`
 --
 ALTER TABLE `role_system_action_permission`
   ADD CONSTRAINT `role_system_action_permission_ibfk_1` FOREIGN KEY (`system_action_id`) REFERENCES `system_action` (`system_action_id`),
   ADD CONSTRAINT `role_system_action_permission_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
   ADD CONSTRAINT `role_system_action_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `role_user_account`
---
-ALTER TABLE `role_user_account`
-  ADD CONSTRAINT `role_user_account_ibfk_1` FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`user_account_id`),
-  ADD CONSTRAINT `role_user_account_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
-  ADD CONSTRAINT `role_user_account_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `security_setting`
---
-ALTER TABLE `security_setting`
-  ADD CONSTRAINT `security_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `system_action`
---
-ALTER TABLE `system_action`
-  ADD CONSTRAINT `system_action_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `upload_setting`
---
-ALTER TABLE `upload_setting`
-  ADD CONSTRAINT `upload_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `upload_setting_file_extension`
---
-ALTER TABLE `upload_setting_file_extension`
-  ADD CONSTRAINT `upload_setting_file_extension_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `user_account`
---
-ALTER TABLE `user_account`
-  ADD CONSTRAINT `user_account_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

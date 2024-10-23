@@ -79,6 +79,52 @@
             logNotes('app_module', app_module_id);
         });
 
+        $(document).on('change','#app_logo',function() {
+            if ($(this).val() !== '' && $(this)[0].files.length > 0) {
+                const transaction = 'update app logo';
+                const app_module_id = $('#details-id').text();
+                var formData = new FormData();
+                formData.append('app_logo', $(this)[0].files[0]);
+                formData.append('transaction', transaction);
+                formData.append('app_module_id', app_module_id);
+        
+                $.ajax({
+                    type: 'POST',
+                    url: 'apps/security/app-module/controller/app-module-controller.php',
+                    dataType: 'json',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification(response.title, response.message, response.messageType);
+                            displayDetails('get app module details');
+                        }
+                        else {
+                            if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                                setNotification(response.title, response.message, response.messageType);
+                                window.location = 'logout.php?logout';
+                            }
+                            else if (response.notExist) {
+                                setNotification(response.title, response.message, response.messageType);
+                                window.location = page_link;
+                            }
+                            else {
+                                showNotification(response.title, response.message, response.messageType);
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
+                        if (xhr.responseText) {
+                            fullErrorMessage += `, Response: ${xhr.responseText}`;
+                        }
+                        showErrorDialog(fullErrorMessage);
+                    }
+                });
+            }
+        });
+
         if($('#internal-notes').length){
             const app_module_id = $('#details-id').text();
 
@@ -280,7 +326,7 @@ function displayDetails(transaction){
                         
                         $('#menu_item_id').val(response.menuItemID).trigger('change');
 
-                        //document.getElementById('app_module_logo').src = response.appLogo;
+                        document.getElementById('app_thumbnail').style.backgroundImage = `url(${response.appLogo})`;
                         
                         $('#app_module_name_summary').text(response.appModuleName);
                         $('#app_module_description_summary').text(response.appModuleDescription);

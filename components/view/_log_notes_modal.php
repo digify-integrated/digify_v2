@@ -1,5 +1,5 @@
 <div id="log-notes-modal" class="modal fade" tabindex="-1" aria-labelledby="log-notes-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-dialog modal-dialog-scrollable modal-r">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Log Notes</h3>

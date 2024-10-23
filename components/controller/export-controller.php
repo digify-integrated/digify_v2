@@ -8,7 +8,7 @@ require_once '../../components/model/system-model.php';
 require_once '../../components/model/export-model.php';
 require_once '../../apps/security/authentication/model/authentication-model.php';
 
-require_once '../../assets/libs/PhpSpreadsheet/autoload.php';
+require_once '../../assets/plugins/PhpSpreadsheet/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
