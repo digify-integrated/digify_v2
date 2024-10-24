@@ -55458,6 +55458,7 @@ body[data-kt-sticky-landing-header=on] {
 [data-bs-theme=dark] {
     --bs-app-bg-color: #0F1014;
     --bs-app-blank-bg-color: #151521;
+    --bs-app-header-base-bg-color: #0B0C10;
     --bs-app-header-sticky-bg-color: #0B0C10;
     --bs-app-header-sticky-box-shadow: none
 }

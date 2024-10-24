@@ -70,7 +70,7 @@ function importFormPreview(){
                             $('.upload-file-default-preview').addClass('d-none');
                             $('.upload-file-preview').removeClass('d-none');
 
-                            document.getElementById('upload-file-preview-table').innerHTML = response.table;
+                            document.getElementById('upload-file-preview-table').innerHTML = response.TABLE;
                             $('#upload-modal').modal('hide');
                         }
                         else {

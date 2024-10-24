@@ -7,7 +7,7 @@
             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                 <?php
                     if ($deleteAccess['total'] > 0 || $exportAccess['total'] > 0) {
-                        $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown action-dropdown me-3 d-none" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                        $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown action-dropdown me-30d-none" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                         Actions
                                         <i class="ki-outline ki-down fs-5 ms-1"></i>
                                     </a>
@@ -32,12 +32,6 @@
                         $action .= '</div>';
                     
                         echo $action;
-                    }
-
-                    if ($exportAccess['total'] > 0) {
-                        $action .= '<button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#kt_customers_export_modal">
-                                                <i class="ki-outline ki-exit-up fs-2"></i> Export
-                                            </button>';
                     }
                 ?>
             </div>

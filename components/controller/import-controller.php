@@ -186,9 +186,9 @@ class ImportController {
     
                 fclose($file);
     
-                $html = '<thead><tr>';
+                $html = '<thead class="text-center"><tr>';
                 foreach ($headers as $header) {
-                    $html .= '<th>' . htmlspecialchars($header) . '</th>';
+                    $html .= '<th class="fw-bold">' . htmlspecialchars($header) . '</th>';
                 }
                 $html .= '</tr></thead><tbody>';
     
@@ -204,7 +204,7 @@ class ImportController {
     
                 $response = [
                     'success' => true,
-                    'table' => $html
+                    'TABLE' => $html
                 ];
                 
                 echo json_encode($response);

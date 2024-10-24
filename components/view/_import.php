@@ -6,10 +6,13 @@
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                 <?php
-                    echo $importAccess['total'] > 0 ? '<button type="button" class="btn btn-flex btn-primary me-2" data-bs-toggle="modal" id="upload-file" data-bs-target="#upload-modal">
+                    echo $importAccess['total'] > 0 ? '<button type="button" class="btn btn-flex btn-primary me-2 upload-file-default-preview" data-bs-toggle="modal" id="upload-file" data-bs-target="#upload-modal">
                         <i class="ki-outline ki-folder-up fs-2"></i>
                         Upload File
                     </button>' : '';
+
+                    echo $importAccess['total'] > 0 ? '<button class="btn btn-flex btn-primary me-2 upload-file-preview d-none" type="submit" form="upload-form">Import</button>
+                    <button class="btn btn-flex btn-info me-2 upload-file-preview d-none" id="reset-import">Reset</button>' : '';
                 ?>
                 <a href="<?php echo $pageLink; ?>" class="btn btn-warning d-flex align-items-center me-2 mb-0">Cancel</a>
             </div>
@@ -36,7 +39,7 @@
         <div class="row">
             <div class="col-md-12 mt-3 mt-md-0">
                 <div class="table-responsive">
-                    <table id="upload-file-preview-table" class="table w-100 table-row-bordered table-striped text-wrap"></table>
+                    <table id="upload-file-preview-table" class="table w-100 table-row-bordered table-striped text-wrap text-center"></table>
                 </div>
             </div>
         </div>
@@ -46,10 +49,13 @@
 <div id="upload-modal" class="modal fade" tabindex="-1" aria-labelledby="upload-modal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-r">
         <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Upload File</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header">
+                <h3 class="modal-title">Upload File</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
             </div>
+
             <div class="modal-body">
                 <form id="upload-form" method="post" action="#">
                     <div class="row">
@@ -60,7 +66,8 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer border-top">
+
+            <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                 <button type="submit" form="upload-form" class="btn btn-primary" id="submit-upload">Upload File</button>
             </div>

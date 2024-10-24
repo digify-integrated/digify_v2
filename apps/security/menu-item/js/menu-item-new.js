@@ -2,22 +2,24 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('menu group options');
         generateDropdownOptions('menu item options');
 
-        if($('#menu-item-form').length){
-            menuItemForm();
+        if($('#app-module-form').length){
+            appModuleForm();
         }
     });
 })(jQuery);
 
-function menuItemForm(){
-    $('#menu-item-form').validate({
+function appModuleForm(){
+    $('#app-module-form').validate({
         rules: {
-            menu_item_name: {
+            app_module_name: {
                 required: true
             },
-            menu_group_id: {
+            app_module_description: {
+                required: true
+            },
+            menu_item_id: {
                 required: true
             },
             order_sequence: {
@@ -25,11 +27,14 @@ function menuItemForm(){
             }
         },
         messages: {
-            menu_item_name: {
+            app_module_name: {
                 required: 'Enter the display name'
             },
-            menu_group_id: {
-                required: 'Choose the menu group'
+            app_module_description: {
+                required: 'Enter the description'
+            },
+            menu_item_id: {
+                required: 'Select the default page'
             },
             order_sequence: {
                 required: 'Enter the order sequence'
@@ -49,12 +54,12 @@ function menuItemForm(){
             $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
-            const transaction = 'add menu item';
+            const transaction = 'add app module';
             const page_link = document.getElementById('page-link').getAttribute('href');
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/security/menu-item/controller/menu-item-controller.php',
+                url: 'apps/security/app-module/controller/app-module-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -63,7 +68,7 @@ function menuItemForm(){
                 success: function (response) {
                     if (response.success) {
                         setNotification(response.title, response.message, response.messageType);
-                        window.location = page_link + '&id=' + response.menuItemID;
+                        window.location = page_link + '&id=' + response.appModuleID;
                     }
                     else {
                         if (response.isInactive || response.notExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -90,27 +95,6 @@ function menuItemForm(){
 
 function generateDropdownOptions(type){
     switch (type) {
-        case 'menu group options':
-            
-            $.ajax({
-                url: 'apps/security/menu-group/view/_menu_group_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type
-                },
-                success: function(response) {
-                    $('#menu_group_id').select2({
-                        data: response
-                    }).on('change', function (e) {
-                        $(this).valid()
-                    });
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                }
-            });
-            break;
         case 'menu item options':
             
             $.ajax({
@@ -121,7 +105,7 @@ function generateDropdownOptions(type){
                     type : type
                 },
                 success: function(response) {
-                    $('#parent_id').select2({
+                    $('#menu_item_id').select2({
                         data: response
                     }).on('change', function (e) {
                         $(this).valid()
