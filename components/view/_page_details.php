@@ -53,4 +53,6 @@
     $importAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'import');
     $exportAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'export');
     $logNotesAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'log notes');
+
+    $disabled = ($writeAccess['total'] == 0) ? 'disabled' : '';
 ?>

@@ -27,18 +27,17 @@ class MenuItemModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function saveMenuItem($p_menu_item_id, $p_menu_item_name, $p_menu_item_url, $p_menu_item_icon, $p_menu_group_id, $p_menu_group_name, $p_app_module_id, $p_app_module_name, $p_parent_id, $p_parent_name, $p_order_sequence, $p_last_log_by) {
-        $stmt = $this->db->getConnection()->prepare('CALL saveMenuItem(:p_menu_item_id, :p_menu_item_name, :p_menu_item_url, :p_menu_item_icon, :p_menu_group_id, :p_menu_group_name, :p_app_module_id, :p_app_module_name, :p_parent_id, :p_parent_name, :p_order_sequence, :p_last_log_by, @p_new_menu_item_id)');
+    public function saveMenuItem($p_menu_item_id, $p_menu_item_name, $p_menu_item_url, $p_menu_item_icon, $p_app_module_id, $p_app_module_name, $p_parent_id, $p_parent_name, $p_table_name, $p_order_sequence, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL saveMenuItem(:p_menu_item_id, :p_menu_item_name, :p_menu_item_url, :p_menu_item_icon, :p_app_module_id, :p_app_module_name, :p_parent_id, :p_parent_name, :p_table_name, :p_order_sequence, :p_last_log_by, @p_new_menu_item_id)');
         $stmt->bindValue(':p_menu_item_id', $p_menu_item_id, PDO::PARAM_INT);
         $stmt->bindValue(':p_menu_item_name', $p_menu_item_name, PDO::PARAM_STR);
         $stmt->bindValue(':p_menu_item_url', $p_menu_item_url, PDO::PARAM_STR);
         $stmt->bindValue(':p_menu_item_icon', $p_menu_item_icon, PDO::PARAM_STR);
-        $stmt->bindValue(':p_menu_group_id', $p_menu_group_id, PDO::PARAM_INT);
-        $stmt->bindValue(':p_menu_group_name', $p_menu_group_name, PDO::PARAM_INT);
         $stmt->bindValue(':p_app_module_id', $p_app_module_id, PDO::PARAM_INT);
         $stmt->bindValue(':p_app_module_name', $p_app_module_name, PDO::PARAM_STR);
         $stmt->bindValue(':p_parent_id', $p_parent_id, PDO::PARAM_INT);
         $stmt->bindValue(':p_parent_name', $p_parent_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_table_name', $p_table_name, PDO::PARAM_STR);
         $stmt->bindValue(':p_order_sequence', $p_order_sequence, PDO::PARAM_INT);
         $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
         $stmt->execute();

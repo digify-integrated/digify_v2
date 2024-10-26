@@ -327,11 +327,6 @@ function displayDetails(transaction){
                         $('#menu_item_id').val(response.menuItemID).trigger('change');
 
                         document.getElementById('app_thumbnail').style.backgroundImage = `url(${response.appLogo})`;
-                        
-                        $('#app_module_name_summary').text(response.appModuleName);
-                        $('#app_module_description_summary').text(response.appModuleDescription);
-                        $('#menu_item_summary').text(response.menuItemName);
-                        $('#order_sequence_summary').text(response.orderSequence);
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {

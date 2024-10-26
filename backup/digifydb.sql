@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 23, 2024 at 11:32 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Oct 26, 2024 at 05:22 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -523,6 +523,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateSystemActionTable` ()   BEG
     SELECT system_action_id, system_action_name, system_action_description 
     FROM system_action
     ORDER BY system_action_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateTables`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateTables` (IN `p_database_name` VARCHAR(255))   BEGIN
+	SELECT table_name FROM information_schema.tables WHERE table_schema = p_database_name;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateUserAccountRoleDualListBoxOptions`$$
@@ -1218,7 +1223,19 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (11, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 1 -> 12<br/>', 2, '2024-10-21 16:53:29', '2024-10-21 16:53:29'),
 (12, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 12 -> 3<br/>', 2, '2024-10-21 16:53:30', '2024-10-21 16:53:30'),
 (13, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 15:25:07 -> 2024-10-21 21:04:17<br/>', 1, '2024-10-21 21:04:17', '2024-10-21 21:04:17'),
-(14, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 21:04:17 -> 2024-10-23 14:09:19<br/>', 1, '2024-10-23 14:09:19', '2024-10-23 14:09:19');
+(14, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 21:04:17 -> 2024-10-23 14:09:19<br/>', 1, '2024-10-23 14:09:19', '2024-10-23 14:09:19'),
+(15, 'role_permission', 1, 'Role permission changed.<br/><br/>Write Access: 1 -> 0<br/>', 1, '2024-10-26 22:14:30', '2024-10-26 22:14:30'),
+(16, 'role_permission', 1, 'Role permission changed.<br/><br/>Write Access: 0 -> 1<br/>', 1, '2024-10-26 22:15:34', '2024-10-26 22:15:34'),
+(17, 'menu_item', 10, 'Menu item created.', 2, '2024-10-26 22:32:57', '2024-10-26 22:32:57'),
+(18, 'role_permission', 10, 'Role permission changed.<br/><br/>Menu Item: System Action -> asd<br/>', 2, '2024-10-26 22:41:04', '2024-10-26 22:41:04'),
+(19, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item URL: qwe -> qweasdasd<br/>', 2, '2024-10-26 22:41:13', '2024-10-26 22:41:13'),
+(20, 'menu_item', 10, 'Menu item changed.<br/><br/>Parent: internal_notes_attachment -> internal_notes<br/>', 2, '2024-10-26 22:41:20', '2024-10-26 22:41:20'),
+(21, 'role_permission', 10, 'Role permission changed.<br/><br/>Menu Item: asd -> asdasdasd<br/>', 2, '2024-10-26 22:41:30', '2024-10-26 22:41:30'),
+(22, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Name: asd -> asdasdasd<br/>', 2, '2024-10-26 22:41:30', '2024-10-26 22:41:30'),
+(23, 'role_permission', 10, 'Role permission changed.<br/><br/>Menu Item: asdasdasd -> asdasdasdasdasd<br/>', 2, '2024-10-26 22:41:33', '2024-10-26 22:41:33'),
+(24, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Name: asdasdasd -> asdasdasdasdasd<br/>', 2, '2024-10-26 22:41:33', '2024-10-26 22:41:33'),
+(25, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Icon: ki-outline ki-abstract -> ki-outline ki-abstract-10<br/>Parent: App Module -> General Settings<br/>', 2, '2024-10-26 22:42:37', '2024-10-26 22:42:37'),
+(26, 'menu_item', 10, 'Menu item changed.<br/><br/>Parent: General Settings -> Company<br/>', 2, '2024-10-26 23:08:31', '2024-10-26 23:08:31');
 
 -- --------------------------------------------------------
 
@@ -1465,7 +1482,7 @@ CREATE TABLE `menu_item` (
 --
 
 INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `menu_item_icon`, `app_module_id`, `app_module_name`, `parent_id`, `parent_name`, `table_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-10-19 21:30:54', 2),
+(1, 'App Module', 'app-module.php', '', 1, 'Settings', NULL, '', 'app_module', 1, '2024-10-19 21:30:54', 2),
 (2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-10-19 21:30:54', 2),
 (3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-10-19 21:30:54', 2),
 (4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-10-19 21:30:54', 2),
@@ -1473,7 +1490,8 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-10-19 21:30:54', 2),
 (7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-10-19 21:30:54', 2),
 (8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-10-19 21:30:54', 2),
-(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-10-19 21:30:54', 2);
+(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-10-19 21:30:54', 2),
+(10, 'asdasdasdasdasd', 'qweasdasd', 'ki-outline ki-abstract-10', 2, 'Employees', 5, 'Company', 'internal_notes', 12, '2024-10-26 22:32:57', 2);
 
 --
 -- Triggers `menu_item`
@@ -1502,7 +1520,7 @@ CREATE TRIGGER `menu_item_trigger_update` AFTER UPDATE ON `menu_item` FOR EACH R
     END IF;
 
     IF NEW.menu_item_icon <> OLD.menu_item_icon THEN
-        SET audit_log = CONCAT(audit_log, "Menu Item Icon: ", OLD.menu_item_icon, " -> ", NEW.menu_item_icon, "<br/>");
+        SET audit_log = CONCAT(audit_log, "Menu Icon: ", OLD.menu_item_icon, " -> ", NEW.menu_item_icon, "<br/>");
     END IF;
 
     IF NEW.app_module_name <> OLD.app_module_name THEN
@@ -1513,12 +1531,12 @@ CREATE TRIGGER `menu_item_trigger_update` AFTER UPDATE ON `menu_item` FOR EACH R
         SET audit_log = CONCAT(audit_log, "Parent: ", OLD.parent_name, " -> ", NEW.parent_name, "<br/>");
     END IF;
 
-    IF NEW.table_name <> OLD.table_name THEN
-        SET audit_log = CONCAT(audit_log, "Parent: ", OLD.table_name, " -> ", NEW.table_name, "<br/>");
-    END IF;
-
     IF NEW.order_sequence <> OLD.order_sequence THEN
         SET audit_log = CONCAT(audit_log, "Order Sequence: ", OLD.order_sequence, " -> ", NEW.order_sequence, "<br/>");
+    END IF;
+
+    IF NEW.table_name <> OLD.table_name THEN
+        SET audit_log = CONCAT(audit_log, "Export Table: ", OLD.table_name, " -> ", NEW.table_name, "<br/>");
     END IF;
     
     IF audit_log <> 'Menu item changed.<br/><br/>' THEN
@@ -1864,7 +1882,7 @@ CREATE TABLE `role_permission` (
 --
 
 INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `menu_item_id`, `menu_item_name`, `read_access`, `write_access`, `create_access`, `delete_access`, `import_access`, `export_access`, `log_notes_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
+(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 2),
 (2, 1, 'Administrator', 2, 'General Settings', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
 (3, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
 (4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
@@ -1873,7 +1891,7 @@ INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `me
 (7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
 (8, 1, 'Administrator', 8, 'Menu Group', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
 (9, 1, 'Administrator', 9, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(10, 1, 'Administrator', 10, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1);
+(10, 1, 'Administrator', 10, 'asdasdasdasdasd', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 2);
 
 --
 -- Triggers `role_permission`
@@ -2632,7 +2650,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -2662,7 +2680,7 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`

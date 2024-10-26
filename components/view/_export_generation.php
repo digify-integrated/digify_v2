@@ -39,6 +39,34 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             }
         break;
         # -------------------------------------------------------------
+
+        # -------------------------------------------------------------
+        case 'table options':
+            $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;
+            
+            $sql = $databaseModel->getConnection()->prepare('CALL generateTables(:databaseName)');
+            $sql->bindValue(':databaseName', DB_NAME, PDO::PARAM_STR);
+            $sql->execute();
+            $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+            $sql->closeCursor();
+
+            if(!$multiple){
+                $response[] = [
+                    'id' => '',
+                    'text' => '--'
+                ];
+            }
+
+            foreach ($options as $row) {
+                $response[] = [
+                    'id' => $row['table_name'],
+                    'text' => $row['table_name']
+                ];
+            }
+
+            echo json_encode($response);
+        break;
+        # -------------------------------------------------------------
     }
 }
 

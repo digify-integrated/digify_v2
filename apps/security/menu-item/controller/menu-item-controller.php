@@ -8,28 +8,25 @@ require_once '../../../../components/model/system-model.php';
 require_once '../../authentication/model/authentication-model.php';
 require_once '../../security-setting/model/security-setting-model.php';
 require_once '../../app-module/model/app-module-model.php';
-require_once '../../menu-group/model/menu-group-model.php';
 require_once '../../menu-item/model/menu-item-model.php';
 
-require_once '../../../../assets/libs/PhpSpreadsheet/autoload.php';
+require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new MenuItemController(new MenuItemModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new AppModuleModel(new DatabaseModel), new MenuGroupModel(new DatabaseModel), new SecurityModel(), new SystemModel());
+$controller = new MenuItemController(new MenuItemModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new AppModuleModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
 class MenuItemController {
     private $menuItemModel;
     private $appModuleModel;
-    private $menuGroupModel;
     private $authenticationModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(MenuItemModel $menuItemModel, AuthenticationModel $authenticationModel, AppModuleModel $appModuleModel, MenuGroupModel $menuGroupModel, SecurityModel $securityModel, SystemModel $systemModel) {
+    public function __construct(MenuItemModel $menuItemModel, AuthenticationModel $authenticationModel, AppModuleModel $appModuleModel, SecurityModel $securityModel, SystemModel $systemModel) {
         $this->menuItemModel = $menuItemModel;
         $this->appModuleModel = $appModuleModel;
-        $this->menuGroupModel = $menuGroupModel;
         $this->authenticationModel = $authenticationModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
@@ -151,21 +148,20 @@ class MenuItemController {
 
         $userID = $_SESSION['user_account_id'];
         $menuItemName = filter_input(INPUT_POST, 'menu_item_name', FILTER_SANITIZE_STRING);
-        $menuGroupID = filter_input(INPUT_POST, 'menu_group_id', FILTER_VALIDATE_INT);
+        $appModuleID = filter_input(INPUT_POST, 'app_module_id', FILTER_VALIDATE_INT);
         $orderSequence = filter_input(INPUT_POST, 'order_sequence', FILTER_VALIDATE_INT);
         $parentID = filter_input(INPUT_POST, 'parent_id', FILTER_VALIDATE_INT);
         $menuItemIcon = filter_input(INPUT_POST, 'menu_item_icon', FILTER_SANITIZE_STRING);
         $menuItemURL = filter_input(INPUT_POST, 'menu_item_url', FILTER_SANITIZE_STRING);
+        $tableName = filter_input(INPUT_POST, 'table_name', FILTER_SANITIZE_STRING);
 
-        $menuGroupDetails = $this->menuGroupModel->getMenuGroup($menuGroupID);
-        $menuGroupName = $menuGroupDetails['menu_group_name'] ?? '';
-        $appModuleID = $menuGroupDetails['app_module_id'] ?? '';
-        $appModuleName = $menuGroupDetails['app_module_name'] ?? '';
+        $appModuleDetails = $this->appModuleModel->getAppModule($appModuleID);
+        $appModuleName = $appModuleDetails['app_module_name'] ?? '';
 
         $parentDetails = $this->menuItemModel->getMenuItem($parentID);
         $parentName = $parentDetails['menu_item_name'] ?? '';
         
-        $menuItemID = $this->menuItemModel->saveMenuItem(null, $menuItemName, $menuItemURL, $menuItemIcon, $menuGroupID, $menuGroupName, $appModuleID, $appModuleName, $parentID, $parentName, $orderSequence, $userID);
+        $menuItemID = $this->menuItemModel->saveMenuItem(null, $menuItemName, $menuItemURL, $menuItemIcon, $appModuleID, $appModuleName, $parentID, $parentName, $tableName, $orderSequence, $userID);
     
         $response = [
             'success' => true,
@@ -193,11 +189,12 @@ class MenuItemController {
         $userID = $_SESSION['user_account_id'];
         $menuItemID = filter_input(INPUT_POST, 'menu_item_id', FILTER_VALIDATE_INT);
         $menuItemName = filter_input(INPUT_POST, 'menu_item_name', FILTER_SANITIZE_STRING);
-        $menuGroupID = filter_input(INPUT_POST, 'menu_group_id', FILTER_VALIDATE_INT);
+        $appModuleID = filter_input(INPUT_POST, 'app_module_id', FILTER_VALIDATE_INT);
         $orderSequence = filter_input(INPUT_POST, 'order_sequence', FILTER_VALIDATE_INT);
         $parentID = filter_input(INPUT_POST, 'parent_id', FILTER_VALIDATE_INT);
         $menuItemIcon = filter_input(INPUT_POST, 'menu_item_icon', FILTER_SANITIZE_STRING);
         $menuItemURL = filter_input(INPUT_POST, 'menu_item_url', FILTER_SANITIZE_STRING);
+        $tableName = filter_input(INPUT_POST, 'table_name', FILTER_SANITIZE_STRING);
     
         $checkMenuItemExist = $this->menuItemModel->checkMenuItemExist($menuItemID);
         $total = $checkMenuItemExist['total'] ?? 0;
@@ -215,15 +212,13 @@ class MenuItemController {
             exit;
         }
 
-        $menuGroupDetails = $this->menuGroupModel->getMenuGroup($menuGroupID);
-        $menuGroupName = $menuGroupDetails['menu_group_name'] ?? '';
-        $appModuleID = $menuGroupDetails['app_module_id'] ?? '';
-        $appModuleName = $menuGroupDetails['app_module_name'] ?? '';
+        $appModuleDetails = $this->appModuleModel->getAppModule($appModuleID);
+        $appModuleName = $appModuleDetails['app_module_name'] ?? '';
 
         $parentDetails = $this->menuItemModel->getMenuItem($parentID);
         $parentName = $parentDetails['menu_item_name'] ?? '';
 
-        $menuItemID = $this->menuItemModel->saveMenuItem($menuItemID, $menuItemName, $menuItemURL, $menuItemIcon, $menuGroupID, $menuGroupName, $appModuleID, $appModuleName, $parentID, $parentName, $orderSequence, $userID);
+        $menuItemID = $this->menuItemModel->saveMenuItem($menuItemID, $menuItemName, $menuItemURL, $menuItemIcon, $appModuleID, $appModuleName, $parentID, $parentName, $tableName, $orderSequence, $userID);
             
         $response = [
             'success' => true,
@@ -447,10 +442,9 @@ class MenuItemController {
             'menuItemName' => $menuItemDetails['menu_item_name'] ?? null,
             'menuItemURL' => $menuItemDetails['menu_item_url'] ?? null,
             'menuItemIcon' => $menuItemDetails['menu_item_icon'] ?? null,
-            'menuGroupID' => $menuItemDetails['menu_group_id'] ?? null,
-            'menuGroupName' => $menuItemDetails['menu_group_name'] ?? null,
+            'appModuleID' => $menuItemDetails['app_module_id'] ?? null,
             'parentID' => $menuItemDetails['parent_id'] ?? null,
-            'parentName' => $menuItemDetails['parent_name'] ?? null,
+            'tableName' => $menuItemDetails['table_name'] ?? null,
             'orderSequence' => $menuItemDetails['order_sequence'] ?? null
         ];
 

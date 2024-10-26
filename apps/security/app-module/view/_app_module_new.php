@@ -27,7 +27,7 @@
                 <div class="col-md-6">
                     <label class="fs-6 fw-semibold form-label" for="menu_item_id"><span class="required">Default Page</span></label>
                     <div class="mb-3">
-                        <select id="menu_item_id" name="menu_item_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="true"></select>
+                        <select id="menu_item_id" name="menu_item_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
                     </div>
                 </div>
                 <div class="col-md-6">

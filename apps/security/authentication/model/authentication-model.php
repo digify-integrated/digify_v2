@@ -109,7 +109,6 @@ class AuthenticationModel {
     }
     # -------------------------------------------------------------
 
-
     # -------------------------------------------------------------
     #   Update methods
     # -------------------------------------------------------------
@@ -209,6 +208,19 @@ class AuthenticationModel {
         $stmt = $this->db->getConnection()->prepare('CALL updateResetTokenAsExpired(:p_user_account_id, :p_reset_token_expiry_date)');
         $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
         $stmt->bindValue(':p_reset_token_expiry_date', $p_reset_token_expiry_date, PDO::PARAM_STR);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    #   Generate methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function generateTables($p_database_name) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateLoginAttempt(:p_database_name)');
+        $stmt->bindValue(':p_database_name', $p_database_name, PDO::PARAM_STR);
         $stmt->execute();
         $stmt->closeCursor();
     }

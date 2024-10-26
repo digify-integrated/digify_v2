@@ -67,3 +67,11 @@ BEGIN
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
 END //
+
+DROP PROCEDURE IF EXISTS generateTables//
+CREATE PROCEDURE generateTables(
+    IN p_database_name VARCHAR(255)
+)
+BEGIN
+	SELECT table_name FROM information_schema.tables WHERE table_schema = p_database_name;
+END //

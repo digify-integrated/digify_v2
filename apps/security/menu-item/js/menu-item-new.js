@@ -2,24 +2,23 @@
     'use strict';
 
     $(function() {
+        generateDropdownOptions('app module options');
         generateDropdownOptions('menu item options');
+        generateDropdownOptions('table options');
 
-        if($('#app-module-form').length){
-            appModuleForm();
+        if($('#menu-item-form').length){
+            menuItemForm();
         }
     });
 })(jQuery);
 
-function appModuleForm(){
-    $('#app-module-form').validate({
+function menuItemForm(){
+    $('#menu-item-form').validate({
         rules: {
-            app_module_name: {
+            menu_item_name: {
                 required: true
             },
-            app_module_description: {
-                required: true
-            },
-            menu_item_id: {
+            app_module_id: {
                 required: true
             },
             order_sequence: {
@@ -27,14 +26,11 @@ function appModuleForm(){
             }
         },
         messages: {
-            app_module_name: {
+            menu_item_name: {
                 required: 'Enter the display name'
             },
-            app_module_description: {
-                required: 'Enter the description'
-            },
-            menu_item_id: {
-                required: 'Select the default page'
+            app_module_id: {
+                required: 'Choose the app module'
             },
             order_sequence: {
                 required: 'Enter the order sequence'
@@ -54,12 +50,12 @@ function appModuleForm(){
             $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
-            const transaction = 'add app module';
+            const transaction = 'add menu item';
             const page_link = document.getElementById('page-link').getAttribute('href');
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/security/app-module/controller/app-module-controller.php',
+                url: 'apps/security/menu-item/controller/menu-item-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -68,7 +64,7 @@ function appModuleForm(){
                 success: function (response) {
                     if (response.success) {
                         setNotification(response.title, response.message, response.messageType);
-                        window.location = page_link + '&id=' + response.appModuleID;
+                        window.location = page_link + '&id=' + response.menuItemID;
                     }
                     else {
                         if (response.isInactive || response.notExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -95,6 +91,27 @@ function appModuleForm(){
 
 function generateDropdownOptions(type){
     switch (type) {
+        case 'app module options':
+            
+            $.ajax({
+                url: 'apps/security/app-module/view/_app_module_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type
+                },
+                success: function(response) {
+                    $('#app_module_id').select2({
+                        data: response
+                    }).on('change', function (e) {
+                        $(this).valid()
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
         case 'menu item options':
             
             $.ajax({
@@ -105,7 +122,28 @@ function generateDropdownOptions(type){
                     type : type
                 },
                 success: function(response) {
-                    $('#menu_item_id').select2({
+                    $('#parent_id').select2({
+                        data: response
+                    }).on('change', function (e) {
+                        $(this).valid()
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+        case 'table options':
+            
+            $.ajax({
+                url: 'components/view/_export_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type
+                },
+                success: function(response) {
+                    $('#table_name').select2({
                         data: response
                     }).on('change', function (e) {
                         $(this).valid()

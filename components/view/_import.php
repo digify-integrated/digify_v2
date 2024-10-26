@@ -5,16 +5,16 @@
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                <a href="<?php echo $pageLink; ?>" class="btn btn-light btn-active-light-primary me-2 mb-0">Cancel</a>
                 <?php
-                    echo $importAccess['total'] > 0 ? '<button type="button" class="btn btn-flex btn-primary me-2 upload-file-default-preview" data-bs-toggle="modal" id="upload-file" data-bs-target="#upload-modal">
+                    echo $importAccess['total'] > 0 ? '<button type="button" class="btn btn-flex btn-primary upload-file-default-preview" data-bs-toggle="modal" id="upload-file" data-bs-target="#upload-modal">
                         <i class="ki-outline ki-folder-up fs-2"></i>
                         Upload File
                     </button>' : '';
 
-                    echo $importAccess['total'] > 0 ? '<button class="btn btn-flex btn-primary me-2 upload-file-preview d-none" type="submit" form="upload-form">Import</button>
-                    <button class="btn btn-flex btn-info me-2 upload-file-preview d-none" id="reset-import">Reset</button>' : '';
+                    echo $importAccess['total'] > 0 ? '<button class="btn btn-flex btn-info me-2 upload-file-preview d-none" id="reset-import">Reset</button>
+                    <button class="btn btn-flex btn-primary upload-file-preview d-none" type="submit" form="upload-form">Import</button>' : '';
                 ?>
-                <a href="<?php echo $pageLink; ?>" class="btn btn-warning d-flex align-items-center me-2 mb-0">Cancel</a>
             </div>
         </div>
     </div>

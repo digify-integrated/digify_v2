@@ -349,15 +349,3 @@ BEGIN
     WHERE table_name = p_table_name AND reference_id  = p_reference_id
     ORDER BY changed_at DESC;
 END //
-
-DROP PROCEDURE IF EXISTS generateInternalNotes//
-CREATE PROCEDURE generateInternalNotes(
-    IN p_table_name VARCHAR(255),
-    IN p_reference_id INT
-)
-BEGIN
-	SELECT internal_notes_id, internal_note, internal_note_by, internal_note_date
-    FROM internal_notes
-    WHERE table_name = p_table_name AND reference_id  = p_reference_id
-    ORDER BY internal_note_date DESC;
-END //

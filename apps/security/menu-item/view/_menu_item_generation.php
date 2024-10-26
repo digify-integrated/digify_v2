@@ -25,16 +25,12 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             $filterAppModule = isset($_POST['app_module_filter']) && is_array($_POST['app_module_filter']) 
             ? "'" . implode("','", array_map('trim', $_POST['app_module_filter'])) . "'" 
             : null;
-            $filterMenuGroup = isset($_POST['menu_group_filter']) && is_array($_POST['menu_group_filter']) 
-            ? "'" . implode("','", array_map('trim', $_POST['menu_group_filter'])) . "'" 
-            : null;
             $filterParentID = isset($_POST['parent_id_filter']) && is_array($_POST['parent_id_filter']) 
             ? "'" . implode("','", array_map('trim', $_POST['parent_id_filter'])) . "'" 
             : null;
 
-            $sql = $databaseModel->getConnection()->prepare('CALL generateMenuItemTable(:filterAppModule, :filterMenuGroup, :filterParentID)');
+            $sql = $databaseModel->getConnection()->prepare('CALL generateMenuItemTable(:filterAppModule, :filterParentID)');
             $sql->bindValue(':filterAppModule', $filterAppModule, PDO::PARAM_STR);
-            $sql->bindValue(':filterMenuGroup', $filterMenuGroup, PDO::PARAM_STR);
             $sql->bindValue(':filterParentID', $filterParentID, PDO::PARAM_STR);
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
@@ -43,17 +39,17 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $menuItemID = $row['menu_item_id'];
                 $menuItemName = $row['menu_item_name'];
-                $menuGroupName = $row['menu_group_name'];
                 $appModuleName = $row['app_module_name'];
-                $parentName = $row['parent_name'];
+                $parentName = !empty($row['parent_name']) ? $row['parent_name'] : '-';
                 $orderSequence = $row['order_sequence'];
 
                 $menuItemIDEncrypted = $securityModel->encryptData($menuItemID);
 
                 $response[] = [
-                    'CHECK_BOX' => '<input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $menuItemID .'">',
+                    'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $menuItemID .'">
+                                    </div>',
                     'MENU_ITEM_NAME' => $menuItemName,
-                    'MENU_GROUP_NAME' => $menuGroupName,
                     'APP_MODULE_NAME' => $appModuleName,
                     'PARENT_NAME' => $parentName,
                     'ORDER_SEQUENCE' => $orderSequence,

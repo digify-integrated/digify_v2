@@ -6,10 +6,12 @@
                 <div class="image-input image-input-outline" data-kt-image-input="true">
                     <div class="image-input-wrapper w-125px h-125px" id="app_thumbnail" style="background-image: url(./assets/images/default/app-module-logo.png)"></div>
 
-                    <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" aria-label="Change logo" data-bs-original-title="Change logo" data-kt-initialized="1">
-                        <i class="ki-outline ki-pencil fs-7"></i>
-                        <input type="file" id="app_logo" name="app_logo" accept=".png, .jpg, .jpeg">
-                    </label>
+                    <?php
+                        echo ($writeAccess['total'] > 0) ? '<label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" aria-label="Change logo" data-bs-original-title="Change logo" data-kt-initialized="1">
+                                                                <i class="ki-outline ki-pencil fs-7"></i>
+                                                                <input type="file" id="app_logo" name="app_logo" accept=".png, .jpg, .jpeg">
+                                                            </label>' : '';
+                    ?>
                 </div>
                         
                 <div class="form-text mt-5">Set the app module image. Only *.png, *.jpg and *.jpeg image files are accepted.</div>
@@ -22,6 +24,9 @@
                 <div class="card-title m-0">
                     <h3 class="fw-bold m-0">App Module Details</h3>
                 </div>
+                <?php
+                    echo ($deleteAccess['total'] > 0) ? '<button id="delete-app-module" class="btn btn-sm btn-danger align-self-center">Delete App Module</a>' : '';
+                ?>
             </div>
 
             <form id="app-module-form" class="form" method="post" action="#">
@@ -34,7 +39,7 @@
                         <div class="col-lg-8">
                             <div class="row">
                                 <div class="col-lg-12 fv-row fv-plugins-icon-container">
-                                    <input type="text" class="form-control form-control-solid maxlength" id="app_module_name" name="app_module_name" maxlength="100" autocomplete="off">
+                                    <input type="text" class="form-control form-control-solid maxlength" id="app_module_name" name="app_module_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
                                 </div>
                             </div>
                         </div>
@@ -48,7 +53,7 @@
                         <div class="col-lg-8">
                             <div class="row">
                                 <div class="col-lg-12 fv-row fv-plugins-icon-container">
-                                    <textarea class="form-control form-control-solid maxlength" id="app_module_description" name="app_module_description" maxlength="500" rows="3"></textarea>
+                                    <textarea class="form-control form-control-solid maxlength" id="app_module_description" name="app_module_description" maxlength="500" rows="3" <?php echo $disabled ?>></textarea>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +67,7 @@
                         <div class="col-lg-8">
                             <div class="row">
                                 <div class="col-lg-12 fv-row fv-plugins-icon-container">
-                                    <select id="menu_item_id" name="menu_item_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                    <select id="menu_item_id" name="menu_item_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
                                 </div>
                             </div>
                         </div>
@@ -76,16 +81,18 @@
                         <div class="col-lg-8">
                             <div class="row">
                                 <div class="col-lg-12 fv-row fv-plugins-icon-container">
-                                    <input type="number" class="form-control form-control-solid" id="order_sequence" name="order_sequence" min="0">
+                                    <input type="number" class="form-control form-control-solid" id="order_sequence" name="order_sequence" min="0" <?php echo $disabled ?>>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-footer d-flex justify-content-end py-6 px-9">
-                    <button type="submit" form="app-module-form" class="btn btn-primary" id="submit-data">Save Changes</button>
-                </div>
+                <?php
+                    echo ($writeAccess['total'] > 0) ? '<div class="card-footer d-flex justify-content-end py-6 px-9">
+                                                            <button type="submit" form="app-module-form" class="btn btn-primary" id="submit-data">Save Changes</button>
+                                                        </div>' : '';
+                ?>
             </form>
         </div>
     </div>
