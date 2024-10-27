@@ -2,7 +2,7 @@
     'use strict';
 
     $(function() {
-        setHereClassForMenu('.menu-item');
+        setHereClassForMenu('#kt_app_header_menu', '.menu-item');
 
         checkNotification();
         passwordAddOn();
@@ -29,10 +29,13 @@
     });
 })(jQuery);
 
-function setHereClassForMenu(menuSelector) {
+function setHereClassForMenu(menuContainerSelector, menuSelector) {
     var currentUrl = window.location.href.split('?')[0];
 
-    var firstLevelMenuItems = document.querySelectorAll(menuSelector);
+    var menuContainer = document.querySelector(menuContainerSelector);
+    if (!menuContainer) return; 
+
+    var firstLevelMenuItems = menuContainer.querySelectorAll(menuSelector);
 
     firstLevelMenuItems.forEach(function(menuItem) {
         var hasChildMatch = false;
@@ -64,7 +67,6 @@ function setHereClassForMenu(menuSelector) {
         }
     });
 }
-
 
 function discardCreate(windows_location){
     Swal.fire({

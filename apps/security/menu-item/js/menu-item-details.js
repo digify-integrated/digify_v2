@@ -12,6 +12,10 @@
             menuItemForm();
         }
 
+        if($('#role-permission-table').length){
+            rolePermissionTable('#role-permission-table');
+        }
+
         $(document).on('click','#edit-details',function() {
             displayDetails('get menu item details');
         });
@@ -173,6 +177,76 @@ function menuItemForm(){
             return false;
         }
     });
+}
+
+function rolePermissionTable(datatable_name) {
+    const type = 'menu item assigned role table';
+    const page_id = $('#page-id').val();
+    const page_link = document.getElementById('page-link').getAttribute('href');
+    const menu_item_id = $('#details-id').text();
+
+
+    const columns = [ 
+        { data: 'ROLE_NAME' },
+        { data: 'READ_ACCESS' },
+        { data: 'WRITE_ACCESS' },
+        { data: 'CREATE_ACCESS' },
+        { data: 'DELETE_ACCESS' },
+        { data: 'IMPORT_ACCESS' },
+        { data: 'EXPORT_ACCESS' },
+        { data: 'LOG_NOTES_ACCESS' },
+        { data: 'ACTION' }
+    ];
+
+    const columnDefs = [
+        { width: 'auto', targets: 0, responsivePriority: 1 },
+        { width: 'auto', bSortable: false, targets: 1, responsivePriority: 2 },
+        { width: 'auto', bSortable: false, targets: 2, responsivePriority: 3 },
+        { width: 'auto', bSortable: false, targets: 3, responsivePriority: 4 },
+        { width: 'auto', bSortable: false, targets: 4, responsivePriority: 5 },
+        { width: 'auto', bSortable: false, targets: 5, responsivePriority: 6 },
+        { width: 'auto', bSortable: false, targets: 6, responsivePriority: 7 },
+        { width: 'auto', bSortable: false, targets: 7, responsivePriority: 8 },
+        { width: 'auto', bSortable: false, targets: 8, responsivePriority: 1 }
+    ];
+
+    const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
+
+    const settings = {
+        ajax: { 
+            url: 'apps/security/menu-item/view/_menu_item_generation.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                type: type,
+                page_id: page_id,
+                page_link: page_link,
+                menu_item_id: menu_item_id
+            },
+            dataSrc: '',
+            error: function(xhr, status, error) {
+                handleSystemError(xhr, status, error);
+            }
+        },
+        lengthChange: false,
+        order: [[0, 'asc']],
+        columns: columns,
+        columnDefs: columnDefs,
+        lengthMenu: lengthMenu,
+        autoWidth: false,
+        language: {
+            emptyTable: 'No data found',
+            sLengthMenu: '_MENU_',
+            info: '_START_ - _END_ of _TOTAL_ items',
+            loadingRecords: 'Just a moment while we fetch your data...'
+        },
+        fnDrawCallback: function(oSettings) {
+            readjustDatatableColumn();
+        }
+    };
+
+    destroyDatatable(datatable_name);
+    $(datatable_name).dataTable(settings);
 }
 
 function displayDetails(transaction){

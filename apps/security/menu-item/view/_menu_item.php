@@ -61,22 +61,24 @@
         </div>
     </div>
     <div class="card-body pt-9">
-        <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5" id="menu-item-table">
-            <thead>
-                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                    <th class="all">
-                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                            <input class="form-check-input" id="datatable-checkbox" type="checkbox">
-                        </div>
-                    </th>
-                    <th>Menu Item</th>
-                    <th>App Module</th>
-                    <th>Parent Menu Item</th>
-                    <th>Order Sequence</th>
-                </tr>
-            </thead>
-            <tbody class="fw-semibold text-gray-600"></tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5 text-nowrap" id="menu-item-table">
+                <thead>
+                    <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
+                        <th>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                <input class="form-check-input" id="datatable-checkbox" type="checkbox">
+                            </div>
+                        </th>
+                        <th>Menu Item</th>
+                        <th>App Module</th>
+                        <th>Parent Menu</th>
+                        <th>Order Sequence</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-semibold text-gray-800"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 

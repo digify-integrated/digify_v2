@@ -59,3 +59,4 @@
         </div>
     </div>
 </div>
+<input type="hidden" id="page-id" value="<?php echo $pageID; ?>">
