@@ -11,7 +11,7 @@ require_once '../../role/model/role-model.php';
 require_once '../../menu-item/model/menu-item-model.php';
 require_once '../../system-action/model/system-action-model.php';
 
-require_once '../../../../assets/libs/PhpSpreadsheet/autoload.php';
+require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
 $controller = new RoleController(new RoleModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new MenuItemModel(new DatabaseModel), new SystemActionModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();

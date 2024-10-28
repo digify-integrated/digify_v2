@@ -11,7 +11,7 @@
             const transaction = 'delete system action';
     
             Swal.fire({
-                title: 'Confirm System Action Deletion',
+                title: 'Confirm system action Deletion',
                 text: 'Are you sure you want to delete this system action?',
                 icon: 'warning',
                 showCancelButton: !0,
@@ -76,7 +76,7 @@
     
             if(system_action_id.length > 0){
                 Swal.fire({
-                    title: 'Confirm Multiple System Actions Deletion',
+                    title: 'Confirm Multiple system actions Deletion',
                     text: 'Are you sure you want to delete these system actions?',
                     icon: 'warning',
                     showCancelButton: !0,
@@ -125,7 +125,7 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple System Action Error', 'Please select the system actions you wish to delete.', 'danger');
+                showNotification('Deletion Multiple system action Error', 'Please select the system actions you wish to delete.', 'danger');
             }
         });
 
@@ -147,11 +147,6 @@
             var length = $(this).val(); 
             table.page.len(length).draw();
         });
-
-        $(document).on('click','#apply-filter',function() {
-            systemActionTable('#system-action-table');
-            $('#filter-offcanvas').offcanvas('hide');
-        });
     });
 })(jQuery);
 
@@ -161,6 +156,7 @@ function systemActionTable(datatable_name) {
     const type = 'system action table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
+
 
     const columns = [ 
         { data: 'CHECK_BOX' },
@@ -191,24 +187,11 @@ function systemActionTable(datatable_name) {
                 handleSystemError(xhr, status, error);
             }
         },
-        dom: 'Brtip',
         lengthChange: false,
         order: [[1, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,
-        responsive: {
-            details: {
-                type: 'inline',
-                display: $.fn.dataTable.Responsive.display.childRow,
-                renderer: function (api, rowIdx, columns) {
-                    let data = $.map(columns, function (col) {
-                        return col.hidden ? `<tr><td>${col.title}:</td><td>${col.data}</td></tr>` : '';
-                    }).join('');
-                    return data ? $('<table/>').append(data) : false;
-                }
-            }
-        },
         autoWidth: false,
         language: {
             emptyTable: 'No data found',

@@ -97,7 +97,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 $logNotesAccessChecked = $logNotesAccessRights ? 'checked' : '';
 
                 if($deleteRoleAccess['total'] > 0){
-                    $deleteButton = '<a href="javascript:void(0);" class="btn btn-sm btn-icon btn-danger delete-role-permission" data-role-permission-id="' . $rolePermissionID . '" title="Delete Role Permission">
+                    $deleteButton = '<a href="javascript:void(0);" class="btn btn-sm btn-icon btn-light-danger btn-active-danger  delete-role-permission" data-role-permission-id="' . $rolePermissionID . '" title="Delete Role Permission">
                                         <i class="ki-outline ki-trash m-0 fs-5"></i>
                                     </a>';
                 }

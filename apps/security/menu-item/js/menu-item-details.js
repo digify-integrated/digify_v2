@@ -12,6 +12,10 @@
             menuItemForm();
         }
 
+        if($('#role-permission-assignment-form').length){
+            rolePermissionAssignmentForm();
+        }
+
         if($('#role-permission-table').length){
             rolePermissionTable('#role-permission-table');
         }
@@ -75,10 +79,114 @@
             });
         });
 
+        $(document).on('click','#assign-role-permission',function() {
+            generateDropdownOptions('menu item role dual listbox options');
+        });
+
+        $(document).on('click','.update-role-permission',function() {
+            const role_permission_id = $(this).data('role-permission-id');
+            const access_type = $(this).data('access-type');
+            const transaction = 'update role permission';
+            const access = $(this).is(':checked') ? '1' : '0';
+            
+            $.ajax({
+                type: 'POST',
+                url: 'apps/security/role/controller/role-controller.php',
+                dataType: 'json',
+                data: {
+                    role_permission_id : role_permission_id, 
+                    access_type : access_type,
+                    access : access,
+                    transaction : transaction
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            reloadDatatable('#role-permission-table');
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+        });
+
+        $(document).on('click','.delete-role-permission',function() {
+            const role_permission_id = $(this).data('role-permission-id');
+            const transaction = 'delete role permission';
+    
+            Swal.fire({
+                title: 'Confirm Role Permission Deletion',
+                text: 'Are you sure you want to delete this role permission?',
+                icon: 'warning',
+                showCancelButton: !0,
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-danger mt-2',
+                    cancelButton: 'btn btn-secondary ms-2 mt-2'
+                },
+                buttonsStyling: !1
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'apps/security/role/controller/role-controller.php',
+                        dataType: 'json',
+                        data: {
+                            role_permission_id : role_permission_id, 
+                            transaction : transaction
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                showNotification(response.title, response.message, response.messageType);
+                                reloadDatatable('#role-permission-table');
+                            }
+                            else {
+                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = 'logout.php?logout';
+                                }
+                                else if (response.notExist) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    reloadDatatable('#role-permission-table');
+                                }
+                                else {
+                                    showNotification(response.title, response.message, response.messageType);
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            handleSystemError(xhr, status, error);
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+
         $(document).on('click','#log-notes-main',function() {
             const menu_item_id = $('#details-id').text();
 
             logNotes('menu_item', menu_item_id);
+        });
+
+        $(document).on('click','.view-role-permission-log-notes',function() {
+            const role_permission_id = $(this).data('role-permission-id');
+
+            logNotes('role_permission', role_permission_id);
         });
 
         if($('#internal-notes').length){
@@ -171,6 +279,66 @@ function menuItemForm(){
                 complete: function() {
                     enableFormSubmitButton('submit-data');
                     logNotesMain('menu_item', menu_item_id);
+                }
+            });
+        
+            return false;
+        }
+    });
+}
+
+function rolePermissionAssignmentForm(){
+    $('#role-permission-assignment-form').validate({
+        errorPlacement: function(error, element) {
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
+        },
+        highlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
+        },
+        unhighlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
+        },
+        submitHandler: function(form) {
+            const menu_item_id = $('#details-id').text();
+            const transaction = 'assign menu item role permission';
+          
+            $.ajax({
+                type: 'POST',
+                url: 'apps/security/role/controller/role-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&menu_item_id=' + menu_item_id,
+                dataType: 'json',
+                beforeSend: function() {
+                    disableFormSubmitButton('submit-assignment');
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+                        reloadDatatable('#role-permission-table');
+                        $('#role-permission-assignment-modal').modal('hide');
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'role.php';
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                },
+                complete: function() {
+                    enableFormSubmitButton('submit-assignment');
                 }
             });
         
@@ -363,6 +531,47 @@ function generateDropdownOptions(type){
                 },
                 error: function(xhr, status, error) {
                     handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+        case 'menu item role dual listbox options':
+            var menu_item_id = $('#details-id').text();
+        
+            $.ajax({
+                url: 'apps/security/role/view/_role_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type,
+                    menu_item_id : menu_item_id
+                },
+                success: function(response) {
+                    var select = document.getElementById('role_id');
+        
+                    select.options.length = 0;
+        
+                    response.forEach(function(opt) {
+                        var option = new Option(opt.text, opt.id);
+                        select.appendChild(option);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                },
+                complete: function(){
+                    if($('#role_id').length){
+                        $('#role_id').bootstrapDualListbox({
+                            nonSelectedListLabel: 'Non-selected',
+                            selectedListLabel: 'Selected',
+                            preserveSelectionOnMove: 'moved',
+                            moveOnSelect: false,
+                            helperSelectNamePostfix: false
+                        });
+        
+                        $('#role_id').bootstrapDualListbox('refresh', true);
+        
+                        initializeDualListBoxIcon();
+                    }
                 }
             });
             break;

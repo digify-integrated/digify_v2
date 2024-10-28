@@ -9,7 +9,7 @@ require_once '../../authentication/model/authentication-model.php';
 require_once '../../security-setting/model/security-setting-model.php';
 require_once '../../system-action/model/system-action-model.php';
 
-require_once '../../../../assets/libs/PhpSpreadsheet/autoload.php';
+require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
 $controller = new SystemActionController(new SystemActionModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();

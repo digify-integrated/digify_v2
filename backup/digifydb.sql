@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2024 at 05:22 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Oct 28, 2024 at 10:32 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -1235,7 +1235,20 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (23, 'role_permission', 10, 'Role permission changed.<br/><br/>Menu Item: asdasdasd -> asdasdasdasdasd<br/>', 2, '2024-10-26 22:41:33', '2024-10-26 22:41:33'),
 (24, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Name: asdasdasd -> asdasdasdasdasd<br/>', 2, '2024-10-26 22:41:33', '2024-10-26 22:41:33'),
 (25, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Icon: ki-outline ki-abstract -> ki-outline ki-abstract-10<br/>Parent: App Module -> General Settings<br/>', 2, '2024-10-26 22:42:37', '2024-10-26 22:42:37'),
-(26, 'menu_item', 10, 'Menu item changed.<br/><br/>Parent: General Settings -> Company<br/>', 2, '2024-10-26 23:08:31', '2024-10-26 23:08:31');
+(26, 'menu_item', 10, 'Menu item changed.<br/><br/>Parent: General Settings -> Company<br/>', 2, '2024-10-26 23:08:31', '2024-10-26 23:08:31'),
+(27, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-23 14:09:19 -> 2024-10-28 15:18:19<br/>', 1, '2024-10-28 15:18:19', '2024-10-28 15:18:19'),
+(28, 'role_permission', 10, 'Role permission changed.<br/><br/>Menu Item: asdasdasdasdasd -> Test<br/>', 2, '2024-10-28 15:44:43', '2024-10-28 15:44:43'),
+(29, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Name: asdasdasdasdasd -> Test<br/>', 2, '2024-10-28 15:44:43', '2024-10-28 15:44:43'),
+(30, 'role_permission', 10, 'Role permission changed.<br/><br/>Log Notes Access: 1 -> 0<br/>', 2, '2024-10-28 16:06:46', '2024-10-28 16:06:46'),
+(31, 'role_permission', 10, 'Role permission changed.<br/><br/>Log Notes Access: 0 -> 1<br/>', 2, '2024-10-28 16:06:48', '2024-10-28 16:06:48'),
+(32, 'role_permission', 11, 'Role permission created.', 2, '2024-10-28 16:35:40', '2024-10-28 16:35:40'),
+(33, 'role_permission', 11, 'Role permission changed.<br/><br/>Read Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:42', '2024-10-28 16:35:42'),
+(34, 'role_permission', 11, 'Role permission changed.<br/><br/>Write Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:42', '2024-10-28 16:35:42'),
+(35, 'role_permission', 11, 'Role permission changed.<br/><br/>Create Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:43', '2024-10-28 16:35:43'),
+(36, 'role_permission', 11, 'Role permission changed.<br/><br/>Delete Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:43', '2024-10-28 16:35:43'),
+(37, 'role_permission', 11, 'Role permission changed.<br/><br/>Import Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:44', '2024-10-28 16:35:44'),
+(38, 'role_permission', 11, 'Role permission changed.<br/><br/>Export Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:44', '2024-10-28 16:35:44'),
+(39, 'role_permission', 11, 'Role permission changed.<br/><br/>Log Notes Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:45', '2024-10-28 16:35:45');
 
 -- --------------------------------------------------------
 
@@ -1491,7 +1504,7 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-10-19 21:30:54', 2),
 (8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-10-19 21:30:54', 2),
 (9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-10-19 21:30:54', 2),
-(10, 'asdasdasdasdasd', 'qweasdasd', 'ki-outline ki-abstract-10', 2, 'Employees', 5, 'Company', 'internal_notes', 12, '2024-10-26 22:32:57', 2);
+(10, 'Test', 'qweasdasd', 'ki-outline ki-abstract-10', 2, 'Employees', 5, 'Company', 'internal_notes', 12, '2024-10-26 22:32:57', 2);
 
 --
 -- Triggers `menu_item`
@@ -1891,7 +1904,7 @@ INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `me
 (7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
 (8, 1, 'Administrator', 8, 'Menu Group', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
 (9, 1, 'Administrator', 9, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(10, 1, 'Administrator', 10, 'asdasdasdasdasd', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 2);
+(11, 1, 'Administrator', 10, 'Test', 1, 1, 1, 1, 1, 1, 1, '2024-10-28 16:35:40', '2024-10-28 16:35:40', 2);
 
 --
 -- Triggers `role_permission`
@@ -2387,7 +2400,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `linked_id`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, NULL, '2024-10-13 16:12:00', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-10-23 14:09:19', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'BfM3C3J5X7x3N%2B0un4fb1KhHrFmzxHAgm1tfvpTQK6s%3D', NULL, '2024-10-13 16:12:00', 1);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-10-28 15:18:19', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'vVuMsxbxLPNfPDEr4DnXeQu9QIoRcbC1gMZUdDEG6gk%3D', NULL, '2024-10-13 16:12:00', 1);
 
 --
 -- Triggers `user_account`
@@ -2650,7 +2663,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -2722,7 +2735,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`

@@ -35,7 +35,9 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 $systemActionIDEncrypted = $securityModel->encryptData($systemActionID);
 
                 $response[] = [
-                    'CHECK_BOX' => '<input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $systemActionID .'">',
+                    'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $systemActionID .'">
+                                    </div>',
                     'SYSTEM_ACTION_NAME' => $systemActionName,
                     'SYSTEM_ACTION_DESCRIPTION' => $systemActionDescription,
                     'LINK' => $pageLink .'&id='. $systemActionIDEncrypted
@@ -82,7 +84,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 }
 
                 $roleAccessButton = '<div class="form-check form-switch">
-                                        <input class="form-check-input success update-role-permission" type="checkbox" data-role-permission-id="' . $roleSystemActionPermissionID . '" ' . $roleAccessChecked . ' '. $disabled .' />
+                                        <input class="form-check form-switch form-switch-sm form-check-custom form-check-solid update-role-permission" type="checkbox" data-role-permission-id="' . $roleSystemActionPermissionID . '" ' . $roleAccessChecked . ' '. $disabled .' />
                                     </div>';
 
                 $response[] = [
