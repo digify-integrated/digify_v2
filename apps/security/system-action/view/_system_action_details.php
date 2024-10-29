@@ -1,3 +1,6 @@
+<?php
+    $addSystemActionRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 12);
+?>
 <div class="card mb-10">
     <div class="card-header border-0">
         <div class="card-title m-0">
@@ -40,7 +43,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-6">
+            <div class="row mb-0">
                 <label class="col-lg-4 col-form-label fw-semibold fs-6" for="system_action_description">
                     <span class="required">Description</span>
                 </label>
@@ -71,7 +74,9 @@
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                <button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#role-permission-assignment-modal" id="assign-role-permission"><i class="ki-outline ki-plus fs-2"></i> Assign</button>
+                <?php
+                    echo $addSystemActionRoleAccess['total'] > 0 ? '<button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#role-permission-assignment-modal" id="assign-role-permission"><i class="ki-outline ki-plus fs-2"></i> Assign</button>' : '';
+                ?>
             </div>
         </div>
     </div>
@@ -80,7 +85,7 @@
             <thead>
                 <tr class="fw-semibold fs-6 text-gray-800">
                     <th>Role</th>
-                    <th></th>
+                    <th>Access</th>
                 </tr>
             </thead>
             <tbody class="fw-semibold text-gray-600"></tbody>

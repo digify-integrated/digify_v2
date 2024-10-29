@@ -1,59 +1,57 @@
-<div class="card card-body">
-<div class="row">
-        <?php require_once('components/view/_datatable_search.php'); ?>
-        <div class="col-md-7 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
-            <div class="card-actions cursor-pointer ms-auto d-flex button-group">
+<div class="card mb-6">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <?php require('./components/view/_datatable_search.php') ?>
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                 <?php
                     if ($deleteAccess['total'] > 0 || $exportAccess['total'] > 0) {
-                        $action = '<button type="button" class="btn btn-dark dropdown-toggle action-dropdown mb-0 d-none" data-bs-toggle="dropdown" aria-expanded="false">
+                        $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown action-dropdown me-3 d-none" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                         Actions
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">';
+                                        <i class="ki-outline ki-down fs-5 ms-1"></i>
+                                    </a>
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-60px, 539px);" data-popper-placement="bottom-end">';
                     
                         if ($exportAccess['total'] > 0) {
-                            $action .= '<li><button class="dropdown-item" type="button" data-bs-toggle="modal" id="export-data" data-bs-target="#export-modal">Export</button></li>';
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" data-bs-toggle="modal" id="export-data" data-bs-target="#export-modal">
+                                                Export
+                                            </a>
+                                        </div>';
                         }
                     
                         if ($deleteAccess['total'] > 0) {
-                            $action .= '<li><button class="dropdown-item" type="button" id="delete-app-module">Delete</button></li>';
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="delete-role">
+                                                Delete
+                                            </a>
+                                        </div>';
                         }
                     
-                        $action .= '</ul>';
+                        $action .= '</div>';
                     
                         echo $action;
                     }
-
-                    echo $importAccess['total'] > 0 ? '<a href="' . $pageLink . '&import='. $securityModel->encryptData('role') .'" class="btn btn-secondary d-flex align-items-center mb-0">Import</a>' : '';
-                    echo $createAccess['total'] > 0 ? '<a href="' . $pageLink . '&new" class="btn btn-primary d-flex align-items-center mb-0 me-0">New</a>' : '';
                 ?>
             </div>
         </div>
     </div>
-</div>
-
-<div class="datatables">
-    <div class="row">
-        <div class="col-12">
-            <div class="card mb-0">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="role-table" class="table w-100 table-hover display text-nowrap align-middle dataTable">
-                            <thead class="text-dark">
-                                <tr>
-                                    <th class="all">
-                                        <div class="form-check">
-                                            <input class="form-check-input" id="datatable-checkbox" type="checkbox">
-                                        </div>
-                                    </th>
-                                    <th>Role</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <div class="card-body pt-9">
+        <div class="table-responsive">
+            <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5 text-nowrap" id="role-table">
+                <thead>
+                    <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
+                        <th>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                <input class="form-check-input" id="datatable-checkbox" type="checkbox">
+                            </div>
+                        </th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-semibold text-gray-800"></tbody>
+            </table>
         </div>
     </div>
 </div>

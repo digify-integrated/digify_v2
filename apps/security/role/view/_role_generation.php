@@ -35,9 +35,13 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 $roleIDEncrypted = $securityModel->encryptData($roleID);
 
                 $response[] = [
-                    'CHECK_BOX' => '<input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $roleID .'">',
-                    'ROLE_NAME' => $roleName,
-                    'ROLE_DESCRIPTION' => $roleDescription,
+                    'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $roleID .'">
+                                    </div>',
+                    'ROLE_NAME' => '<div class="d-flex flex-column">
+                                                <a href="#" class="fs-5 text-gray-900 fw-bold">'. $roleName .'</a>
+                                                <div class="fs-6 fw-semibold text-gray-500">'. $roleDescription .'</div>
+                                            </div>',
                     'LINK' => $pageLink .'&id='. $roleIDEncrypted
                 ];
             }
@@ -83,43 +87,43 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 $logNotesAccessChecked = $logNotesAccessRights ? 'checked' : '';
 
                 if($deleteRoleAccess['total'] > 0){
-                    $deleteButton = '<a href="javascript:void(0);" class="text-danger ms-3 delete-menu-item-permission" data-role-permission-id="' . $rolePermissionID . '" title="Delete Menu Item Permission">
-                                        <i class="ti ti-trash fs-5"></i>
+                    $deleteButton = '<a href="javascript:void(0);" class="btn btn-sm btn-icon btn-light-danger btn-active-danger  delete-menu-item-permission" data-role-permission-id="' . $rolePermissionID . '" title="Delete Role Permission">
+                                        <i class="ki-outline ki-trash m-0 fs-5"></i>
                                     </a>';
                 }
 
                 if($logNotesAccess['total'] > 0){
-                    $logNotes = '<a href="javascript:void(0);" class="text-info view-menu-item-permission-log-notes" data-role-permission-id="' . $rolePermissionID . '" data-bs-toggle="modal" id="edit-details" data-bs-target="#log-notes-modal" title="View Log Notes">
-                                        <i class="ti ti-file-text fs-5"></i>
-                                    </a>';
+                    $logNotes = '<a href="javascript:void(0);" class="btn btn-sm btn-icon btn-light btn-active-light-primary view-menu-item-permission-log-notes" data-role-permission-id="' . $rolePermissionID . '" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="View Log Notes">
+                                    <i class="ki-outline ki-shield-search m-0 fs-5"></i>
+                                </a>';
                 }
 
-                $readAccessButton = '<div class="form-check form-switch">
-                                        <input class="form-check-input success update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="read" ' . $readAccessChecked . ' '. $disabled .' />
+                $readAccessButton = '<div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="read" ' . $readAccessChecked . ' '. $disabled .' />
                                     </div>';
 
-                $writeAccessButton = '<div class="form-check form-switch">
-                                        <input class="form-check-input success update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="write" ' . $writeAccessChecked . ' '. $disabled .' />
+                $writeAccessButton = '<div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="write" ' . $writeAccessChecked . ' '. $disabled .' />
                                     </div>';
 
-                $createAccessButton = '<div class="form-check form-switch">
-                                        <input class="form-check-input success update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="create" ' . $createAccessChecked . ' '. $disabled .' />
+                $createAccessButton = '<div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="create" ' . $createAccessChecked . ' '. $disabled .' />
                                     </div>';
 
-                $deleteAccessButton = '<div class="form-check form-switch">
-                                        <input class="form-check-input success update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="delete" ' . $deleteAccessChecked . ' '. $disabled .' />
+                $deleteAccessButton = '<div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="delete" ' . $deleteAccessChecked . ' '. $disabled .' />
                                     </div>';
 
-                $importAccessButton = '<div class="form-check form-switch">
-                                        <input class="form-check-input success update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="import" ' . $importAccessChecked . ' '. $disabled .' />
+                $importAccessButton = '<div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="import" ' . $importAccessChecked . ' '. $disabled .' />
                                     </div>';
 
-                $exportAccessButton = '<div class="form-check form-switch">
-                                        <input class="form-check-input success update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="export" ' . $exportAccessChecked . ' '. $disabled .' />
+                $exportAccessButton = '<div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="export" ' . $exportAccessChecked . ' '. $disabled .' />
                                     </div>';
 
-                $logNotesAccessButton = '<div class="form-check form-switch">
-                                        <input class="form-check-input success update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="log notes" ' . $logNotesAccessChecked . ' '. $disabled .' />
+                $logNotesAccessButton = '<div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input update-menu-item-permission" type="checkbox" data-role-permission-id="' . $rolePermissionID . '" data-access-type="log notes" ' . $logNotesAccessChecked . ' '. $disabled .' />
                                     </div>';
 
                 $response[] = [
@@ -166,19 +170,19 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 $roleAccessChecked = $roleAccess ? 'checked' : '';
 
                 if($deleteRoleAccess['total'] > 0){
-                    $deleteButton = '<a href="javascript:void(0);" class="text-danger ms-3 delete-system-action-permission" data-role-permission-id="' . $roleSystemActionPermissionID . '" title="Delete System Action Permission">
-                                        <i class="ti ti-trash fs-5"></i>
+                    $deleteButton = '<a href="javascript:void(0);" class="btn btn-sm btn-icon btn-light-danger btn-active-danger  delete-system-action-permission" data-role-permission-id="' . $roleSystemActionPermissionID . '" title="Delete Role Permission">
+                                        <i class="ki-outline ki-trash m-0 fs-5"></i>
                                     </a>';
                 }
 
                 if($logNotesAccess['total'] > 0){
-                    $logNotes = '<a href="javascript:void(0);" class="text-info view-system-action-permission-log-notes" data-role-permission-id="' . $roleSystemActionPermissionID . '" data-bs-toggle="modal" id="edit-details" data-bs-target="#log-notes-modal" title="View Log Notes">
-                                        <i class="ti ti-file-text fs-5"></i>
-                                    </a>';
+                    $logNotes = '<a href="javascript:void(0);" class="btn btn-sm btn-icon btn-light btn-active-light-primary view-system-action-permission-log-notes" data-role-permission-id="' . $roleSystemActionPermissionID . '" data-bs-toggle="modal" data-bs-target="#log-notes-modal" title="View Log Notes">
+                                    <i class="ki-outline ki-shield-search m-0 fs-5"></i>
+                                </a>';
                 }
 
-                $roleAccessButton = '<div class="form-check form-switch">
-                                        <input class="form-check-input success update-system-action-permission" type="checkbox" data-role-permission-id="' . $roleSystemActionPermissionID . '" ' . $roleAccessChecked . ' '. $disabled .' />
+                $roleAccessButton = '<div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
+                                        <input class="form-check-input update-system-action-permission" type="checkbox" data-role-permission-id="' . $roleSystemActionPermissionID . '" ' . $roleAccessChecked . ' '. $disabled .' />
                                     </div>';
 
                 $response[] = [

@@ -20,7 +20,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-6">
+            <div class="row mb-0">
                 <label class="col-lg-4 col-form-label fw-semibold fs-6" for="system_action_description">
                     <span class="required">Description</span>
                 </label>

@@ -1,3 +1,6 @@
+<?php
+    $addMenuItemRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 9);
+?>
 <div class="card mb-10">
     <div class="card-header border-0">
         <div class="card-title m-0">
@@ -35,7 +38,7 @@
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-12">
-                            <input type="text" class="form-control form-control-solid maxlength" id="menu_item_name" name="menu_item_name" maxlength="100" autocomplete="off">
+                            <input type="text" class="form-control form-control-solid maxlength" id="menu_item_name" name="menu_item_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
                         </div>
                     </div>
                 </div>
@@ -48,7 +51,7 @@
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-12">
-                            <select id="app_module_id" name="app_module_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                            <select id="app_module_id" name="app_module_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
                         </div>
                     </div>
                 </div>
@@ -61,7 +64,7 @@
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-12">
-                            <input type="number" class="form-control form-control-solid" id="order_sequence" name="order_sequence" min="0">
+                            <input type="number" class="form-control form-control-solid" id="order_sequence" name="order_sequence" min="0" <?php echo $disabled ?>>
                         </div>
                     </div>
                 </div>
@@ -74,7 +77,7 @@
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-12">
-                            <select id="parent_id" name="parent_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                            <select id="parent_id" name="parent_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
                         </div>
                     </div>
                 </div>
@@ -87,7 +90,7 @@
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-12">
-                            <select id="menu_item_icon" name="menu_item_icon" class="form-select form-select-solid" data-control="select2" data-allow-clear="false">
+                            <select id="menu_item_icon" name="menu_item_icon" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>>
                                 <option value="">--</option>
                                 <optgroup label="Abstract">
                                     <option value="ki-outline ki-abstract">ki-outline ki-abstract</option>
@@ -759,7 +762,7 @@
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-12">
-                            <select id="table_name" name="table_name" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                            <select id="table_name" name="table_name" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
                         </div>
                     </div>
                 </div>
@@ -772,7 +775,7 @@
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-12">
-                            <input type="text" class="form-control form-control-solid maxlength" id="menu_item_url" name="menu_item_url" maxlength="50" autocomplete="off">
+                            <input type="text" class="form-control form-control-solid maxlength" id="menu_item_url" name="menu_item_url" maxlength="50" autocomplete="off" <?php echo $disabled ?>>
                         </div>
                     </div>
                 </div>
@@ -795,7 +798,9 @@
         </div>
         <div class="card-toolbar">
             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                <button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#role-permission-assignment-modal" id="assign-role-permission"><i class="ki-outline ki-plus fs-2"></i> Assign</button>
+                <?php
+                    echo $addMenuItemRoleAccess['total'] > 0 ? '<button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#role-permission-assignment-modal" id="assign-role-permission"><i class="ki-outline ki-plus fs-2"></i> Assign</button>' : '';
+                ?> 
             </div>
         </div>
     </div>

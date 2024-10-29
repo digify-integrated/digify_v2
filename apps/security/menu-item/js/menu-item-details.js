@@ -200,6 +200,17 @@
 
             internalNotesForm('menu_item', menu_item_id);
         }
+
+        $('#datatable-search').on('keyup', function () {
+            var table = $('#role-permission-table').DataTable();
+            table.search(this.value).draw();
+        });
+
+        $('#datatable-length').on('change', function() {
+            var table = $('#role-permission-table').DataTable();
+            var length = $(this).val(); 
+            table.page.len(length).draw();
+        });
     });
 })(jQuery);
 

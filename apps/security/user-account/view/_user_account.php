@@ -1,151 +1,83 @@
-<div class="card card-body">
-    <div class="row">
-        <?php require_once('components/view/_datatable_search.php'); ?>
-        <div class="col-md-3 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
-            <div class="card-actions cursor-pointer ms-auto d-flex button-group">
+<div class="card mb-6">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <?php require('./components/view/_datatable_search.php') ?>
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                 <?php
                     if ($deleteAccess['total'] > 0 || $exportAccess['total'] > 0) {
-                        $action = '<button type="button" class="btn btn-dark dropdown-toggle action-dropdown mb-0 d-none" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Actions
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">';
+                        $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown action-dropdown me-3 d-none" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        Actions
+                                        <i class="ki-outline ki-down fs-5 ms-1"></i>
+                                    </a>
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-60px, 539px);" data-popper-placement="bottom-end">';
                     
                         if ($exportAccess['total'] > 0) {
-                            $action .= '<li><button class="dropdown-item" type="button" data-bs-toggle="modal" id="export-data" data-bs-target="#export-modal">Export</button></li>';
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" data-bs-toggle="modal" id="export-data" data-bs-target="#export-modal">
+                                                Export
+                                            </a>
+                                        </div>';
                         }
                     
                         if ($deleteAccess['total'] > 0) {
-                            $action .= '<li><button class="dropdown-item" type="button" id="delete-user-account">Delete</button></li>';
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="delete-user-account">
+                                                Delete
+                                            </a>
+                                        </div>';
                         }
                     
-                        $action .= '</ul>';
+                        $action .= '</div>';
                     
                         echo $action;
                     }
                 ?>
-            </div>
-        </div>
-        <div class="col-md-4 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
-            <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-                <a class="btn btn-warning mb-0 px-4" data-bs-toggle="modal" data-bs-target="#filter-modal"><i class="ti ti-filter me-1 fs-3"></i>Filter</a>
-                <?php
-                    echo $importAccess['total'] > 0 ? '<a href="' . $pageLink . '&import='. $securityModel->encryptData('user_account') .'" class="btn btn-secondary d-flex align-items-center mb-0"><i class="ti ti-download me-1 fs-4"></i>Import</a>' : '';
-                    echo $createAccess['total'] > 0 ? '<a href="' . $pageLink . '&new" class="btn btn-primary d-flex align-items-center mb-0 me-0"><i class="ti ti-circle-plus me-1 fs-4"></i>New</a>' : '';
-                ?>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="datatables">
-    <div class="row">
-        <div class="col-12">
-            <div class="card mb-0">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="user-account-table" class="table w-100 table-hover display text-nowrap align-middle dataTable">
-                            <thead class="text-dark">
-                                <tr>
-                                    <th class="all">
-                                        <div class="form-check">
-                                            <input class="form-check-input" id="datatable-checkbox" type="checkbox">
-                                        </div>
-                                    </th>
-                                    <th>Name</th>
-                                    <th>Username</th>
-                                    <th>Email</th>
-                                    <th>Status</th>
-                                    <th>Locked</th>
-                                    <th>Password Expiry Date</th>
-                                    <th>Last Connection Date</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                <div>
+                <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"><i class="ki-outline ki-filter fs-2"></i> Filter</button>
+                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
+                    <div class="px-7 py-5">
+                        <div class="fs-5 text-gray-900 fw-bold">Filter Options</div>
+                    </div>
+                    <div class="separator border-gray-200"></div>
+                        <div class="px-7 py-5" data-kt-user-table-filter="form">
+                            <div class="mb-10">
+                                <label class="form-label fs-6 fw-semibold" for="app_module_filter">App Module:</label>
+                                <select id="app_module_filter" name="app_module_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                            </div>
+                            <div class="mb-10">
+                                <label class="form-label fs-6 fw-semibold" for="parent_id_filter">Parent Menu:</label>
+                                <select id="parent_id_filter" name="parent_id_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6" id="reset-filter" data-kt-menu-dismiss="true" data-kt-user-table-filter="reset">Reset</button>
+                                <button type="button" class="btn btn-primary fw-semibold px-6" id="apply-filter" data-kt-menu-dismiss="true" data-kt-user-table-filter="filter">Apply</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<div id="filter-modal" class="modal fade" tabindex="-1" aria-labelledby="filter-modal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-r">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Filter</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="mb-3">
-                            <label class="form-label" for="user_account_status_filter">By User Account Status</label>
-                            <div class="mb-3">
-                                <select id="user_account_status_filter" name="user_account_status_filter" multiple="multiple" class="form-control">
-                                    <option value="Yes">Active</option>
-                                    <option value="No">Inactive</option>
-                                </select>
-                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="mb-3">
-                            <label class="form-label" for="user_account_lock_status_filter">By User Account Lock Status</label>
-                            <div class="mb-3">
-                                <select id="user_account_lock_status_filter" name="user_account_lock_status_filter" multiple="multiple" class="form-control">
-                                    <option value="Yes">Yes</option>
-                                    <option value="No">No</option>
-                                </select>
+    <div class="card-body pt-9">
+        <div class="table-responsive">
+            <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5 text-nowrap" id="user-account-table">
+                <thead>
+                    <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
+                        <th>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                <input class="form-check-input" id="datatable-checkbox" type="checkbox">
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="mb-3">
-                            <label class="form-label" for="password_expiry_date_filter">By Password Expiry Date</label>
-                            <div class="row">
-                                <div class="col-lg-9">
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control filter-daterange" id="password_expiry_date_filter" name="password_expiry_date_filter" autocomplete="off"/>
-                                        <span class="input-group-text">
-                                            <i class="ti ti-calendar fs-5"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3">
-                                    <button type="button" class="btn btn-info w-100 clear-daterange">Clear</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="mb-0">
-                            <label class="form-label" for="last_connection_date_filter">By Last Connection Date</label>
-                            <div class="row">
-                                <div class="col-lg-9">
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control filter-daterange" id="last_connection_date_filter" name="last_connection_date_filter" autocomplete="off"/>
-                                        <span class="input-group-text">
-                                            <i class="ti ti-calendar fs-5"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3">
-                                    <button type="button" class="btn btn-info w-100 clear-daterange">Clear</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-warning" data-bs-dismiss="modal" id="apply-filter">Apply Filter</button>
-            </div>
+                        </th>
+                        <th>Menu Item</th>
+                        <th>App Module</th>
+                        <th>Parent Menu</th>
+                        <th>Order Sequence</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-semibold text-gray-800"></tbody>
+            </table>
         </div>
     </div>
 </div>

@@ -147,11 +147,6 @@
             var length = $(this).val(); 
             table.page.len(length).draw();
         });
-
-        $(document).on('click','#apply-filter',function() {
-            roleTable('#role-table');
-            $('#filter-offcanvas').offcanvas('hide');
-        });
     });
 })(jQuery);
 
@@ -162,16 +157,15 @@ function roleTable(datatable_name) {
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
 
+
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'ROLE_NAME' },
-        { data: 'ROLE_DESCRIPTION' }
+        { data: 'ROLE_NAME' }
     ];
 
     const columnDefs = [
         { width: '1%', bSortable: false, targets: 0, responsivePriority: 1 },
-        { width: '29%', targets: 1, responsivePriority: 1 },
-        { width: '70%', targets: 1, responsivePriority: 1 },
+        { width: 'auto', targets: 1, responsivePriority: 2 }
     ];
 
     const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
@@ -191,24 +185,11 @@ function roleTable(datatable_name) {
                 handleSystemError(xhr, status, error);
             }
         },
-        dom: 'Brtip',
         lengthChange: false,
         order: [[1, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,
-        responsive: {
-            details: {
-                type: 'inline',
-                display: $.fn.dataTable.Responsive.display.childRow,
-                renderer: function (api, rowIdx, columns) {
-                    let data = $.map(columns, function (col) {
-                        return col.hidden ? `<tr><td>${col.title}:</td><td>${col.data}</td></tr>` : '';
-                    }).join('');
-                    return data ? $('<table/>').append(data) : false;
-                }
-            }
-        },
         autoWidth: false,
         language: {
             emptyTable: 'No data found',

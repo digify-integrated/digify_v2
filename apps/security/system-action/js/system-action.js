@@ -160,14 +160,12 @@ function systemActionTable(datatable_name) {
 
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'SYSTEM_ACTION_NAME' },
-        { data: 'SYSTEM_ACTION_DESCRIPTION' }
+        { data: 'SYSTEM_ACTION_NAME' }
     ];
 
     const columnDefs = [
         { width: '1%', bSortable: false, targets: 0, responsivePriority: 1 },
-        { width: '49%', targets: 1, responsivePriority: 2 },
-        { width: '50%', targets: 1, responsivePriority: 3 }
+        { width: 'auto', targets: 1, responsivePriority: 2 }
     ];
 
     const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];

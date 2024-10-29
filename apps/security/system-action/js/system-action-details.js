@@ -75,8 +75,13 @@
             });
         });
 
+        $(document).on('click','#assign-role-permission',function() {
+            generateDropdownOptions('system action role dual listbox options');
+        });
+
         $(document).on('click','.update-role-permission',function() {
             const role_permission_id = $(this).data('role-permission-id');
+            const access_type = $(this).data('access-type');
             const transaction = 'update role system action permission';
             const access = $(this).is(':checked') ? '1' : '0';
             
@@ -85,7 +90,8 @@
                 url: 'apps/security/role/controller/role-controller.php',
                 dataType: 'json',
                 data: {
-                    role_permission_id : role_permission_id,
+                    role_permission_id : role_permission_id, 
+                    access_type : access_type,
                     access : access,
                     transaction : transaction
                 },
@@ -114,7 +120,7 @@
         });
 
         $(document).on('click','.delete-role-permission',function() {
-            const role_permission_id = $(this).data('role-system-action-permission-id');
+            const role_permission_id = $(this).data('role-permission-id');
             const transaction = 'delete role system action permission';
     
             Swal.fire({
@@ -167,23 +173,17 @@
             });
         });
 
-        $(document).on('click','#assign-role-permission',function() {
-            generateDropdownOptions('system action role dual listbox options');
-        });
-
-        if($('#log-notes-modal').length){
-            $(document).on('click','.view-role-permission-log-notes',function() {
-                const role_system_action_permission_id  = $(this).data('role-permission-id');
-
-                logNotes('role_system_action_permission', role_system_action_permission_id );
-            });
-        }
-
-        if($('#log-notes-main').length){
+        $(document).on('click','#log-notes-main',function() {
             const system_action_id = $('#details-id').text();
 
-            logNotesMain('system_action', system_action_id);
-        }
+            logNotes('system_action', system_action_id);
+        });
+
+        $(document).on('click','.view-role-permission-log-notes',function() {
+            const role_system_action_permission_id = $(this).data('role-permission-id');
+
+            logNotes('role_system_action_permission', role_system_action_permission_id);
+        });
 
         if($('#internal-notes').length){
             const system_action_id = $('#details-id').text();
@@ -196,6 +196,17 @@
 
             internalNotesForm('system_action', system_action_id);
         }
+
+        $('#datatable-search').on('keyup', function () {
+            var table = $('#role-permission-table').DataTable();
+            table.search(this.value).draw();
+        });
+
+        $('#datatable-length').on('change', function() {
+            var table = $('#role-permission-table').DataTable();
+            var length = $(this).val(); 
+            table.page.len(length).draw();
+        });
     });
 })(jQuery);
 
@@ -354,8 +365,7 @@ function rolePermissionTable(datatable_name) {
         { width: 'auto', bSortable: false, targets: 1, responsivePriority: 2 },
         { width: '5%', bSortable: false, targets: 2, responsivePriority: 1 }
     ];
-
-    const lengthMenu = [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, 'All']];
+    const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
 
     const settings = {
         ajax: { 
@@ -373,24 +383,11 @@ function rolePermissionTable(datatable_name) {
                 handleSystemError(xhr, status, error);
             }
         },
-        dom: 'Brtip',
         lengthChange: false,
         order: [[0, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,
-        responsive: {
-            details: {
-                type: 'inline',
-                display: $.fn.dataTable.Responsive.display.childRow,
-                renderer: function (api, rowIdx, columns) {
-                    let data = $.map(columns, function (col) {
-                        return col.hidden ? `<tr><td>${col.title}:</td><td>${col.data}</td></tr>` : '';
-                    }).join('');
-                    return data ? $('<table/>').append(data) : false;
-                }
-            }
-        },
         autoWidth: false,
         language: {
             emptyTable: 'No data found',
@@ -400,13 +397,6 @@ function rolePermissionTable(datatable_name) {
         },
         fnDrawCallback: function(oSettings) {
             readjustDatatableColumn();
-
-            $(`${datatable_name} tbody`).on('click', 'tr td:nth-child(n+2)', function () {
-                const rowData = $(datatable_name).DataTable().row($(this).closest('tr')).data();
-                if (rowData && rowData.LINK) {
-                    window.location.href = rowData.LINK;
-                }
-            });
         }
     };
 

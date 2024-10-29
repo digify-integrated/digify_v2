@@ -48,7 +48,6 @@
                             </div>
                         </th>
                         <th>System Action</th>
-                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody class="fw-semibold text-gray-800"></tbody>

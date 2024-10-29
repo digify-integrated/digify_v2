@@ -2,160 +2,163 @@
     $addMenuItemRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 9);
     $addSystemActionRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 12);
 ?>
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <h5 class="card-title mb-0">Role</h5>
-                <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-                    <button type="button" class="btn btn-dark dropdown-toggle action-dropdown mb-0" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <?php
-                           echo $createAccess['total'] > 0 ? '<li><a class="dropdown-item" href="'. $pageLink .'&new">Create</a></li>' : '';
-                           echo $deleteAccess['total'] > 0 ? '<li><button class="dropdown-item" type="button" id="delete-role">Delete</button></li>' : '';
-                        ?>
-                    </ul>
-                </div>
-                <?php
-                    echo $writeAccess['total'] > 0 ? '<div class="card-actions cursor-pointer ms-auto d-flex button-group">
-                                                            <button class="btn btn-info mb-0 me-0 px-4" data-bs-toggle="modal" id="edit-details" data-bs-target="#role-modal">Edit</button>
-                                                        </div>' : '';
+<div class="card mb-10">
+    <div class="card-header border-0">
+        <div class="card-title m-0">
+            <h3 class="fw-bold m-0">Role Details</h3>
+        </div>
+        <?php
+            if ($deleteAccess['total'] > 0) {
+            $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown align-self-center" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        Actions
+                                        <i class="ki-outline ki-down fs-5 ms-1"></i>
+                                    </a>
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-60px, 539px);" data-popper-placement="bottom-end">';
+                    
+                        if ($deleteAccess['total'] > 0) {
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="delete-role">
+                                                Delete
+                                            </a>
+                                        </div>';
+                        }
+                    
+                        $action .= '</div>';
+                    
+                        echo $action;
+                    }
                 ?>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="form-label col-md-3">Display Name:</label>
-                                <div class="col-md-9">
-                                <p class="form-control-static" id="role_name_summary">--</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="form-label col-md-3">Description:</label>
-                                <div class="col-md-9">
-                                <p class="form-control-static" id="role_description_summary">--</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-</div>
+    <div class="card-body">
+        <form id="role-form" method="post" action="#">
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="role_name">
+                    <span class="required">Display Name</span>
+                </label>
 
-<div class="datatables">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex align-items-center">
-                    <h5 class="card-title mb-0">Menu Item Permission</h5>
-                    <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-                        <?php
-                            echo $addMenuItemRoleAccess['total'] > 0 ? '<button class="btn btn-success d-flex align-items-center mb-0" data-bs-toggle="modal" data-bs-target="#menu-item-permission-assignment-modal" id="assign-menu-item-permission">Assign</button>' : '';
-                        ?>                        
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="menu-item-permission-table" class="table w-100 text-nowrap dataTable">
-                            <thead class="text-dark">
-                                <tr>
-                                    <th>Menu Item</th>
-                                    <th>Read</th>
-                                    <th>Create</th>
-                                    <th>Write</th>
-                                    <th>Delete</th>
-                                    <th>Import</th>
-                                    <th>Export</th>
-                                    <th>Log Notes</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="datatables">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex align-items-center">
-                    <h5 class="card-title mb-0">System Action Permission</h5>
-                    <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-                        <?php
-                            echo $addSystemActionRoleAccess['total'] > 0 ? '<button class="btn btn-success d-flex align-items-center mb-0" data-bs-toggle="modal" data-bs-target="#system-action-permission-assignment-modal" id="assign-system-action-permission">Assign</button>' : '';
-                        ?>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="system-action-permission-table" class="table w-100 text-nowrap dataTable">
-                            <thead class="text-dark">
-                                <tr>
-                                    <th>System Action</th>
-                                    <th>Access</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="role-modal" tabindex="-1" aria-labelledby="role-modal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-r">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Edit Role Details</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="role-form" method="post" action="#">
+                <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="role_name">Display Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="role_name" name="role_name" maxlength="100" autocomplete="off">
-                            </div>
+                            <input type="text" class="form-control form-control-solid maxlength" id="role_name" name="role_name" maxlength="100" autocomplete="off">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="role_description">Description <span class="text-danger">*</span></label>
-                                <textarea class="form-control maxlength" id="role_description" name="role_description" maxlength="200" rows="3"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="role-form" class="btn btn-success" id="submit-data">Save changes</button>
+            <div class="row mb-0">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="role_description">
+                    <span class="required">Description</span>
+                </label>
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <textarea class="form-control form-control-solid maxlength" id="role_description" name="role_description" maxlength="200" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <?php
+        echo ($writeAccess['total'] > 0) ? ' <div class="card-footer d-flex justify-content-end py-6 px-9">
+                                                <button type="button" id="discard-create" class="btn btn-light btn-active-light-primary me-2">Discard</button>
+                                                <button type="submit" form="role-form" class="btn btn-primary" id="submit-data">Save</button>
+                                            </div>' : '';
+    ?>
+</div>
+
+<div class="card mb-10">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <div class="d-flex align-items-center position-relative my-1 me-3">
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i> <input type="text" class="form-control form-control-solid w-250px ps-12" id="menu-item-permission-datatable-search" placeholder="Search..." autocomplete="off" />
+            </div>
+            <select id="menu-item-permission-datatable-length" class="form-select form-select-solid w-auto">
+                <option value="-1">All</option>
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                <?php
+                    echo $addMenuItemRoleAccess['total'] > 0 ? '<button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#menu-item-permission-assignment-modal" id="assign-menu-item-permission"><i class="ki-outline ki-plus fs-2"></i> Assign</button>' : '';
+                ?> 
             </div>
         </div>
+    </div>
+    <div class="card-body pt-9">
+        <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5 gs-7" id="menu-item-permission-table">
+            <thead>
+                <tr class="fw-semibold fs-6 text-gray-800">
+                    <th>Menu Item</th>
+                    <th>Read Access</th>
+                    <th>Create Access</th>
+                    <th>Write Access</th>
+                    <th>Delete Access</th>
+                    <th>Import Access</th>
+                    <th>Export Access</th>
+                    <th>Log Notes Access</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody class="fw-semibold text-gray-600"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <div class="d-flex align-items-center position-relative my-1 me-3">
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i> <input type="text" class="form-control form-control-solid w-250px ps-12" id="system-action-permission-datatable-search" placeholder="Search..." autocomplete="off" />
+            </div>
+            <select id="system-action-permission-datatable-length" class="form-select form-select-solid w-auto">
+                <option value="-1">All</option>
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                <?php
+                    echo $addSystemActionRoleAccess['total'] > 0 ? '<button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#system-action-permission-assignment-modal" id="assign-system-action-permission"><i class="ki-outline ki-plus fs-2"></i> Assign</button>' : '';
+                ?>
+            </div>
+        </div>
+    </div>
+    <div class="card-body pt-9">
+        <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5 gs-7" id="system-action-permission-table">
+            <thead>
+                <tr class="fw-semibold fs-6 text-gray-800">
+                    <th>System Action</th>
+                    <th>Access</th>
+                </tr>
+            </thead>
+            <tbody class="fw-semibold text-gray-600"></tbody>
+        </table>
     </div>
 </div>
 
 <div id="menu-item-permission-assignment-modal" class="modal fade" tabindex="-1" aria-labelledby="menu-item-permission-assignment-modal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Assign Menu Item Permission</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header">
+                <h3 class="modal-title">Assign Menu Item</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
             </div>
+
             <div class="modal-body">
                 <form id="menu-item-permission-assignment-form" method="post" action="#">
                     <div class="row">
@@ -165,9 +168,10 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="menu-item-permission-assignment-form" class="btn btn-success" id="submit-menu-item-assignment">Save changes</button>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="menu-item-permission-assignment-form" class="btn btn-primary" id="submit-assignment">Assign</button>
             </div>
         </div>
     </div>
@@ -176,10 +180,13 @@
 <div id="system-action-permission-assignment-modal" class="modal fade" tabindex="-1" aria-labelledby="system-action-permission-assignment-modal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Assign System Action Permission</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header">
+                <h3 class="modal-title">Assign System Action</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
             </div>
+
             <div class="modal-body">
                 <form id="system-action-permission-assignment-form" method="post" action="#">
                     <div class="row">
@@ -189,15 +196,13 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="system-action-permission-assignment-form" class="btn btn-success" id="submit-system-action-assignment">Save changes</button>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="system-action-permission-assignment-form" class="btn btn-primary" id="submit-assignment">Assign</button>
             </div>
         </div>
     </div>
 </div>
 
-<?php 
-    $logNotesAccess['total'] > 0 ? require_once('components/view/_log_notes_modal.php') : ''; 
-    require_once('components/view/_internal_log_notes.php');
-?>
+<?php require_once('components/view/_log_notes_modal.php'); ?>

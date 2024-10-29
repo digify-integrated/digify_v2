@@ -83,6 +83,10 @@
             });
         });
 
+        $(document).on('click','#assign-menu-item-permission',function() {
+            generateDropdownOptions('role menu item dual listbox options');
+        });
+
         $(document).on('click','.update-menu-item-permission',function() {
             const role_permission_id = $(this).data('role-permission-id');
             const access_type = $(this).data('access-type');
@@ -177,8 +181,8 @@
             });
         });
 
-        $(document).on('click','#assign-menu-item-permission',function() {
-            generateDropdownOptions('role menu item dual listbox options');
+        $(document).on('click','#assign-system-action-permission',function() {
+            generateDropdownOptions('role system action dual listbox options');
         });
 
         $(document).on('click','.update-system-action-permission',function() {
@@ -275,41 +279,45 @@
             });
         });
 
-        $(document).on('click','#assign-system-action-permission',function() {
-            generateDropdownOptions('role system action dual listbox options');
+        $(document).on('click','#log-notes-main',function() {
+            const role_id = $('#details-id').text();
+
+            logNotes('role', role_id);
         });
 
-        if($('#log-notes-modal').length){
-            $(document).on('click','.view-menu-item-permission-log-notes',function() {
-                const role_permission_id = $(this).data('role-permission-id');
+        $(document).on('click','.view-menu-item-permission-log-notes',function() {
+            const role_permission_id = $(this).data('role-permission-id');
 
-                logNotes('role_permission', role_permission_id);
-            });
+            logNotes('role_permission', role_permission_id);
+        });
 
-            $(document).on('click','.view-system-action-permission-log-notes',function() {
-                const role_system_action_permission_id  = $(this).data('role-permission-id');
+        $(document).on('click','.view-system-action-permission-log-notes',function() {
+            const role_system_action_permission_id  = $(this).data('role-permission-id');
 
-                logNotes('role_system_action_permission', role_system_action_permission_id );
-            });
-        }
+            logNotes('role_system_action_permission', role_system_action_permission_id );
+        });
 
-        if($('#log-notes-main').length){
-            const role_id = $('#details-id').text();
+        $('#menu-item-permission-datatable-search').on('keyup', function () {
+            var table = $('#menu-item-permission-table').DataTable();
+            table.search(this.value).draw();
+        });
 
-            logNotesMain('role', role_id);
-        }
+        $('#menu-item-permission-datatable-length').on('change', function() {
+            var table = $('#menu-item-permission-table').DataTable();
+            var length = $(this).val(); 
+            table.page.len(length).draw();
+        });
 
-        if($('#internal-notes').length){
-            const role_id = $('#details-id').text();
+        $('#system-action-permission-datatable-search').on('keyup', function () {
+            var table = $('#system-action-permission-table').DataTable();
+            table.search(this.value).draw();
+        });
 
-            internalNotes('role', role_id);
-        }
-
-        if($('#internal-notes-form').length){
-            const role_id = $('#details-id').text();
-
-            internalNotesForm('role', role_id);
-        }
+        $('#system-action-permission-datatable-length').on('change', function() {
+            var table = $('#system-action-permission-table').DataTable();
+            var length = $(this).val(); 
+            table.page.len(length).draw();
+        });
     });
 })(jQuery);
 
@@ -520,8 +528,8 @@ function menuItemPermissionTable(datatable_name) {
     const columns = [ 
         { data: 'MENU_ITEM_NAME' },
         { data: 'READ_ACCESS' },
-        { data: 'WRITE_ACCESS' },
         { data: 'CREATE_ACCESS' },
+        { data: 'WRITE_ACCESS' },
         { data: 'DELETE_ACCESS' },
         { data: 'IMPORT_ACCESS' },
         { data: 'EXPORT_ACCESS' },
@@ -541,7 +549,7 @@ function menuItemPermissionTable(datatable_name) {
         { width: 'auto', bSortable: false, targets: 8, responsivePriority: 1 }
     ];
 
-    const lengthMenu = [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, 'All']];
+    const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
 
     const settings = {
         ajax: { 
@@ -559,24 +567,11 @@ function menuItemPermissionTable(datatable_name) {
                 handleSystemError(xhr, status, error);
             }
         },
-        dom: 'Brtip',
         lengthChange: false,
         order: [[0, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,
-        responsive: {
-            details: {
-                type: 'inline',
-                display: $.fn.dataTable.Responsive.display.childRow,
-                renderer: function (api, rowIdx, columns) {
-                    let data = $.map(columns, function (col) {
-                        return col.hidden ? `<tr><td>${col.title}:</td><td>${col.data}</td></tr>` : '';
-                    }).join('');
-                    return data ? $('<table/>').append(data) : false;
-                }
-            }
-        },
         autoWidth: false,
         language: {
             emptyTable: 'No data found',
@@ -586,13 +581,6 @@ function menuItemPermissionTable(datatable_name) {
         },
         fnDrawCallback: function(oSettings) {
             readjustDatatableColumn();
-
-            $(`${datatable_name} tbody`).on('click', 'tr td:nth-child(n+2)', function () {
-                const rowData = $(datatable_name).DataTable().row($(this).closest('tr')).data();
-                if (rowData && rowData.LINK) {
-                    window.location.href = rowData.LINK;
-                }
-            });
         }
     };
 
@@ -618,7 +606,7 @@ function systemActionPermissionTable(datatable_name) {
         { width: '5%', bSortable: false, targets: 2, responsivePriority: 1 }
     ];
 
-    const lengthMenu = [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, 'All']];
+    const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
 
     const settings = {
         ajax: { 
@@ -636,24 +624,11 @@ function systemActionPermissionTable(datatable_name) {
                 handleSystemError(xhr, status, error);
             }
         },
-        dom: 'Brtip',
         lengthChange: false,
         order: [[0, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,
-        responsive: {
-            details: {
-                type: 'inline',
-                display: $.fn.dataTable.Responsive.display.childRow,
-                renderer: function (api, rowIdx, columns) {
-                    let data = $.map(columns, function (col) {
-                        return col.hidden ? `<tr><td>${col.title}:</td><td>${col.data}</td></tr>` : '';
-                    }).join('');
-                    return data ? $('<table/>').append(data) : false;
-                }
-            }
-        },
         autoWidth: false,
         language: {
             emptyTable: 'No data found',
@@ -663,18 +638,58 @@ function systemActionPermissionTable(datatable_name) {
         },
         fnDrawCallback: function(oSettings) {
             readjustDatatableColumn();
-
-            $(`${datatable_name} tbody`).on('click', 'tr td:nth-child(n+2)', function () {
-                const rowData = $(datatable_name).DataTable().row($(this).closest('tr')).data();
-                if (rowData && rowData.LINK) {
-                    window.location.href = rowData.LINK;
-                }
-            });
         }
     };
 
     destroyDatatable(datatable_name);
     $(datatable_name).dataTable(settings);
+}
+
+function displayDetails(transaction){
+    switch (transaction) {
+        case 'get role details':
+            var role_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            
+            $.ajax({
+                url: 'apps/security/role/controller/role-controller.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    role_id : role_id, 
+                    transaction : transaction
+                },
+                beforeSend: function(){
+                    resetModalForm('role-form');
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#role_name').val(response.roleName);
+                        $('#role_description').val(response.roleDescription);
+                        
+                        $('#role_name_summary').text(response.roleName);
+                        $('#role_description_summary').text(response.roleDescription);
+                    } 
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = page_link;
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+    }
 }
 
 function generateDropdownOptions(type){
@@ -758,53 +773,6 @@ function generateDropdownOptions(type){
             
                         initializeDualListBoxIcon();
                     }
-                }
-            });
-            break;
-    }
-}
-
-function displayDetails(transaction){
-    switch (transaction) {
-        case 'get role details':
-            var role_id = $('#details-id').text();
-            const page_link = document.getElementById('page-link').getAttribute('href'); 
-            
-            $.ajax({
-                url: 'apps/security/role/controller/role-controller.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    role_id : role_id, 
-                    transaction : transaction
-                },
-                beforeSend: function(){
-                    resetModalForm('role-form');
-                },
-                success: function(response) {
-                    if (response.success) {
-                        $('#role_name').val(response.roleName);
-                        $('#role_description').val(response.roleDescription);
-                        
-                        $('#role_name_summary').text(response.roleName);
-                        $('#role_description_summary').text(response.roleDescription);
-                    } 
-                    else {
-                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                            setNotification(response.title, response.message, response.messageType);
-                            window.location = 'logout.php?logout';
-                        }
-                        else if (response.notExist) {
-                            setNotification(response.title, response.message, response.messageType);
-                            window.location = page_link;
-                        }
-                        else {
-                            showNotification(response.title, response.message, response.messageType);
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
                 }
             });
             break;

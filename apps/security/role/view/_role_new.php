@@ -1,29 +1,42 @@
 <div class="card">
     <div class="card-header d-flex align-items-center">
-        <h5 class="card-title mb-0">Role Form</h5>
+        <h5 class="card-title mb-0">Role Details</h5>
         <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-            <button type="submit" form="role-form" class="btn btn-success mb-0" id="submit-data">Save</button>
-            <button type="button" id="discard-create" class="btn btn-outline-danger mb-0">Discard</button>
+            
         </div>
     </div>
     <div class="card-body">
         <form id="role-form" method="post" action="#">
-            <div class="row">
-                 <div class="col-lg-12">
-                    <div class="mb-3">
-                        <label class="form-label" for="role_name">Display Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control maxlength" id="role_name" name="role_name" maxlength="100" autocomplete="off">
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="role_name">
+                    <span class="required">Display Name</span>
+                </label>
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input type="text" class="form-control form-control-solid maxlength" id="role_name" name="role_name" maxlength="100" autocomplete="off">
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="mb-3">
-                        <label class="form-label" for="role_description">Description <span class="text-danger">*</span></label>
-                        <textarea class="form-control maxlength" id="role_description" name="role_description" maxlength="200" rows="3"></textarea>
+            <div class="row mb-0">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="role_description">
+                    <span class="required">Description</span>
+                </label>
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <textarea class="form-control form-control-solid maxlength" id="role_description" name="role_description" maxlength="200" rows="3"></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
         </form>
+    </div>
+    <div class="card-footer d-flex justify-content-end py-6 px-9">
+        <button type="button" id="discard-create" class="btn btn-light btn-active-light-primary me-2">Discard</button>
+        <button type="submit" form="role-form" class="btn btn-primary" id="submit-data">Save</button>
     </div>
 </div>
