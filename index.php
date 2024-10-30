@@ -22,7 +22,10 @@
     require_once('components/view/_theme_script.php');
 ?>
 
-<body id="kt_body" class="app-blank bgi-size-cover bgi-attachment-fixed bgi-position-center bgi-no-repeat">
+<body id="kt_body" class="app-blank bgi-size-cover bgi-attachment-fixed bgi-position-center bgi-no-repeat" data-kt-app-page-loading-enabled="true" data-kt-app-page-loading="on">
+    <?php 
+        require_once('components/view/_preloader.php');
+    ?>
     <div class="d-flex flex-column flex-root" id="kt_app_root" style="background-image: url('./assets/images/backgrounds/login-bg.jpg');">
         <div class="d-flex flex-column flex-column-fluid flex-lg-row align-items-center justify-content-center">
             <div class="d-flex flex-column-fluid flex-lg-row-auto justify-content-center justify-content-lg-end p-5">

@@ -20,10 +20,41 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
     switch ($type) {
         # -------------------------------------------------------------
         case 'user account table':
-            $filterAppModule = isset($_POST['app_module_filter']) && is_array($_POST['app_module_filter']) 
-            ? "'" . implode("','", array_map('trim', $_POST['app_module_filter'])) . "'" 
-            : null;
+            $userAccountStatusFilter = $_POST['user_account_status_filter'];
+            $userAccountLockStatusFilter = $_POST['user_account_lock_status_filter'];
+            $passwordExpiryDateFilter = $_POST['password_expiry_date_filter'];
+            $lastConnectionDateFilter = $_POST['last_connection_date_filter'];
 
+            $passwordExpiryStartDateFormatted = null;
+            $passwordExpiryEndDateFormatted = null;
+
+            if (!empty($passwordExpiryDateFilter)) {
+                $passwordExpiryDates = explode(' - ', $passwordExpiryDateFilter);
+                
+                $passwordExpiryStartDate = DateTime::createFromFormat('m/d/Y', trim($passwordExpiryDates[0]));
+                $passwordExpiryEndDate = DateTime::createFromFormat('m/d/Y', trim($passwordExpiryDates[1]));
+            
+                if ($passwordExpiryStartDate && $passwordExpiryEndDate) {
+                    $passwordExpiryStartDateFormatted = $passwordExpiryStartDate->format('Y-m-d');
+                    $passwordExpiryEndDateFormatted = $passwordExpiryEndDate->format('Y-m-d');
+                }
+            }
+
+            $lastConnectionStartDateFormatted = null;
+            $lastConnectionEndDateFormatted = null;
+
+            if (!empty($lastConnectionDateFilter)) {
+                $lastConnectionDates = explode(' - ', $lastConnectionDateFilter);
+                
+                $lastConnectionStartDate = DateTime::createFromFormat('m/d/Y', trim($lastConnectionDates[0]));
+                $lastConnectionEndDate = DateTime::createFromFormat('m/d/Y', trim($lastConnectionDates[1]));
+            
+                if ($lastConnectionStartDate && $lastConnectionEndDate) {
+                    $lastConnectionStartDateFormatted = $lastConnectionStartDate->format('Y-m-d');
+                    $lastConnectionEndDateFormatted = $lastConnectionEndDate->format('Y-m-d');
+                }
+            }
+           
             $sql = $databaseModel->getConnection()->prepare('CALL generateUserAccountTable()');
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
@@ -42,21 +73,40 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
 
                 $userAccountIDEncrypted = $securityModel->encryptData($userAccountID);
 
-                $activeBadge = $active == 'Yes' ? '<span class="badge rounded-pill text-bg-success">Active</span>' : '<span class="badge rounded-pill text-bg-danger">Inactive</span>';
-                $lockedBadge = $locked == 'Yes' ? '<span class="badge rounded-pill text-bg-danger">Yes</span>' : '<span class=" badge rounded-pill text-bg-success">No</span>';
+                $activeBadge = $active == 'Yes' ? '<span class="badge badge-light-success">Active</span>' : '<span class="badge badge-light-danger">Inactive</span>';
+                $lockedBadge = $locked == 'Yes' ? '<span class="badge badge-light-danger">Yes</span>' : '<span class=" badge badge-light-success">No</span>';
+
+                if(!empty($userAccountStatusFilter) && $userAccountStatusFilter == $active){
+                    
+                }
+
+                if(!empty($userAccountLockStatusFilter) && $userAccountLockStatusFilter == $locked){
+
+                }
+
+                if(!empty($passwordExpiryStartDateFormatted) && !empty($passwordExpiryEndDateFormatted) && $passwordExpiryStartDateFormatted >=  $passwordExpiryDate && $passwordExpiryEndDateFormatted <= $passwordExpiryDate ){
+
+                }
+
+                if(!empty($lastConnectionStartDateFormatted) && !empty($lastConnectionEndDateFormatted) && $lastConnectionStartDateFormatted >=  $lastConnectionDate && $lastConnectionEndDateFormatted <= $lastConnectionDate ){
+
+                }
 
                 $response[] = [
-                    'CHECK_BOX' => '<input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $userAccountID .'">',
+                    'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $userAccountID .'">
+                                    </div>',
                     'USER_ACCOUNT' => '<div class="d-flex align-items-center">
-                                            <img src="'. $profilePicture .'" alt="avatar" class="rounded-circle" width="35" height="35" />
-                                            <div class="ms-3">
-                                                <div class="user-meta-info">
-                                                    <h6 class="user-name mb-0">'. $fileAs .'</h6>
-                                                </div>
+                                        <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                            <div class="symbol-label">
+                                                <img src="'. $profilePicture .'" alt="'. $fileAs .'" class="w-100">
                                             </div>
-                                        </div>',
-                    'USERNAME' => $username,
-                    'EMAIL' => $email,
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-800 mb-1">'. $fileAs .'</span>
+                                            <span class="text-gray-600">'. $email .'</span>
+                                        </div>
+                                    </div>',
                     'USER_ACCOUNT_STATUS' => $activeBadge,
                     'LOCK_STATUS' => $lockedBadge,
                     'PASSWORD_EXPIRY_DATE' => $passwordExpiryDate,

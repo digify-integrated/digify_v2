@@ -6,24 +6,12 @@
             userAccountTable('#user-account-table');
         }
 
-        if($('#user_account_status_filter').length){
-            $('#user_account_status_filter').select2({
-                dropdownParent: $('#filter-modal').closest('.modal')
-            });
-        }
-
-        if($('#user_account_lock_status_filter').length){
-            $('#user_account_lock_status_filter').select2({
-                dropdownParent: $('#filter-modal').closest('.modal')
-            });
-        }
-
         $(document).on('click','.delete-user-account',function() {
             const user_account_id = $(this).data('user-account-id');
             const transaction = 'delete user account';
     
             Swal.fire({
-                title: 'Confirm App Module Deletion',
+                title: 'Confirm User Account Deletion',
                 text: 'Are you sure you want to delete this user account?',
                 icon: 'warning',
                 showCancelButton: !0,
@@ -88,7 +76,7 @@
     
             if(user_account_id.length > 0){
                 Swal.fire({
-                    title: 'Confirm Multiple App Modules Deletion',
+                    title: 'Confirm Multiple User Accounts Deletion',
                     text: 'Are you sure you want to delete these user accounts?',
                     icon: 'warning',
                     showCancelButton: !0,
@@ -137,7 +125,7 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple App Module Error', 'Please select the user accounts you wish to delete.', 'danger');
+                showNotification('Deletion Multiple User Account Error', 'Please select the user accounts you wish to delete.', 'danger');
             }
         });
 
@@ -163,6 +151,15 @@
         $(document).on('click','#apply-filter',function() {
             userAccountTable('#user-account-table');
         });
+
+        $(document).on('click', '#reset-filter', function() {
+            $('#user_account_status_filter').val(null).trigger('change');
+            $('#user_account_lock_status_filter').val(null).trigger('change');
+            $('#password_expiry_date_filter').val(null);
+            $('#last_connection_date_filter').val(null);
+            
+            userAccountTable('#user-account-table');
+        });
     });
 })(jQuery);
 
@@ -177,15 +174,14 @@ function userAccountTable(datatable_name) {
     const password_expiry_date_filter = $('#password_expiry_date_filter').val();
     const last_connection_date_filter = $('#last_connection_date_filter').val();
 
+
     const columns = [ 
         { data: 'CHECK_BOX' },
         { data: 'USER_ACCOUNT' },
-        { data: 'USERNAME' },
-        { data: 'EMAIL' },
         { data: 'USER_ACCOUNT_STATUS' },
         { data: 'LOCK_STATUS' },
-        { data: 'PASSWORD_EXPIRY_DATE' },
-        { data: 'LAST_CONNECTION_DATE' }
+        { data: 'LAST_CONNECTION_DATE' },
+        { data: 'PASSWORD_EXPIRY_DATE' }
     ];
 
     const columnDefs = [
@@ -195,8 +191,6 @@ function userAccountTable(datatable_name) {
         { width: 'auto', targets: 3, responsivePriority: 4 },
         { width: 'auto', targets: 4, responsivePriority: 5 },
         { width: 'auto', targets: 5, responsivePriority: 6 },
-        { width: 'auto', targets: 6, responsivePriority: 7 },
-        { width: 'auto', targets: 7, responsivePriority: 8 }
     ];
 
     const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
@@ -214,30 +208,18 @@ function userAccountTable(datatable_name) {
                 user_account_lock_status_filter: user_account_lock_status_filter,
                 password_expiry_date_filter: password_expiry_date_filter,
                 last_connection_date_filter: last_connection_date_filter
+                
             },
             dataSrc: '',
             error: function(xhr, status, error) {
                 handleSystemError(xhr, status, error);
             }
         },
-        dom: 'Brtip',
         lengthChange: false,
         order: [[1, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,
-        responsive: {
-            details: {
-                type: 'inline',
-                display: $.fn.dataTable.Responsive.display.childRow,
-                renderer: function (api, rowIdx, columns) {
-                    let data = $.map(columns, function (col) {
-                        return col.hidden ? `<tr><td>${col.title}:</td><td>${col.data}</td></tr>` : '';
-                    }).join('');
-                    return data ? $('<table/>').append(data) : false;
-                }
-            }
-        },
         autoWidth: false,
         language: {
             emptyTable: 'No data found',

@@ -11,7 +11,7 @@
             const transaction = 'delete system action';
     
             Swal.fire({
-                title: 'Confirm system action Deletion',
+                title: 'Confirm System Action Deletion',
                 text: 'Are you sure you want to delete this system action?',
                 icon: 'warning',
                 showCancelButton: !0,
@@ -76,7 +76,7 @@
     
             if(system_action_id.length > 0){
                 Swal.fire({
-                    title: 'Confirm Multiple system actions Deletion',
+                    title: 'Confirm Multiple System Actions Deletion',
                     text: 'Are you sure you want to delete these system actions?',
                     icon: 'warning',
                     showCancelButton: !0,
@@ -125,7 +125,7 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple system action Error', 'Please select the system actions you wish to delete.', 'danger');
+                showNotification('Deletion Multiple System Action Error', 'Please select the system actions you wish to delete.', 'danger');
             }
         });
 

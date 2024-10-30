@@ -79,7 +79,7 @@
     
             if(menu_item_id.length > 0){
                 Swal.fire({
-                    title: 'Confirm Multiple menu items Deletion',
+                    title: 'Confirm Multiple Menu Items Deletion',
                     text: 'Are you sure you want to delete these menu items?',
                     icon: 'warning',
                     showCancelButton: !0,
@@ -128,7 +128,7 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple menu item Error', 'Please select the menu items you wish to delete.', 'danger');
+                showNotification('Deletion Multiple Menu Item Error', 'Please select the menu items you wish to delete.', 'danger');
             }
         });
 
