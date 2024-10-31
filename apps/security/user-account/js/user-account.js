@@ -180,8 +180,7 @@ function userAccountTable(datatable_name) {
         { data: 'USER_ACCOUNT' },
         { data: 'USER_ACCOUNT_STATUS' },
         { data: 'LOCK_STATUS' },
-        { data: 'LAST_CONNECTION_DATE' },
-        { data: 'PASSWORD_EXPIRY_DATE' }
+        { data: 'LAST_CONNECTION_DATE' }
     ];
 
     const columnDefs = [
@@ -189,8 +188,7 @@ function userAccountTable(datatable_name) {
         { width: 'auto', targets: 1, responsivePriority: 2 },
         { width: 'auto', targets: 2, responsivePriority: 3 },
         { width: 'auto', targets: 3, responsivePriority: 4 },
-        { width: 'auto', targets: 4, responsivePriority: 5 },
-        { width: 'auto', targets: 5, responsivePriority: 6 },
+        { width: 'auto', targets: 4, responsivePriority: 5 }
     ];
 
     const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];

@@ -149,7 +149,7 @@ class AuthenticationController {
         $sessionToken = $this->generateToken(6, 6);
         $encryptedSessionToken = $this->securityModel->encryptData($sessionToken);
 
-        $this->authenticationModel->updateLastConnection($userAccountID, $encryptedSessionToken, date('Y-m-d H:i:s'));
+        $this->authenticationModel->updateLastConnection($userAccountID, $encryptedSessionToken);
         
         $_SESSION['user_account_id'] = $userAccountID;
         $_SESSION['session_token'] = $sessionToken;
@@ -366,7 +366,7 @@ class AuthenticationController {
         $sessionToken = $this->generateToken(6, 6);
         $encryptedSessionToken = $this->securityModel->encryptData($sessionToken);
 
-        $this->authenticationModel->updateLastConnection($userAccountID, $encryptedSessionToken, date('Y-m-d H:i:s'));
+        $this->authenticationModel->updateLastConnection($userAccountID, $encryptedSessionToken);
         
         $_SESSION['user_account_id'] = $userAccountID;
         $_SESSION['session_token'] = $sessionToken;

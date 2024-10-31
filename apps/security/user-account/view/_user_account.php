@@ -1,3 +1,9 @@
+<?php
+    $activateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 3);
+    $deactivateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 4);
+    $lockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 5);
+    $unlockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 6);
+?>
 <div class="card mb-6">
     <div class="card-header border-0 pt-6">
         <div class="card-title">
@@ -12,7 +18,39 @@
                                         <i class="ki-outline ki-down fs-5 ms-1"></i>
                                     </a>
                                     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-60px, 539px);" data-popper-placement="bottom-end">';
-                    
+                                    
+                        if ($activateUserAccount['total'] > 0) {
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="activate-user-account">
+                                                Activate User
+                                            </a>
+                                        </div>';
+                        }
+                                    
+                        if ($deactivateUserAccount['total'] > 0) {
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="deactivate-user-account">
+                                                Deactivate
+                                            </a>
+                                        </div>';
+                        }
+                                    
+                        if ($lockUserAccount['total'] > 0) {
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="lock-user-account">
+                                                Lock
+                                            </a>
+                                        </div>';
+                        }
+                                    
+                        if ($unlockUserAccount['total'] > 0) {
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="unlock-user-account">
+                                                Unlock
+                                            </a>
+                                        </div>';
+                        }
+                                    
                         if ($exportAccess['total'] > 0) {
                             $action .= '<div class="menu-item px-3">
                                             <a href="javascript:void(0);" class="menu-link px-3" data-bs-toggle="modal" id="export-data" data-bs-target="#export-modal">
@@ -42,14 +80,6 @@
                     </div>
                     <div class="separator border-gray-200"></div>
                         <div class="px-7 py-5" data-kt-user-table-filter="form">
-                            <div class="mb-10">
-                                <label class="form-label fs-6 fw-semibold" for="parent_id_filter">Password Expiry Date:</label>
-                                <input class="form-control form-control-solid filter-daterange" id="password_expiry_date_filter" autocomplete="off"/>
-                            </div>
-                            <div class="mb-10">
-                                <label class="form-label fs-6 fw-semibold" for="parent_id_filter">Last Login:</label>
-                                <input class="form-control form-control-solid filter-daterange" id="last_connection_date_filter" autocomplete="off"/>
-                            </div>
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="user_account_status_filter">Status:</label>
                                 <select id="user_account_status_filter" class="form-select form-select-solid" data-control="select2" data-allow-clear="false">
@@ -90,7 +120,6 @@
                         <th>Status</th>
                         <th>Locked</th>
                         <th>Last Login</th>
-                        <th>Password Expiry Date</th>
                     </tr>
                 </thead>
                 <tbody class="fw-semibold text-gray-800"></tbody>

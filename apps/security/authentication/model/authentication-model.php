@@ -148,11 +148,10 @@ class AuthenticationModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function updateLastConnection($p_user_account_id, $p_session_token, $p_last_connection_date) {
-        $stmt = $this->db->getConnection()->prepare('CALL updateLastConnection(:p_user_account_id, :p_session_token, :p_last_connection_date)');
+    public function updateLastConnection($p_user_account_id, $p_session_token) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateLastConnection(:p_user_account_id, :p_session_token)');
         $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
         $stmt->bindValue(':p_session_token', $p_session_token, PDO::PARAM_STR);
-        $stmt->bindValue(':p_last_connection_date', $p_last_connection_date, PDO::PARAM_STR);
         $stmt->execute();
         $stmt->closeCursor();
     }

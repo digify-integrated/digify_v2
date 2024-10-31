@@ -171,8 +171,7 @@ END //
 DROP PROCEDURE IF EXISTS updateLastConnection//
 CREATE PROCEDURE updateLastConnection(
     IN p_user_account_id INT, 
-    IN p_session_token VARCHAR(255), 
-    IN p_last_connection_date DATETIME
+    IN p_session_token VARCHAR(255)
 )
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -184,7 +183,7 @@ BEGIN
     
     UPDATE user_account
     SET session_token = p_session_token, 
-        last_connection_date = p_last_connection_date
+        last_connection_date = NOW()
     WHERE user_account_id = p_user_account_id;
 
     COMMIT;

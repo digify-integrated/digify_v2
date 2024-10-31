@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 29, 2024 at 10:27 AM
+-- Generation Time: Oct 31, 2024 at 10:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -546,6 +546,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateUserAccountRoleList` (IN `p
     ORDER BY role_name;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateUserAccountTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateUserAccountTable` ()   BEGIN
+	SELECT user_account_id, file_as, username, email, profile_picture, locked, active, password_expiry_date, last_connection_date 
+    FROM user_account 
+    ORDER BY user_account_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getAppModule`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getAppModule` (IN `p_app_module_id` INT)   BEGIN
 	SELECT * FROM app_module
@@ -614,6 +621,12 @@ DROP PROCEDURE IF EXISTS `getSystemAction`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getSystemAction` (IN `p_system_action_id` INT)   BEGIN
 	SELECT * FROM system_action
 	WHERE system_action_id = p_system_action_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getTotalProductCost`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getTotalProductCost` (IN `p_product_id` INT)   BEGIN
+	SELECT SUM(expense_amount) AS expense_amount FROM product_expense
+    WHERE product_id = p_product_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getUploadSetting`$$
@@ -1338,7 +1351,12 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (126, 'role_permission', 14, 'Role permission changed.<br/><br/>Import Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:12', '2024-10-29 17:11:12'),
 (127, 'role_permission', 14, 'Role permission changed.<br/><br/>Export Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:13', '2024-10-29 17:11:13'),
 (128, 'role_permission', 14, 'Role permission changed.<br/><br/>Log Notes Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:13', '2024-10-29 17:11:13'),
-(129, 'role_permission', 24, 'Role permission created.', 2, '2024-10-29 17:19:00', '2024-10-29 17:19:00');
+(129, 'role_permission', 24, 'Role permission created.', 2, '2024-10-29 17:19:00', '2024-10-29 17:19:00'),
+(130, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-29 14:23:41 -> 2024-10-30 12:00:30<br/>', 1, '2024-10-30 12:00:30', '2024-10-30 12:00:30'),
+(131, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-30 12:00:30 -> 2024-10-30 12:11:15<br/>', 1, '2024-10-30 12:11:15', '2024-10-30 12:11:15'),
+(132, 'user_account', 2, 'User account changed.<br/><br/>Last Failed Login Attempt: 0000-00-00 00:00:00 -> 2024-10-31 10:43:03<br/>', 1, '2024-10-31 10:43:03', '2024-10-31 10:43:03'),
+(133, 'user_account', 2, 'User account changed.<br/><br/>Last Failed Login Attempt: 2024-10-31 10:43:03 -> 0000-00-00 00:00:00<br/>', 1, '2024-10-31 10:43:07', '2024-10-31 10:43:07'),
+(134, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-30 12:11:15 -> 2024-10-31 10:43:07<br/>', 1, '2024-10-31 10:43:07', '2024-10-31 10:43:07');
 
 -- --------------------------------------------------------
 
@@ -2516,7 +2534,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `linked_id`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, NULL, '2024-10-13 16:12:00', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-10-29 14:23:41', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'mwPNtNcJkM8TIcso2jk0%2FW1MG%2BunB2iUKOgLsQfVFDY%3D', NULL, '2024-10-13 16:12:00', 1);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-10-31 10:43:07', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'pyRhlDSadmJ8TEJ%2FKdVyfUhh%2FaFTokCAdEHbumyrsDc%3D', NULL, '2024-10-13 16:12:00', 1);
 
 --
 -- Triggers `user_account`
@@ -2779,7 +2797,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
 
 --
 -- AUTO_INCREMENT for table `email_setting`

@@ -77,9 +77,9 @@ class UploadSettingController {
             }
 
             $loginCredentialsDetails = $this->authenticationModel->getLoginCredentials($userID, null);
-            $active = $loginCredentialsDetails['active'];
-            $locked = $loginCredentialsDetails['locked'];
-            $multipleSession = $loginCredentialsDetails['multiple_session'];
+            $active = $this->securityModel->decryptData($loginCredentialsDetails['active']);
+            $locked = $this->securityModel->decryptData($loginCredentialsDetails['locked']);
+            $multipleSession = $this->securityModel->decryptData($loginCredentialsDetails['multiple_session']);
             $sessionToken = $this->securityModel->decryptData($loginCredentialsDetails['session_token']);
 
             if ($active === 'No') {
