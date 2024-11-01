@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header d-flex align-items-center">
-        <h5 class="card-title mb-0">App Module Form</h5>
+        <h5 class="card-title mb-0">User Account Details</h5>
         <div class="card-actions cursor-pointer ms-auto d-flex button-group">
             <button type="submit" form="user-account-form" class="btn btn-success mb-0" id="submit-data">Save</button>
             <button type="button" id="discard-create" class="btn btn-outline-danger mb-0">Discard</button>

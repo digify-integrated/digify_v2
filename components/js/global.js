@@ -561,3 +561,25 @@ function generateExportColumns(table_name) {
         }
     });
 }
+
+function getDeviceInfo() {
+    const userAgent = navigator.userAgent;
+    let device = 'Unknown Device';
+
+    if (userAgent.indexOf('Windows NT') !== -1) device = 'Windows';
+    else if (userAgent.indexOf('Mac OS') !== -1) device = 'Mac OS';
+    else if (userAgent.indexOf('Linux') !== -1) device = 'Linux';
+    else if (userAgent.indexOf('Android') !== -1) device = 'Android';
+    else if (userAgent.indexOf('like Mac') !== -1) device = 'iOS';
+
+    const browser = (() => {
+        if (userAgent.indexOf('Firefox') !== -1) return 'Firefox';
+        else if (userAgent.indexOf('Opera') !== -1 || userAgent.indexOf('OPR') !== -1) return 'Opera';
+        else if (userAgent.indexOf('Chrome') !== -1) return 'Chrome';
+        else if (userAgent.indexOf('Safari') !== -1) return 'Safari';
+        else if (userAgent.indexOf('MSIE') !== -1 || userAgent.indexOf('Trident/') !== -1) return 'Internet Explorer';
+        return 'Unknown Browser';
+    })();
+
+    return `${browser} - ${device}`;
+}

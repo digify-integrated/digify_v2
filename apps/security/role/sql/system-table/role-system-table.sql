@@ -52,9 +52,10 @@ INSERT INTO role_permission (role_permission_id, role_id, role_name, menu_item_i
 (5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, 1),
 (6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, 1),
 (7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, 1),
-(8, 1, 'Administrator', 8, 'Menu Group', 1, 1, 1, 1, 1, 1, 1, 1),
-(9, 1, 'Administrator', 9, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, 1),
-(10, 1, 'Administrator', 10, 'System Action', 1, 1, 1, 1, 1, 1, 1, 1);
+(8, 1, 'Administrator', 9, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, 1),
+(9, 1, 'Administrator', 10, 'System Action', 1, 1, 1, 1, 1, 1, 1, 1),
+(10, 1, 'Administrator', 10, 'Subscription', 1, 0, 0, 0, 0, 0, 0, 1),
+(11, 1, 'Administrator', 11, 'Subscription Code', 1, 1, 1, 1, 1, 1, 1, 1);
 
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 31, 2024 at 10:28 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Nov 01, 2024 at 04:38 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -945,7 +945,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateFailedOTPAttempts` (IN `p_use
 END$$
 
 DROP PROCEDURE IF EXISTS `updateLastConnection`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `updateLastConnection` (IN `p_user_account_id` INT, IN `p_session_token` VARCHAR(255), IN `p_last_connection_date` DATETIME)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateLastConnection` (IN `p_user_account_id` INT, IN `p_session_token` VARCHAR(255))   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
@@ -955,7 +955,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateLastConnection` (IN `p_user_a
     
     UPDATE user_account
     SET session_token = p_session_token, 
-        last_connection_date = p_last_connection_date
+        last_connection_date = NOW()
     WHERE user_account_id = p_user_account_id;
 
     COMMIT;
@@ -1218,146 +1218,6 @@ CREATE TABLE `audit_log` (
   `created_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `audit_log`
---
-
-INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `changed_by`, `changed_at`, `created_date`) VALUES
-(1, 'app_module', 1, 'App module changed.<br/><br/>Menu Item: Account Setting -> App Module<br/>', 1, '2024-10-13 16:27:40', '2024-10-13 16:27:40'),
-(2, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-13 16:20:55 -> 2024-10-19 17:23:18<br/>', 1, '2024-10-19 17:23:18', '2024-10-19 17:23:18'),
-(3, 'menu_item', 5, 'Menu item changed.<br/><br/>Menu Item Icon:  -> ki-duotone ki-shop<br/>', 2, '2024-10-19 19:57:02', '2024-10-19 19:57:02'),
-(4, 'menu_item', 5, 'Menu item changed.<br/><br/>Menu Item Icon: ki-duotone ki-shop -> ki-outline ki-shop<br/>', 2, '2024-10-19 20:07:07', '2024-10-19 20:07:07'),
-(5, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-19 17:23:18 -> 2024-10-21 09:52:26<br/>', 1, '2024-10-21 09:52:26', '2024-10-21 09:52:26'),
-(6, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 09:52:26 -> 2024-10-21 15:07:34<br/>', 1, '2024-10-21 15:07:34', '2024-10-21 15:07:34'),
-(7, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 15:07:34 -> 2024-10-21 15:25:07<br/>', 1, '2024-10-21 15:25:07', '2024-10-21 15:25:07'),
-(8, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 100 -> 10<br/>', 2, '2024-10-21 16:53:19', '2024-10-21 16:53:19'),
-(9, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 10 -> 2<br/>', 2, '2024-10-21 16:53:24', '2024-10-21 16:53:24'),
-(10, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 2 -> 1<br/>', 2, '2024-10-21 16:53:26', '2024-10-21 16:53:26'),
-(11, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 1 -> 12<br/>', 2, '2024-10-21 16:53:29', '2024-10-21 16:53:29'),
-(12, 'app_module', 1, 'App module changed.<br/><br/>Order Sequence: 12 -> 3<br/>', 2, '2024-10-21 16:53:30', '2024-10-21 16:53:30'),
-(13, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 15:25:07 -> 2024-10-21 21:04:17<br/>', 1, '2024-10-21 21:04:17', '2024-10-21 21:04:17'),
-(14, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-21 21:04:17 -> 2024-10-23 14:09:19<br/>', 1, '2024-10-23 14:09:19', '2024-10-23 14:09:19'),
-(15, 'role_permission', 1, 'Role permission changed.<br/><br/>Write Access: 1 -> 0<br/>', 1, '2024-10-26 22:14:30', '2024-10-26 22:14:30'),
-(16, 'role_permission', 1, 'Role permission changed.<br/><br/>Write Access: 0 -> 1<br/>', 1, '2024-10-26 22:15:34', '2024-10-26 22:15:34'),
-(17, 'menu_item', 10, 'Menu item created.', 2, '2024-10-26 22:32:57', '2024-10-26 22:32:57'),
-(18, 'role_permission', 10, 'Role permission changed.<br/><br/>Menu Item: System Action -> asd<br/>', 2, '2024-10-26 22:41:04', '2024-10-26 22:41:04'),
-(19, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item URL: qwe -> qweasdasd<br/>', 2, '2024-10-26 22:41:13', '2024-10-26 22:41:13'),
-(20, 'menu_item', 10, 'Menu item changed.<br/><br/>Parent: internal_notes_attachment -> internal_notes<br/>', 2, '2024-10-26 22:41:20', '2024-10-26 22:41:20'),
-(21, 'role_permission', 10, 'Role permission changed.<br/><br/>Menu Item: asd -> asdasdasd<br/>', 2, '2024-10-26 22:41:30', '2024-10-26 22:41:30'),
-(22, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Name: asd -> asdasdasd<br/>', 2, '2024-10-26 22:41:30', '2024-10-26 22:41:30'),
-(23, 'role_permission', 10, 'Role permission changed.<br/><br/>Menu Item: asdasdasd -> asdasdasdasdasd<br/>', 2, '2024-10-26 22:41:33', '2024-10-26 22:41:33'),
-(24, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Name: asdasdasd -> asdasdasdasdasd<br/>', 2, '2024-10-26 22:41:33', '2024-10-26 22:41:33'),
-(25, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Icon: ki-outline ki-abstract -> ki-outline ki-abstract-10<br/>Parent: App Module -> General Settings<br/>', 2, '2024-10-26 22:42:37', '2024-10-26 22:42:37'),
-(26, 'menu_item', 10, 'Menu item changed.<br/><br/>Parent: General Settings -> Company<br/>', 2, '2024-10-26 23:08:31', '2024-10-26 23:08:31'),
-(27, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-23 14:09:19 -> 2024-10-28 15:18:19<br/>', 1, '2024-10-28 15:18:19', '2024-10-28 15:18:19'),
-(28, 'role_permission', 10, 'Role permission changed.<br/><br/>Menu Item: asdasdasdasdasd -> Test<br/>', 2, '2024-10-28 15:44:43', '2024-10-28 15:44:43'),
-(29, 'menu_item', 10, 'Menu item changed.<br/><br/>Menu Item Name: asdasdasdasdasd -> Test<br/>', 2, '2024-10-28 15:44:43', '2024-10-28 15:44:43'),
-(30, 'role_permission', 10, 'Role permission changed.<br/><br/>Log Notes Access: 1 -> 0<br/>', 2, '2024-10-28 16:06:46', '2024-10-28 16:06:46'),
-(31, 'role_permission', 10, 'Role permission changed.<br/><br/>Log Notes Access: 0 -> 1<br/>', 2, '2024-10-28 16:06:48', '2024-10-28 16:06:48'),
-(32, 'role_permission', 11, 'Role permission created.', 2, '2024-10-28 16:35:40', '2024-10-28 16:35:40'),
-(33, 'role_permission', 11, 'Role permission changed.<br/><br/>Read Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:42', '2024-10-28 16:35:42'),
-(34, 'role_permission', 11, 'Role permission changed.<br/><br/>Write Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:42', '2024-10-28 16:35:42'),
-(35, 'role_permission', 11, 'Role permission changed.<br/><br/>Create Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:43', '2024-10-28 16:35:43'),
-(36, 'role_permission', 11, 'Role permission changed.<br/><br/>Delete Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:43', '2024-10-28 16:35:43'),
-(37, 'role_permission', 11, 'Role permission changed.<br/><br/>Import Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:44', '2024-10-28 16:35:44'),
-(38, 'role_permission', 11, 'Role permission changed.<br/><br/>Export Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:44', '2024-10-28 16:35:44'),
-(39, 'role_permission', 11, 'Role permission changed.<br/><br/>Log Notes Access: 0 -> 1<br/>', 2, '2024-10-28 16:35:45', '2024-10-28 16:35:45'),
-(40, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-28 15:18:19 -> 2024-10-29 14:23:41<br/>', 1, '2024-10-29 14:23:41', '2024-10-29 14:23:41'),
-(41, 'role_system_action_permission', 3, 'Role system action permission changed.<br/><br/>System Action: Activate User Account -> Activate User Accounts<br/>', 2, '2024-10-29 14:26:41', '2024-10-29 14:26:41'),
-(42, 'system_action', 3, 'System action changed.<br/><br/>System Action Name: Activate User Account -> Activate User Accounts<br/>System Action Description: Access to activate the user account. -> Access to activate the user account.s<br/>', 2, '2024-10-29 14:26:41', '2024-10-29 14:26:41'),
-(43, 'role_system_action_permission', 3, 'Role system action permission changed.<br/><br/>System Action: Activate User Accounts -> Activate User Account<br/>', 2, '2024-10-29 14:26:47', '2024-10-29 14:26:47'),
-(44, 'system_action', 3, 'System action changed.<br/><br/>System Action Name: Activate User Accounts -> Activate User Account<br/>System Action Description: Access to activate the user account.s -> Access to activate the user account.<br/>', 2, '2024-10-29 14:26:47', '2024-10-29 14:26:47'),
-(45, 'role_permission', 12, 'Role permission created.', 2, '2024-10-29 14:53:06', '2024-10-29 14:53:06'),
-(46, 'role_permission', 12, 'Role permission changed.<br/><br/>Read Access: 0 -> 1<br/>', 2, '2024-10-29 14:53:08', '2024-10-29 14:53:08'),
-(47, 'role_permission', 12, 'Role permission changed.<br/><br/>Write Access: 0 -> 1<br/>', 2, '2024-10-29 14:53:08', '2024-10-29 14:53:08'),
-(48, 'role_permission', 12, 'Role permission changed.<br/><br/>Create Access: 0 -> 1<br/>', 2, '2024-10-29 14:53:09', '2024-10-29 14:53:09'),
-(49, 'role_permission', 12, 'Role permission changed.<br/><br/>Delete Access: 0 -> 1<br/>', 2, '2024-10-29 14:53:10', '2024-10-29 14:53:10'),
-(50, 'role_permission', 12, 'Role permission changed.<br/><br/>Import Access: 0 -> 1<br/>', 2, '2024-10-29 14:53:11', '2024-10-29 14:53:11'),
-(51, 'role_permission', 12, 'Role permission changed.<br/><br/>Export Access: 0 -> 1<br/>', 2, '2024-10-29 14:53:11', '2024-10-29 14:53:11'),
-(52, 'role_permission', 12, 'Role permission changed.<br/><br/>Log Notes Access: 0 -> 1<br/>', 2, '2024-10-29 14:53:14', '2024-10-29 14:53:14'),
-(53, 'role_permission', 12, 'Role permission changed.<br/><br/>Write Access: 1 -> 0<br/>', 2, '2024-10-29 14:53:23', '2024-10-29 14:53:23'),
-(54, 'role_permission', 12, 'Role permission changed.<br/><br/>Create Access: 1 -> 0<br/>', 2, '2024-10-29 14:53:23', '2024-10-29 14:53:23'),
-(55, 'role_permission', 12, 'Role permission changed.<br/><br/>Delete Access: 1 -> 0<br/>', 2, '2024-10-29 14:53:24', '2024-10-29 14:53:24'),
-(56, 'role_permission', 12, 'Role permission changed.<br/><br/>Import Access: 1 -> 0<br/>', 2, '2024-10-29 14:53:24', '2024-10-29 14:53:24'),
-(57, 'role_permission', 12, 'Role permission changed.<br/><br/>Export Access: 1 -> 0<br/>', 2, '2024-10-29 14:53:25', '2024-10-29 14:53:25'),
-(58, 'role_permission', 12, 'Role permission changed.<br/><br/>Log Notes Access: 1 -> 0<br/>', 2, '2024-10-29 14:53:26', '2024-10-29 14:53:26'),
-(59, 'role_system_action_permission', 3, 'Role system action permission changed.<br/><br/>System Action Access: 1 -> 0<br/>', 2, '2024-10-29 14:54:57', '2024-10-29 14:54:57'),
-(60, 'role_system_action_permission', 3, 'Role system action permission changed.<br/><br/>System Action Access: 0 -> 1<br/>', 2, '2024-10-29 14:55:00', '2024-10-29 14:55:00'),
-(61, 'role_system_action_permission', 17, 'Role system action permission created.', 2, '2024-10-29 14:55:54', '2024-10-29 14:55:54'),
-(62, 'role_system_action_permission', 17, 'Role system action permission changed.<br/><br/>System Action Access: 0 -> 1<br/>', 2, '2024-10-29 14:55:54', '2024-10-29 14:55:54'),
-(63, 'role_system_action_permission', 17, 'Role system action permission changed.<br/><br/>System Action Access: 1 -> 0<br/>', 2, '2024-10-29 15:00:10', '2024-10-29 15:00:10'),
-(64, 'role_system_action_permission', 17, 'Role system action permission changed.<br/><br/>System Action Access: 0 -> 1<br/>', 2, '2024-10-29 15:00:13', '2024-10-29 15:00:13'),
-(65, 'role_system_action_permission', 17, 'Role system action permission changed.<br/><br/>System Action Access: 1 -> 0<br/>', 2, '2024-10-29 15:01:26', '2024-10-29 15:01:26'),
-(66, 'role_system_action_permission', 17, 'Role system action permission changed.<br/><br/>System Action Access: 0 -> 1<br/>', 2, '2024-10-29 15:01:26', '2024-10-29 15:01:26'),
-(67, 'role_system_action_permission', 17, 'Role system action permission changed.<br/><br/>System Action Access: 1 -> 0<br/>', 2, '2024-10-29 15:03:37', '2024-10-29 15:03:37'),
-(68, 'role_system_action_permission', 17, 'Role system action permission changed.<br/><br/>System Action Access: 0 -> 1<br/>', 2, '2024-10-29 15:03:39', '2024-10-29 15:03:39'),
-(69, 'system_action', 17, 'System action created.', 2, '2024-10-29 15:05:13', '2024-10-29 15:05:13'),
-(70, 'role', 2, 'Role created.', 2, '2024-10-29 16:05:47', '2024-10-29 16:05:47'),
-(71, 'role', 3, 'Role created.', 2, '2024-10-29 16:05:57', '2024-10-29 16:05:57'),
-(72, 'role', 3, 'Role changed.<br/><br/>Role Name: test -> testasd<br/>Role Description: test -> testasd<br/>', 2, '2024-10-29 16:06:32', '2024-10-29 16:06:32'),
-(73, 'role_permission', 13, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(74, 'role_permission', 14, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(75, 'role_permission', 15, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(76, 'role_permission', 16, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(77, 'role_permission', 17, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(78, 'role_permission', 18, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(79, 'role_permission', 19, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(80, 'role_permission', 20, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(81, 'role_permission', 21, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(82, 'role_permission', 22, 'Role permission created.', 2, '2024-10-29 17:00:07', '2024-10-29 17:00:07'),
-(83, 'role_system_action_permission', 18, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(84, 'role_system_action_permission', 19, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(85, 'role_system_action_permission', 20, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(86, 'role_system_action_permission', 21, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(87, 'role_system_action_permission', 22, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(88, 'role_system_action_permission', 23, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(89, 'role_system_action_permission', 24, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(90, 'role_system_action_permission', 25, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(91, 'role_system_action_permission', 26, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(92, 'role_system_action_permission', 27, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(93, 'role_system_action_permission', 28, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(94, 'role_system_action_permission', 29, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(95, 'role_system_action_permission', 30, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(96, 'role_system_action_permission', 31, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(97, 'role_system_action_permission', 32, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(98, 'role_system_action_permission', 33, 'Role system action permission created.', 2, '2024-10-29 17:00:13', '2024-10-29 17:00:13'),
-(99, 'role_permission', 13, 'Role permission changed.<br/><br/>Read Access: 0 -> 1<br/>', 2, '2024-10-29 17:01:04', '2024-10-29 17:01:04'),
-(100, 'role_permission', 13, 'Role permission changed.<br/><br/>Read Access: 1 -> 0<br/>', 2, '2024-10-29 17:01:07', '2024-10-29 17:01:07'),
-(101, 'role_system_action_permission', 18, 'Role system action permission changed.<br/><br/>System Action Access: 0 -> 1<br/>', 2, '2024-10-29 17:01:10', '2024-10-29 17:01:10'),
-(102, 'role_system_action_permission', 18, 'Role system action permission changed.<br/><br/>System Action Access: 1 -> 0<br/>', 2, '2024-10-29 17:01:12', '2024-10-29 17:01:12'),
-(103, 'role_permission', 13, 'Role permission changed.<br/><br/>Read Access: 0 -> 1<br/>', 2, '2024-10-29 17:02:24', '2024-10-29 17:02:24'),
-(104, 'role_permission', 13, 'Role permission changed.<br/><br/>Write Access: 0 -> 1<br/>', 2, '2024-10-29 17:02:26', '2024-10-29 17:02:26'),
-(105, 'role_permission', 13, 'Role permission changed.<br/><br/>Create Access: 0 -> 1<br/>', 2, '2024-10-29 17:02:34', '2024-10-29 17:02:34'),
-(106, 'role_permission', 13, 'Role permission changed.<br/><br/>Create Access: 1 -> 0<br/>', 2, '2024-10-29 17:03:44', '2024-10-29 17:03:44'),
-(107, 'role_permission', 13, 'Role permission changed.<br/><br/>Create Access: 0 -> 1<br/>', 2, '2024-10-29 17:03:47', '2024-10-29 17:03:47'),
-(108, 'role_system_action_permission', 18, 'Role system action permission changed.<br/><br/>System Action Access: 0 -> 1<br/>', 2, '2024-10-29 17:03:57', '2024-10-29 17:03:57'),
-(109, 'role_system_action_permission', 18, 'Role system action permission changed.<br/><br/>System Action Access: 1 -> 0<br/>', 2, '2024-10-29 17:04:00', '2024-10-29 17:04:00'),
-(110, 'role_system_action_permission', 19, 'Role system action permission changed.<br/><br/>System Action Access: 0 -> 1<br/>', 2, '2024-10-29 17:04:05', '2024-10-29 17:04:05'),
-(111, 'role_system_action_permission', 19, 'Role system action permission changed.<br/><br/>System Action Access: 1 -> 0<br/>', 2, '2024-10-29 17:04:08', '2024-10-29 17:04:08'),
-(112, 'role_permission', 13, 'Role permission changed.<br/><br/>Delete Access: 0 -> 1<br/>', 2, '2024-10-29 17:05:31', '2024-10-29 17:05:31'),
-(113, 'role_permission', 14, 'Role permission changed.<br/><br/>Log Notes Access: 0 -> 1<br/>', 2, '2024-10-29 17:05:44', '2024-10-29 17:05:44'),
-(114, 'role_permission', 14, 'Role permission changed.<br/><br/>Export Access: 0 -> 1<br/>', 2, '2024-10-29 17:05:48', '2024-10-29 17:05:48'),
-(115, 'role_permission', 14, 'Role permission changed.<br/><br/>Import Access: 0 -> 1<br/>', 2, '2024-10-29 17:05:50', '2024-10-29 17:05:50'),
-(116, 'role_permission', 14, 'Role permission changed.<br/><br/>Delete Access: 0 -> 1<br/>', 2, '2024-10-29 17:05:53', '2024-10-29 17:05:53'),
-(117, 'role_permission', 14, 'Role permission changed.<br/><br/>Write Access: 0 -> 1<br/>', 2, '2024-10-29 17:05:59', '2024-10-29 17:05:59'),
-(118, 'role_permission', 14, 'Role permission changed.<br/><br/>Create Access: 0 -> 1<br/>', 2, '2024-10-29 17:06:02', '2024-10-29 17:06:02'),
-(119, 'role_permission', 14, 'Role permission changed.<br/><br/>Read Access: 0 -> 1<br/>', 2, '2024-10-29 17:06:06', '2024-10-29 17:06:06'),
-(120, 'role_permission', 23, 'Role permission created.', 2, '2024-10-29 17:10:50', '2024-10-29 17:10:50'),
-(121, 'role_system_action_permission', 34, 'Role system action permission created.', 2, '2024-10-29 17:10:54', '2024-10-29 17:10:54'),
-(122, 'role_permission', 14, 'Role permission changed.<br/><br/>Read Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:10', '2024-10-29 17:11:10'),
-(123, 'role_permission', 14, 'Role permission changed.<br/><br/>Create Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:11', '2024-10-29 17:11:11'),
-(124, 'role_permission', 14, 'Role permission changed.<br/><br/>Write Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:11', '2024-10-29 17:11:11'),
-(125, 'role_permission', 14, 'Role permission changed.<br/><br/>Delete Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:12', '2024-10-29 17:11:12'),
-(126, 'role_permission', 14, 'Role permission changed.<br/><br/>Import Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:12', '2024-10-29 17:11:12'),
-(127, 'role_permission', 14, 'Role permission changed.<br/><br/>Export Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:13', '2024-10-29 17:11:13'),
-(128, 'role_permission', 14, 'Role permission changed.<br/><br/>Log Notes Access: 1 -> 0<br/>', 2, '2024-10-29 17:11:13', '2024-10-29 17:11:13'),
-(129, 'role_permission', 24, 'Role permission created.', 2, '2024-10-29 17:19:00', '2024-10-29 17:19:00'),
-(130, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-29 14:23:41 -> 2024-10-30 12:00:30<br/>', 1, '2024-10-30 12:00:30', '2024-10-30 12:00:30'),
-(131, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-30 12:00:30 -> 2024-10-30 12:11:15<br/>', 1, '2024-10-30 12:11:15', '2024-10-30 12:11:15'),
-(132, 'user_account', 2, 'User account changed.<br/><br/>Last Failed Login Attempt: 0000-00-00 00:00:00 -> 2024-10-31 10:43:03<br/>', 1, '2024-10-31 10:43:03', '2024-10-31 10:43:03'),
-(133, 'user_account', 2, 'User account changed.<br/><br/>Last Failed Login Attempt: 2024-10-31 10:43:03 -> 0000-00-00 00:00:00<br/>', 1, '2024-10-31 10:43:07', '2024-10-31 10:43:07'),
-(134, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-10-30 12:11:15 -> 2024-10-31 10:43:07<br/>', 1, '2024-10-31 10:43:07', '2024-10-31 10:43:07');
-
 -- --------------------------------------------------------
 
 --
@@ -1603,70 +1463,17 @@ CREATE TABLE `menu_item` (
 --
 
 INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `menu_item_icon`, `app_module_id`, `app_module_name`, `parent_id`, `parent_name`, `table_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-10-19 21:30:54', 2),
-(2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-10-19 21:30:54', 2),
-(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-10-19 21:30:54', 2),
-(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-10-19 21:30:54', 2),
-(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-10-19 21:30:54', 2),
-(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-10-19 21:30:54', 2),
-(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-10-19 21:30:54', 2),
-(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-10-19 21:30:54', 2),
-(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-10-19 21:30:54', 2),
-(10, 'Test', 'qweasdasd', 'ki-outline ki-abstract-10', 2, 'Employees', 5, 'Company', 'internal_notes', 12, '2024-10-26 22:32:57', 2);
-
---
--- Triggers `menu_item`
---
-DROP TRIGGER IF EXISTS `menu_item_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `menu_item_trigger_insert` AFTER INSERT ON `menu_item` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Menu item created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('menu_item', NEW.menu_item_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `menu_item_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `menu_item_trigger_update` AFTER UPDATE ON `menu_item` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Menu item changed.<br/><br/>';
-
-    IF NEW.menu_item_name <> OLD.menu_item_name THEN
-        SET audit_log = CONCAT(audit_log, "Menu Item Name: ", OLD.menu_item_name, " -> ", NEW.menu_item_name, "<br/>");
-    END IF;
-
-    IF NEW.menu_item_url <> OLD.menu_item_url THEN
-        SET audit_log = CONCAT(audit_log, "Menu Item URL: ", OLD.menu_item_url, " -> ", NEW.menu_item_url, "<br/>");
-    END IF;
-
-    IF NEW.menu_item_icon <> OLD.menu_item_icon THEN
-        SET audit_log = CONCAT(audit_log, "Menu Icon: ", OLD.menu_item_icon, " -> ", NEW.menu_item_icon, "<br/>");
-    END IF;
-
-    IF NEW.app_module_name <> OLD.app_module_name THEN
-        SET audit_log = CONCAT(audit_log, "App Module: ", OLD.app_module_name, " -> ", NEW.app_module_name, "<br/>");
-    END IF;
-
-    IF NEW.parent_name <> OLD.parent_name THEN
-        SET audit_log = CONCAT(audit_log, "Parent: ", OLD.parent_name, " -> ", NEW.parent_name, "<br/>");
-    END IF;
-
-    IF NEW.order_sequence <> OLD.order_sequence THEN
-        SET audit_log = CONCAT(audit_log, "Order Sequence: ", OLD.order_sequence, " -> ", NEW.order_sequence, "<br/>");
-    END IF;
-
-    IF NEW.table_name <> OLD.table_name THEN
-        SET audit_log = CONCAT(audit_log, "Export Table: ", OLD.table_name, " -> ", NEW.table_name, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'Menu item changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('menu_item', NEW.menu_item_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
+(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-11-01 23:18:30', 2),
+(2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-11-01 23:18:30', 2),
+(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-11-01 23:18:30', 2),
+(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-11-01 23:18:30', 2),
+(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-11-01 23:18:30', 2),
+(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-01 23:18:30', 2),
+(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-01 23:18:30', 2),
+(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-01 23:18:30', 2),
+(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-01 23:18:30', 2),
+(10, 'Subscription', '', '', 1, 'Settings', 0, '', '', 127, '2024-11-01 23:18:30', 2),
+(11, 'Subscription Code', 'subscription-code.php', 'ki-outline ki-key', 1, 'Settings', 10, 'Subscription', 'subscription_code', 1, '2024-11-01 23:18:30', 2);
 
 -- --------------------------------------------------------
 
@@ -1937,42 +1744,7 @@ CREATE TABLE `role` (
 --
 
 INSERT INTO `role` (`role_id`, `role_name`, `role_description`, `created_date`, `last_log_by`) VALUES
-(1, 'Administrator', 'Full access to all features and data within the system. This role have similar access levels to the Admin but is not as powerful as the Super Admin.', '2024-10-13 16:22:48', 1),
-(3, 'testasd', 'testasd', '2024-10-29 16:05:57', 2);
-
---
--- Triggers `role`
---
-DROP TRIGGER IF EXISTS `role_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `role_trigger_insert` AFTER INSERT ON `role` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Role created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('role', NEW.role_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `role_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `role_trigger_update` AFTER UPDATE ON `role` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Role changed.<br/><br/>';
-
-    IF NEW.role_name <> OLD.role_name THEN
-        SET audit_log = CONCAT(audit_log, "Role Name: ", OLD.role_name, " -> ", NEW.role_name, "<br/>");
-    END IF;
-
-    IF NEW.role_description <> OLD.role_description THEN
-        SET audit_log = CONCAT(audit_log, "Role Description: ", OLD.role_description, " -> ", NEW.role_description, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'Role changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('role', NEW.role_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
+(1, 'Administrator', 'Full access to all features and data within the system. This role have similar access levels to the Admin but is not as powerful as the Super Admin.', '2024-11-01 23:20:28', 1);
 
 -- --------------------------------------------------------
 
@@ -2004,87 +1776,17 @@ CREATE TABLE `role_permission` (
 --
 
 INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `menu_item_id`, `menu_item_name`, `read_access`, `write_access`, `create_access`, `delete_access`, `import_access`, `export_access`, `log_notes_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 2),
-(2, 1, 'Administrator', 2, 'General Settings', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(8, 1, 'Administrator', 8, 'Menu Group', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(9, 1, 'Administrator', 9, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(11, 1, 'Administrator', 10, 'Test', 1, 1, 1, 1, 1, 1, 1, '2024-10-28 16:35:40', '2024-10-28 16:35:40', 2),
-(12, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-10-29 14:53:06', '2024-10-29 14:53:06', 2),
-(14, 3, 'testasd', 5, 'Company', 0, 0, 0, 0, 0, 0, 0, '2024-10-29 17:00:07', '2024-10-29 17:00:07', 2),
-(15, 3, 'testasd', 2, 'General Settings', 0, 0, 0, 0, 0, 0, 0, '2024-10-29 17:00:07', '2024-10-29 17:00:07', 2),
-(16, 3, 'testasd', 8, 'Menu Item', 0, 0, 0, 0, 0, 0, 0, '2024-10-29 17:00:07', '2024-10-29 17:00:07', 2),
-(17, 3, 'testasd', 6, 'Role', 0, 0, 0, 0, 0, 0, 0, '2024-10-29 17:00:07', '2024-10-29 17:00:07', 2),
-(18, 3, 'testasd', 9, 'System Action', 0, 0, 0, 0, 0, 0, 0, '2024-10-29 17:00:07', '2024-10-29 17:00:07', 2),
-(19, 3, 'testasd', 10, 'Test', 0, 0, 0, 0, 0, 0, 0, '2024-10-29 17:00:07', '2024-10-29 17:00:07', 2),
-(20, 3, 'testasd', 4, 'User Account', 0, 0, 0, 0, 0, 0, 0, '2024-10-29 17:00:07', '2024-10-29 17:00:07', 2),
-(21, 3, 'testasd', 7, 'User Interface', 0, 0, 0, 0, 0, 0, 0, '2024-10-29 17:00:07', '2024-10-29 17:00:07', 2),
-(22, 3, 'testasd', 3, 'Users & Companies', 0, 0, 0, 0, 0, 0, 0, '2024-10-29 17:00:07', '2024-10-29 17:00:07', 2);
-
---
--- Triggers `role_permission`
---
-DROP TRIGGER IF EXISTS `role_permission_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `role_permission_trigger_insert` AFTER INSERT ON `role_permission` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Role permission created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('role_permission', NEW.role_permission_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `role_permission_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `role_permission_trigger_update` AFTER UPDATE ON `role_permission` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Role permission changed.<br/><br/>';
-
-    IF NEW.role_name <> OLD.role_name THEN
-        SET audit_log = CONCAT(audit_log, "Role Name: ", OLD.role_name, " -> ", NEW.role_name, "<br/>");
-    END IF;
-
-    IF NEW.menu_item_name <> OLD.menu_item_name THEN
-        SET audit_log = CONCAT(audit_log, "Menu Item: ", OLD.menu_item_name, " -> ", NEW.menu_item_name, "<br/>");
-    END IF;
-
-    IF NEW.read_access <> OLD.read_access THEN
-        SET audit_log = CONCAT(audit_log, "Read Access: ", OLD.read_access, " -> ", NEW.read_access, "<br/>");
-    END IF;
-
-    IF NEW.write_access <> OLD.write_access THEN
-        SET audit_log = CONCAT(audit_log, "Write Access: ", OLD.write_access, " -> ", NEW.write_access, "<br/>");
-    END IF;
-
-    IF NEW.create_access <> OLD.create_access THEN
-        SET audit_log = CONCAT(audit_log, "Create Access: ", OLD.create_access, " -> ", NEW.create_access, "<br/>");
-    END IF;
-
-    IF NEW.delete_access <> OLD.delete_access THEN
-        SET audit_log = CONCAT(audit_log, "Delete Access: ", OLD.delete_access, " -> ", NEW.delete_access, "<br/>");
-    END IF;
-
-    IF NEW.import_access <> OLD.import_access THEN
-        SET audit_log = CONCAT(audit_log, "Import Access: ", OLD.import_access, " -> ", NEW.import_access, "<br/>");
-    END IF;
-
-    IF NEW.export_access <> OLD.export_access THEN
-        SET audit_log = CONCAT(audit_log, "Export Access: ", OLD.export_access, " -> ", NEW.export_access, "<br/>");
-    END IF;
-
-    IF NEW.log_notes_access <> OLD.log_notes_access THEN
-        SET audit_log = CONCAT(audit_log, "Log Notes Access: ", OLD.log_notes_access, " -> ", NEW.log_notes_access, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'Role permission changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('role_permission', NEW.role_permission_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
+(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(2, 1, 'Administrator', 2, 'General Settings', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(3, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(8, 1, 'Administrator', 9, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(9, 1, 'Administrator', 10, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(10, 1, 'Administrator', 10, 'Subscription', 1, 0, 0, 0, 0, 0, 0, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(11, 1, 'Administrator', 11, 'Subscription Code', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1);
 
 -- --------------------------------------------------------
 
@@ -2110,76 +1812,22 @@ CREATE TABLE `role_system_action_permission` (
 --
 
 INSERT INTO `role_system_action_permission` (`role_system_action_permission_id`, `role_id`, `role_name`, `system_action_id`, `system_action_name`, `system_action_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'Update System Settings', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(2, 1, 'Administrator', 2, 'Update Security Settings', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(10, 1, 'Administrator', 10, 'Update Role Access', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(11, 1, 'Administrator', 11, 'Delete Role Access', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(15, 1, 'Administrator', 15, 'Add File Extension Access', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(16, 1, 'Administrator', 16, 'Delete File Extension Access', 1, '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1),
-(17, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-10-29 14:55:54', '2024-10-29 14:55:54', 2),
-(19, 3, 'testasd', 15, 'Add File Extension Access', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(20, 3, 'testasd', 9, 'Add Role Access', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(21, 3, 'testasd', 12, 'Add Role System Action Access', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(22, 3, 'testasd', 7, 'Add Role User Account', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(23, 3, 'testasd', 4, 'Deactivate User Account', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(24, 3, 'testasd', 16, 'Delete File Extension Access', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(25, 3, 'testasd', 11, 'Delete Role Access', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(26, 3, 'testasd', 14, 'Delete Role System Action Access', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(27, 3, 'testasd', 8, 'Delete Role User Account', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(28, 3, 'testasd', 5, 'Lock User Account', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(29, 3, 'testasd', 6, 'Unlock User Account', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(30, 3, 'testasd', 10, 'Update Role Access', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(31, 3, 'testasd', 13, 'Update Role System Action Access', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(32, 3, 'testasd', 2, 'Update Security Settings', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(33, 3, 'testasd', 1, 'Update System Settings', 0, '2024-10-29 17:00:13', '2024-10-29 17:00:13', 2),
-(34, 3, 'testasd', 3, 'Activate User Account', 0, '2024-10-29 17:10:54', '2024-10-29 17:10:54', 2);
-
---
--- Triggers `role_system_action_permission`
---
-DROP TRIGGER IF EXISTS `role_system_action_permission_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `role_system_action_permission_trigger_insert` AFTER INSERT ON `role_system_action_permission` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Role system action permission created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('role_system_action_permission', NEW.role_system_action_permission_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `role_system_action_permission_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `role_system_action_permission_trigger_update` AFTER UPDATE ON `role_system_action_permission` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Role system action permission changed.<br/><br/>';
-
-    IF NEW.role_name <> OLD.role_name THEN
-        SET audit_log = CONCAT(audit_log, "Role Name: ", OLD.role_name, " -> ", NEW.role_name, "<br/>");
-    END IF;
-
-    IF NEW.system_action_name <> OLD.system_action_name THEN
-        SET audit_log = CONCAT(audit_log, "System Action: ", OLD.system_action_name, " -> ", NEW.system_action_name, "<br/>");
-    END IF;
-
-    IF NEW.system_action_access <> OLD.system_action_access THEN
-        SET audit_log = CONCAT(audit_log, "System Action Access: ", OLD.system_action_access, " -> ", NEW.system_action_access, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'Role system action permission changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('role_system_action_permission', NEW.role_system_action_permission_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
+(1, 1, 'Administrator', 1, 'Update System Settings', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(2, 1, 'Administrator', 2, 'Update Security Settings', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(10, 1, 'Administrator', 10, 'Update Role Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(11, 1, 'Administrator', 11, 'Delete Role Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(15, 1, 'Administrator', 15, 'Add File Extension Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
+(16, 1, 'Administrator', 16, 'Delete File Extension Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1);
 
 -- --------------------------------------------------------
 
@@ -2204,41 +1852,7 @@ CREATE TABLE `role_user_account` (
 --
 
 INSERT INTO `role_user_account` (`role_user_account_id`, `role_id`, `role_name`, `user_account_id`, `file_as`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 2, 'Administrator', '2024-10-13 16:22:48', '2024-10-13 16:22:48', 1);
-
---
--- Triggers `role_user_account`
---
-DROP TRIGGER IF EXISTS `role_user_account_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `role_user_account_trigger_insert` AFTER INSERT ON `role_user_account` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Role user account created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('role_user_account', NEW.role_user_account_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `role_user_account_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `role_user_account_trigger_update` AFTER UPDATE ON `role_user_account` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Role user account changed. <br/>';
-
-    IF NEW.role_name <> OLD.role_name THEN
-        SET audit_log = CONCAT(audit_log, "Role Name: ", OLD.role_name, " -> ", NEW.role_name, "<br/>");
-    END IF;
-
-    IF NEW.file_as <> OLD.file_as THEN
-        SET audit_log = CONCAT(audit_log, "User Account Name: ", OLD.file_as, " -> ", NEW.file_as, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'Role user account changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('role_user_account', NEW.role_user_account_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
+(1, 1, 'Administrator', 2, 'Administrator', '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1);
 
 -- --------------------------------------------------------
 
@@ -2302,6 +1916,26 @@ CREATE TRIGGER `security_setting_trigger_update` AFTER UPDATE ON `security_setti
 END
 $$
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `subscription_code`
+--
+
+DROP TABLE IF EXISTS `subscription_code`;
+CREATE TABLE `subscription_code` (
+  `subscription_code_id` int(11) NOT NULL,
+  `subscription_code_for` varchar(500) NOT NULL,
+  `subscription_code` text NOT NULL,
+  `subscription_tier` varchar(500) DEFAULT NULL,
+  `billing_cycle` varchar(500) DEFAULT NULL,
+  `subscription_validity` varchar(500) DEFAULT NULL,
+  `no_users` varchar(500) DEFAULT NULL,
+  `subscription_status` varchar(500) DEFAULT NULL,
+  `created_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -2373,6 +2007,23 @@ CREATE TRIGGER `system_action_trigger_update` AFTER UPDATE ON `system_action` FO
 END
 $$
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `system_subscription`
+--
+
+DROP TABLE IF EXISTS `system_subscription`;
+CREATE TABLE `system_subscription` (
+  `system_subscription_id` int(11) NOT NULL,
+  `system_subscription_code` text NOT NULL,
+  `subscription_tier` varchar(500) DEFAULT NULL,
+  `billing_cycle` varchar(500) DEFAULT NULL,
+  `subscription_validity` varchar(500) DEFAULT NULL,
+  `no_users` varchar(500) DEFAULT NULL,
+  `subscription_status` varchar(500) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -2534,7 +2185,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `linked_id`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, NULL, '2024-10-13 16:12:00', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-10-31 10:43:07', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'pyRhlDSadmJ8TEJ%2FKdVyfUhh%2FaFTokCAdEHbumyrsDc%3D', NULL, '2024-10-13 16:12:00', 1);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-01 18:50:30', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '%2Bwd4d6EKEwdfY9u%2F8skv53Dk9Qibb1BhAUBk4vEDLTg%3D', NULL, '2024-10-13 16:12:00', 1);
 
 --
 -- Triggers `user_account`
@@ -2749,12 +2400,37 @@ ALTER TABLE `security_setting`
   ADD KEY `security_setting_index_security_setting_id` (`security_setting_id`);
 
 --
+-- Indexes for table `subscription_code`
+--
+ALTER TABLE `subscription_code`
+  ADD PRIMARY KEY (`subscription_code_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `subscription_code_index_subscription_code_id` (`subscription_code_id`),
+  ADD KEY `subscription_code_index_subscription_code` (`subscription_code`(768)),
+  ADD KEY `subscription_code_index_subscription_tier` (`subscription_tier`),
+  ADD KEY `subscription_code_index_subscription_status` (`subscription_status`),
+  ADD KEY `subscription_code_index_subscription_validity` (`subscription_validity`),
+  ADD KEY `subscription_code_index_no_users` (`no_users`);
+
+--
 -- Indexes for table `system_action`
 --
 ALTER TABLE `system_action`
   ADD PRIMARY KEY (`system_action_id`),
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `system_action_index_system_action_id` (`system_action_id`);
+
+--
+-- Indexes for table `system_subscription`
+--
+ALTER TABLE `system_subscription`
+  ADD PRIMARY KEY (`system_subscription_id`),
+  ADD KEY `system_subscription_index_system_subscription_id` (`system_subscription_id`),
+  ADD KEY `system_subscription_index_system_subscription_code` (`system_subscription_code`(768)),
+  ADD KEY `system_subscription_index_subscription_tier` (`subscription_tier`),
+  ADD KEY `system_subscription_index_subscription_status` (`subscription_status`),
+  ADD KEY `system_subscription_index_subscription_validity` (`subscription_validity`),
+  ADD KEY `system_subscription_index_no_users` (`no_users`);
 
 --
 -- Indexes for table `upload_setting`
@@ -2797,7 +2473,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -2827,7 +2503,7 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`
@@ -2863,19 +2539,19 @@ ALTER TABLE `password_history`
 -- AUTO_INCREMENT for table `role`
 --
 ALTER TABLE `role`
-  MODIFY `role_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `role_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`
 --
 ALTER TABLE `role_system_action_permission`
-  MODIFY `role_system_action_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `role_system_action_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `role_user_account`
@@ -2890,10 +2566,22 @@ ALTER TABLE `security_setting`
   MODIFY `security_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
+-- AUTO_INCREMENT for table `subscription_code`
+--
+ALTER TABLE `subscription_code`
+  MODIFY `subscription_code_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `system_action`
 --
 ALTER TABLE `system_action`
   MODIFY `system_action_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `system_subscription`
+--
+ALTER TABLE `system_subscription`
+  MODIFY `system_subscription_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `upload_setting`
@@ -3002,12 +2690,34 @@ ALTER TABLE `role`
   ADD CONSTRAINT `role_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
+-- Constraints for table `role_permission`
+--
+ALTER TABLE `role_permission`
+  ADD CONSTRAINT `role_permission_ibfk_1` FOREIGN KEY (`menu_item_id`) REFERENCES `menu_item` (`menu_item_id`),
+  ADD CONSTRAINT `role_permission_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
+  ADD CONSTRAINT `role_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
 -- Constraints for table `role_system_action_permission`
 --
 ALTER TABLE `role_system_action_permission`
   ADD CONSTRAINT `role_system_action_permission_ibfk_1` FOREIGN KEY (`system_action_id`) REFERENCES `system_action` (`system_action_id`),
   ADD CONSTRAINT `role_system_action_permission_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
   ADD CONSTRAINT `role_system_action_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `role_user_account`
+--
+ALTER TABLE `role_user_account`
+  ADD CONSTRAINT `role_user_account_ibfk_1` FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`user_account_id`),
+  ADD CONSTRAINT `role_user_account_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
+  ADD CONSTRAINT `role_user_account_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `subscription_code`
+--
+ALTER TABLE `subscription_code`
+  ADD CONSTRAINT `subscription_code_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
