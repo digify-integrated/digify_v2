@@ -32,7 +32,7 @@ INSERT INTO menu_item (menu_item_id, menu_item_name, menu_item_url, menu_item_ic
 (7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, 2),
 (8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, 2),
 (9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, 2),
-(10, 'Subscription', '', '', 1, 'Settings', 0, '', '', 999, 2),
-(11, 'Subscription Code', 'subscription-code.php', 'ki-outline ki-key', 1, 'Settings', 10, 'Subscription', 'subscription_code', 1, 2);
+(10, 'Subscription', '', '', 2, 'Subscription', 0, '', '', 999, 2),
+(11, 'Subscriber', 'subscriber.php', 'ki-outline ki-people', 2, 'Subscription', 10, 'Subscription', 'subscriber', 1, 2);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
