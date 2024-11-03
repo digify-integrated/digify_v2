@@ -34,16 +34,16 @@
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
                                     if($newRecord){
-                                        require_once('apps/security/subscribers/view/_app_module_new.php');
+                                        require_once('apps/security/subscribers/view/_subscriber_new.php');
                                     }
                                     else if(!empty($detailID)){
-                                        require_once('apps/security/subscribers/view/_app_module_details.php');
+                                        require_once('apps/security/subscribers/view/_subscriber_details.php');
                                     }
                                     else if(isset($_GET['import']) && !empty($_GET['import'])){
                                         require_once('components/view/_import.php');
                                     }
                                     else{
-                                        require_once('apps/security/subscribers/view/_app_module.php');
+                                        require_once('apps/security/subscribers/view/_subscriber.php');
                                     }
                                 ?>
                             </div>

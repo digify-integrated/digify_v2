@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 01, 2024 at 04:38 PM
+-- Generation Time: Nov 03, 2024 at 02:13 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -1153,53 +1153,8 @@ CREATE TABLE `app_module` (
 --
 
 INSERT INTO `app_module` (`app_module_id`, `app_module_name`, `app_module_description`, `app_logo`, `menu_item_id`, `menu_item_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../security/app-module/image/logo/1/fm981w.png', 1, 'App Module', 3, '2024-10-13 16:19:59', 2),
-(2, 'Employees', 'Centralize employee information', '../security/app-module/image/logo/2/kwDc.png', 23, 'Inventory Overview', 1, '2024-10-13 16:19:59', 1),
-(3, 'Customer', 'Bring all your customer information into one easy-to-access location', '../security/app-module/image/logo/3/rL4r.png', 50, 'Customer', 3, '2024-10-13 16:19:59', 1),
-(4, 'Website Studio', 'Create and customize your website', '../security/app-module/image/logo/4/TnX0.png', 54, 'Websites', 1, '2024-10-13 16:19:59', 1),
-(5, 'CRM', 'Track leads and close opportunities', '../security/app-module/image/logo/5/CxLn.png', 73, 'My Bookings', 3, '2024-10-13 16:19:59', 1);
-
---
--- Triggers `app_module`
---
-DROP TRIGGER IF EXISTS `app_module_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `app_module_trigger_insert` AFTER INSERT ON `app_module` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'App module created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('app_module', NEW.app_module_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `app_module_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `app_module_trigger_update` AFTER UPDATE ON `app_module` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'App module changed.<br/><br/>';
-
-    IF NEW.app_module_name <> OLD.app_module_name THEN
-        SET audit_log = CONCAT(audit_log, "App Module Name: ", OLD.app_module_name, " -> ", NEW.app_module_name, "<br/>");
-    END IF;
-
-    IF NEW.app_module_description <> OLD.app_module_description THEN
-        SET audit_log = CONCAT(audit_log, "App Module Description: ", OLD.app_module_description, " -> ", NEW.app_module_description, "<br/>");
-    END IF;
-
-    IF NEW.menu_item_name <> OLD.menu_item_name THEN
-        SET audit_log = CONCAT(audit_log, "Menu Item: ", OLD.menu_item_name, " -> ", NEW.menu_item_name, "<br/>");
-    END IF;
-
-    IF NEW.order_sequence <> OLD.order_sequence THEN
-        SET audit_log = CONCAT(audit_log, "Order Sequence: ", OLD.order_sequence, " -> ", NEW.order_sequence, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'App module changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('app_module', NEW.app_module_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
+(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../security/app-module/image/logo/1/Pboex.png', 1, 'App Module', 100, '2024-11-03 20:44:42', 1),
+(2, 'Subscription', 'Generate subscription code and manage renewals', '../security/app-module/image/logo/2/FhZ0gHo.png', 10, 'Subscriber', 99, '2024-11-03 20:44:42', 1);
 
 -- --------------------------------------------------------
 
@@ -1217,6 +1172,13 @@ CREATE TABLE `audit_log` (
   `changed_at` datetime NOT NULL DEFAULT current_timestamp(),
   `created_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `audit_log`
+--
+
+INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `changed_by`, `changed_at`, `created_date`) VALUES
+(1, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-01 18:50:30 -> 2024-11-03 19:24:29<br/>', 1, '2024-11-03 19:24:29', '2024-11-03 19:24:29');
 
 -- --------------------------------------------------------
 
@@ -1463,17 +1425,19 @@ CREATE TABLE `menu_item` (
 --
 
 INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `menu_item_icon`, `app_module_id`, `app_module_name`, `parent_id`, `parent_name`, `table_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-11-01 23:18:30', 2),
-(2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-11-01 23:18:30', 2),
-(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-11-01 23:18:30', 2),
-(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-11-01 23:18:30', 2),
-(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-11-01 23:18:30', 2),
-(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-01 23:18:30', 2),
-(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-01 23:18:30', 2),
-(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-01 23:18:30', 2),
-(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-01 23:18:30', 2),
-(10, 'Subscription', '', '', 1, 'Settings', 0, '', '', 127, '2024-11-01 23:18:30', 2),
-(11, 'Subscription Code', 'subscription-code.php', 'ki-outline ki-key', 1, 'Settings', 10, 'Subscription', 'subscription_code', 1, '2024-11-01 23:18:30', 2);
+(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-11-03 20:31:40', 2),
+(2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-11-03 20:31:40', 2),
+(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-11-03 20:31:40', 2),
+(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-11-03 20:31:40', 2),
+(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-11-03 20:31:40', 2),
+(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-03 20:31:40', 2),
+(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-03 20:31:40', 2),
+(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-03 20:31:40', 2),
+(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-03 20:31:40', 2),
+(10, 'Subscriber', 'subscriber.php', 'ki-outline ki-people', 2, 'Subscription', 0, '', 'subscriber', 1, '2024-11-03 20:31:40', 2),
+(11, 'Subscription Settings', '', '', 2, 'Subscription', 0, '', '', 100, '2024-11-03 20:31:40', 2),
+(12, 'Subscription Tier', 'subscription-tier.php', 'ki-outline ki-abstract-19', 2, 'Subscription', 11, 'Subscription Settings', 'subscriber', 1, '2024-11-03 20:31:40', 2),
+(13, 'Billing Cycle', 'billing-cycle.php', 'ki-outline ki-cheque', 2, 'Subscription', 11, 'Subscription Settings', 'subscriber', 1, '2024-11-03 20:31:40', 2);
 
 -- --------------------------------------------------------
 
@@ -1744,7 +1708,7 @@ CREATE TABLE `role` (
 --
 
 INSERT INTO `role` (`role_id`, `role_name`, `role_description`, `created_date`, `last_log_by`) VALUES
-(1, 'Administrator', 'Full access to all features and data within the system. This role have similar access levels to the Admin but is not as powerful as the Super Admin.', '2024-11-01 23:20:28', 1);
+(1, 'Administrator', 'Full access to all features and data within the system. This role have similar access levels to the Admin but is not as powerful as the Super Admin.', '2024-11-03 20:31:39', 1);
 
 -- --------------------------------------------------------
 
@@ -1776,17 +1740,19 @@ CREATE TABLE `role_permission` (
 --
 
 INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `menu_item_id`, `menu_item_name`, `read_access`, `write_access`, `create_access`, `delete_access`, `import_access`, `export_access`, `log_notes_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(2, 1, 'Administrator', 2, 'General Settings', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(3, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(8, 1, 'Administrator', 9, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(9, 1, 'Administrator', 10, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(10, 1, 'Administrator', 10, 'Subscription', 1, 0, 0, 0, 0, 0, 0, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(11, 1, 'Administrator', 11, 'Subscription Code', 1, 1, 1, 1, 1, 1, 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1);
+(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(2, 1, 'Administrator', 2, 'General Settings', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(3, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(8, 1, 'Administrator', 8, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(10, 1, 'Administrator', 10, 'Subscriber', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(11, 1, 'Administrator', 11, 'Subscription Settings', 1, 0, 0, 0, 0, 0, 0, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(12, 1, 'Administrator', 12, 'Subscription Tier', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(13, 1, 'Administrator', 13, 'Billing Cycle', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1);
 
 -- --------------------------------------------------------
 
@@ -1812,22 +1778,22 @@ CREATE TABLE `role_system_action_permission` (
 --
 
 INSERT INTO `role_system_action_permission` (`role_system_action_permission_id`, `role_id`, `role_name`, `system_action_id`, `system_action_name`, `system_action_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'Update System Settings', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(2, 1, 'Administrator', 2, 'Update Security Settings', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(10, 1, 'Administrator', 10, 'Update Role Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(11, 1, 'Administrator', 11, 'Delete Role Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(15, 1, 'Administrator', 15, 'Add File Extension Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1),
-(16, 1, 'Administrator', 16, 'Delete File Extension Access', 1, '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1);
+(1, 1, 'Administrator', 1, 'Update System Settings', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(2, 1, 'Administrator', 2, 'Update Security Settings', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(10, 1, 'Administrator', 10, 'Update Role Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(11, 1, 'Administrator', 11, 'Delete Role Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(15, 1, 'Administrator', 15, 'Add File Extension Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
+(16, 1, 'Administrator', 16, 'Delete File Extension Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1);
 
 -- --------------------------------------------------------
 
@@ -1852,7 +1818,7 @@ CREATE TABLE `role_user_account` (
 --
 
 INSERT INTO `role_user_account` (`role_user_account_id`, `role_id`, `role_name`, `user_account_id`, `file_as`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 2, 'Administrator', '2024-11-01 23:20:29', '2024-11-01 23:20:29', 1);
+(1, 1, 'Administrator', 2, 'Administrator', '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1);
 
 -- --------------------------------------------------------
 
@@ -2185,7 +2151,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `linked_id`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, NULL, '2024-10-13 16:12:00', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-01 18:50:30', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '%2Bwd4d6EKEwdfY9u%2F8skv53Dk9Qibb1BhAUBk4vEDLTg%3D', NULL, '2024-10-13 16:12:00', 1);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-03 19:24:29', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'AOPBd%2BanKR%2FIGe84iOBke8AVS6M3H99%2Bi4mAJywZIpw%3D', NULL, '2024-10-13 16:12:00', 1);
 
 --
 -- Triggers `user_account`
@@ -2467,13 +2433,13 @@ ALTER TABLE `user_account`
 -- AUTO_INCREMENT for table `app_module`
 --
 ALTER TABLE `app_module`
-  MODIFY `app_module_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `app_module_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -2503,7 +2469,7 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`
@@ -2545,7 +2511,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`

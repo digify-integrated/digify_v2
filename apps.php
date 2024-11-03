@@ -61,7 +61,7 @@
                                                     $appModuleName = $row['app_module_name'];
                                                     $appModuleDescription = $row['app_module_description'];
                                                     $menuItemID = $row['menu_item_id'];
-                                                    $appLogo = $systemModel->checkImage($row['app_logo'], 'app module logo');
+                                                    $appLogo = $systemModel->checkImage(str_replace('../', './apps/', $row['app_logo'])  ?? null, 'app module logo');
 
                                                     $menuItemDetails = $menuItemModel->getMenuItem($menuItemID);
                                                     $menuItemURL = $menuItemDetails['menu_item_url'] ?? null;
