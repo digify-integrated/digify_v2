@@ -34,16 +34,16 @@
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
                                     if($newRecord){
-                                        require_once('apps/security/app-module/view/_app_module_new.php');
+                                        require_once('apps/settings/app-module/view/_app_module_new.php');
                                     }
                                     else if(!empty($detailID)){
-                                        require_once('apps/security/app-module/view/_app_module_details.php');
+                                        require_once('apps/settings/app-module/view/_app_module_details.php');
                                     }
                                     else if(isset($_GET['import']) && !empty($_GET['import'])){
                                         require_once('components/view/_import.php');
                                     }
                                     else{
-                                        require_once('apps/security/app-module/view/_app_module.php');
+                                        require_once('apps/settings/app-module/view/_app_module.php');
                                     }
                                 ?>
                             </div>
@@ -64,16 +64,16 @@
         $version = rand();
 
         if ($newRecord) {
-            $scriptFile = './apps/security/app-module/js/app-module-new.js';
+            $scriptFile = './apps/settings/app-module/js/app-module-new.js';
         } 
         elseif (!empty($detailID)) {
-            $scriptFile = './apps/security/app-module/js/app-module-details.js';
+            $scriptFile = './apps/settings/app-module/js/app-module-details.js';
         } 
         elseif (isset($_GET['import']) && !empty($_GET['import'])) {
             $scriptFile = './components/js/import.js'; 
         } 
         else {
-            $scriptFile = './apps/security/app-module/js/app-module.js';
+            $scriptFile = './apps/settings/app-module/js/app-module.js';
         }
 
         $scriptLink = '<script src="' . $scriptFile . '?v=' . $version . '"></script>';

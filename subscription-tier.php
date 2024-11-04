@@ -34,16 +34,16 @@
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
                                     if($newRecord){
-                                        require_once('apps/security/app-module/view/_app_module_new.php');
+                                        require_once('apps/subscription/subscription-tier/view/_subscription_tier_new.php');
                                     }
                                     else if(!empty($detailID)){
-                                        require_once('apps/security/app-module/view/_app_module_details.php');
+                                        require_once('apps/subscription/subscription-tier/view/_subscription_tier_details.php');
                                     }
                                     else if(isset($_GET['import']) && !empty($_GET['import'])){
                                         require_once('components/view/_import.php');
                                     }
                                     else{
-                                        require_once('apps/security/app-module/view/_app_module.php');
+                                        require_once('apps/subscription/subscription-tier/view/_subscription_tier.php');
                                     }
                                 ?>
                             </div>
@@ -64,16 +64,16 @@
         $version = rand();
 
         if ($newRecord) {
-            $scriptFile = './apps/security/app-module/js/app-module-new.js';
+            $scriptFile = './apps/subscription/subscription-tier/js/subscription-tier-new.js';
         } 
         elseif (!empty($detailID)) {
-            $scriptFile = './apps/security/app-module/js/app-module-details.js';
+            $scriptFile = './apps/subscription/subscription-tier/js/subscription-tier-details.js';
         } 
         elseif (isset($_GET['import']) && !empty($_GET['import'])) {
             $scriptFile = './components/js/import.js'; 
         } 
         else {
-            $scriptFile = './apps/security/app-module/js/app-module.js';
+            $scriptFile = './apps/subscription/subscription-tier/js/subscription-tier.js';
         }
 
         $scriptLink = '<script src="' . $scriptFile . '?v=' . $version . '"></script>';

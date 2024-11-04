@@ -1,6 +1,6 @@
 <?php
     require('components/configurations/config.php');
-    require('apps/security/authentication/model/authentication-model.php');
+    require('apps/settings/authentication/model/authentication-model.php');
     require('components/model/database-model.php');
     require('components/model/security-model.php');
 
@@ -93,6 +93,6 @@
     <?php require_once('components/view/_error_modal.php'); ?>
     <?php require_once('components/view/_required_js.php'); ?>
 
-    <script src="./apps/security/authentication/js/otp-verification.js?v=<?php echo rand(); ?>"></script>
+    <script src="./apps/settings/authentication/js/otp-verification.js?v=<?php echo rand(); ?>"></script>
 </body>
 </html>

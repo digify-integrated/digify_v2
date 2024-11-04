@@ -34,16 +34,16 @@
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
                                     if($newRecord){
-                                        require_once('apps/security/system-action/view/_system_action_new.php');
+                                        require_once('apps/settings/system-action/view/_system_action_new.php');
                                     }
                                     else if(!empty($detailID)){
-                                        require_once('apps/security/system-action/view/_system_action_details.php');
+                                        require_once('apps/settings/system-action/view/_system_action_details.php');
                                     }
                                     else if(isset($_GET['import']) && !empty($_GET['import'])){
                                         require_once('components/view/_import.php');
                                     }
                                     else{
-                                        require_once('apps/security/system-action/view/_system_action.php');
+                                        require_once('apps/settings/system-action/view/_system_action.php');
                                     }
                                 ?>
                             </div>
@@ -64,16 +64,16 @@
         $version = rand();
 
         if ($newRecord) {
-            $scriptFile = './apps/security/system-action/js/system-action-new.js';
+            $scriptFile = './apps/settings/system-action/js/system-action-new.js';
         } 
         elseif (!empty($detailID)) {
-            $scriptFile = './apps/security/system-action/js/system-action-details.js';
+            $scriptFile = './apps/settings/system-action/js/system-action-details.js';
         } 
         elseif (isset($_GET['import']) && !empty($_GET['import'])) {
             $scriptFile = './components/js/import.js'; 
         } 
         else {
-            $scriptFile = './apps/security/system-action/js/system-action.js';
+            $scriptFile = './apps/settings/system-action/js/system-action.js';
         }
 
         $scriptLink = '<script src="' . $scriptFile . '?v=' . $version . '"></script>';

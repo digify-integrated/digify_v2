@@ -1,24 +1,22 @@
-/* App Module Table */
+/* Subscription Tier Table */
 
-DROP TABLE IF EXISTS app_module;
-CREATE TABLE app_module (
-    app_module_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    app_module_name VARCHAR(100) NOT NULL,
-    app_module_description VARCHAR(500) NOT NULL,
-    app_logo VARCHAR(500),
-    menu_item_id INT UNSIGNED NOT NULL,
-    menu_item_name VARCHAR(100) NOT NULL,
+DROP TABLE IF EXISTS subscription_tier;
+CREATE TABLE subscription_tier (
+    subscription_tier_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    subscription_tier_name VARCHAR(100) NOT NULL,
+    subscription_tier_description VARCHAR(500) NOT NULL,
     order_sequence TINYINT(10) NOT NULL,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_log_by INT UNSIGNED DEFAULT 1,
     FOREIGN KEY (last_log_by) REFERENCES user_account(user_account_id)
 );
 
-CREATE INDEX app_module_index_app_module_id ON app_module(app_module_id);
-CREATE INDEX app_module_index_menu_item_id ON app_module(menu_item_id);
+CREATE INDEX subscription_tier_index_subscription_tier_id ON subscription_tier(subscription_tier_id);
 
-INSERT INTO app_module (app_module_id, app_module_name, app_module_description, app_logo, menu_item_id, menu_item_name, order_sequence, last_log_by) VALUES
-(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../security/app-module/image/logo/1/Pboex.png', 1, 'App Module', 100, 1),
-(2, 'Subscription', 'Generate subscription code and manage renewals', '../security/app-module/image/logo/2/FhZ0gHo.png', 10, 'Subscriber', 99, 1);
+INSERT INTO subscription_tier (subscription_tier_name, subscription_tier_description, order_sequence, last_log_by) VALUES
+('LaunchPad', 'A solid foundation for startups ready to take off, featuring essential tools for online presence.', 1, 1),
+('Accelerator', 'Aimed at propelling businesses forward with enhanced features for growth and engagement.', 2, 1),
+('Elevate', 'A powerful suite for businesses focused on optimizing their operations and driving performance.', 3, 1),
+('Infinity', 'A one-time investment for perpetual access to a comprehensive solution that adapts with your business needs.', 4, 1);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

@@ -34,16 +34,16 @@
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
                                     if($newRecord){
-                                        require_once('apps/security/role/view/_role_new.php');
+                                        require_once('apps/settings/role/view/_role_new.php');
                                     }
                                     else if(!empty($detailID)){
-                                        require_once('apps/security/role/view/_role_details.php');
+                                        require_once('apps/settings/role/view/_role_details.php');
                                     }
                                     else if(isset($_GET['import']) && !empty($_GET['import'])){
                                         require_once('components/view/_import.php');
                                     }
                                     else{
-                                        require_once('apps/security/role/view/_role.php');
+                                        require_once('apps/settings/role/view/_role.php');
                                     }
                                 ?>
                             </div>
@@ -64,16 +64,16 @@
         $version = rand();
 
         if ($newRecord) {
-            $scriptFile = './apps/security/role/js/role-new.js';
+            $scriptFile = './apps/settings/role/js/role-new.js';
         } 
         elseif (!empty($detailID)) {
-            $scriptFile = './apps/security/role/js/role-details.js';
+            $scriptFile = './apps/settings/role/js/role-details.js';
         } 
         elseif (isset($_GET['import']) && !empty($_GET['import'])) {
             $scriptFile = './components/js/import.js'; 
         } 
         else {
-            $scriptFile = './apps/security/role/js/role.js';
+            $scriptFile = './apps/settings/role/js/role.js';
         }
 
         $scriptLink = '<script src="' . $scriptFile . '?v=' . $version . '"></script>';

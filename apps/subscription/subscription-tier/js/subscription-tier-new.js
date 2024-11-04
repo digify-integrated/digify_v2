@@ -2,24 +2,19 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('menu item options');
-
-        if($('#app-module-form').length){
-            appModuleForm();
+        if($('#subscription-tier-form').length){
+            subscriptionTierForm();
         }
     });
 })(jQuery);
 
-function appModuleForm(){
-    $('#app-module-form').validate({
+function subscriptionTierForm(){
+    $('#subscription-tier-form').validate({
         rules: {
-            app_module_name: {
+            subscription_tier_name: {
                 required: true
             },
-            app_module_description: {
-                required: true
-            },
-            menu_item_id: {
+            subscription_tier_description: {
                 required: true
             },
             order_sequence: {
@@ -27,14 +22,11 @@ function appModuleForm(){
             }
         },
         messages: {
-            app_module_name: {
+            subscription_tier_name: {
                 required: 'Enter the display name'
             },
-            app_module_description: {
+            subscription_tier_description: {
                 required: 'Enter the description'
-            },
-            menu_item_id: {
-                required: 'Select the default page'
             },
             order_sequence: {
                 required: 'Enter the order sequence'
@@ -54,12 +46,12 @@ function appModuleForm(){
             $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
-            const transaction = 'add app module';
+            const transaction = 'add subscription tier';
             const page_link = document.getElementById('page-link').getAttribute('href');
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/security/app-module/controller/app-module-controller.php',
+                url: 'apps/subscription/subscription-tier/controller/subscription-tier-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -68,7 +60,7 @@ function appModuleForm(){
                 success: function (response) {
                     if (response.success) {
                         setNotification(response.title, response.message, response.messageType);
-                        window.location = page_link + '&id=' + response.appModuleID;
+                        window.location = page_link + '&id=' + response.subscriptionTierID;
                     }
                     else {
                         if (response.isInactive || response.notExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -91,30 +83,4 @@ function appModuleForm(){
             return false;
         }
     });
-}
-
-function generateDropdownOptions(type){
-    switch (type) {
-        case 'menu item options':
-            
-            $.ajax({
-                url: 'apps/security/menu-item/view/_menu_item_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type
-                },
-                success: function(response) {
-                    $('#menu_item_id').select2({
-                        data: response
-                    }).on('change', function (e) {
-                        $(this).valid()
-                    });
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                }
-            });
-            break;
-    }
 }

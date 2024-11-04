@@ -5,32 +5,26 @@ require_once '../../../../components/configurations/config.php';
 require_once '../../../../components/model/database-model.php';
 require_once '../../../../components/model/security-model.php';
 require_once '../../../../components/model/system-model.php';
-require_once '../../authentication/model/authentication-model.php';
-require_once '../../app-module/model/app-module-model.php';
-require_once '../../security-setting/model/security-setting-model.php';
-require_once '../../menu-item/model/menu-item-model.php';
-require_once '../../upload-setting/model/upload-setting-model.php';
+require_once '../../../settings/authentication/model/authentication-model.php';
+require_once '../../subscription-tier/model/subscription-tier-model.php';
+require_once '../../../settings/security-setting/model/security-setting-model.php';
 
 require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new AppModuleController(new AppModuleModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new MenuItemModel(new DatabaseModel), new UploadSettingModel(new DatabaseModel), new SecurityModel(), new SystemModel());
+$controller = new SubscriptionTierController(new SubscriptionTierModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
-class AppModuleController {
-    private $appModuleModel;
+class SubscriptionTierController {
+    private $subscriptionTierModel;
     private $authenticationModel;
-    private $menuItemModel;
-    private $uploadSettingModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(AppModuleModel $appModuleModel, AuthenticationModel $authenticationModel, MenuItemModel $menuItemModel, UploadSettingModel $uploadSettingModel, SecurityModel $securityModel, SystemModel $systemModel) {
-        $this->appModuleModel = $appModuleModel;
+    public function __construct(SubscriptionTierModel $subscriptionTierModel, AuthenticationModel $authenticationModel, SecurityModel $securityModel, SystemModel $systemModel) {
+        $this->subscriptionTierModel = $subscriptionTierModel;
         $this->authenticationModel = $authenticationModel;
-        $this->menuItemModel = $menuItemModel;
-        $this->uploadSettingModel = $uploadSettingModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
     }
@@ -106,23 +100,23 @@ class AppModuleController {
             $transaction = isset($_POST['transaction']) ? $_POST['transaction'] : null;
 
             switch ($transaction) {
-                case 'add app module':
-                    $this->addAppModule();
+                case 'add subscription tier':
+                    $this->addSubscriptionTier();
                     break;
-                case 'update app module':
-                    $this->updateAppModule();
+                case 'update subscription tier':
+                    $this->updateSubscriptionTier();
                     break;
                 case 'update app logo':
                     $this->updateAppLogo();
                     break;
-                case 'get app module details':
-                    $this->getAppModuleDetails();
+                case 'get subscription tier details':
+                    $this->getSubscriptionTierDetails();
                     break;
-                case 'delete app module':
-                    $this->deleteAppModule();
+                case 'delete subscription tier':
+                    $this->deleteSubscriptionTier();
                     break;
-                case 'delete multiple app module':
-                    $this->deleteMultipleAppModule();
+                case 'delete multiple subscription tier':
+                    $this->deleteMultipleSubscriptionTier();
                     break;
                 case 'export data':
                     $this->exportData();
@@ -147,27 +141,23 @@ class AppModuleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function addAppModule() {
+    public function addSubscriptionTier() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
 
         $userID = $_SESSION['user_account_id'];
-        $appModuleName = filter_input(INPUT_POST, 'app_module_name', FILTER_SANITIZE_STRING);
-        $appModuleDescription = filter_input(INPUT_POST, 'app_module_description', FILTER_SANITIZE_STRING);
-        $menuItemID = filter_input(INPUT_POST, 'menu_item_id', FILTER_VALIDATE_INT);
+        $subscriptionTierName = filter_input(INPUT_POST, 'subscription_tier_name', FILTER_SANITIZE_STRING);
+        $subscriptionTierDescription = filter_input(INPUT_POST, 'subscription_tier_description', FILTER_SANITIZE_STRING);
         $orderSequence = filter_input(INPUT_POST, 'order_sequence', FILTER_VALIDATE_INT);
-
-        $menuItemDetails = $this->menuItemModel->getMenuItem($menuItemID);
-        $menuItemName = $menuItemDetails['menu_item_name'];
         
-        $appModuleID = $this->appModuleModel->saveAppModule(null, $appModuleName, $appModuleDescription, $menuItemID, $menuItemName, $orderSequence, $userID);
+        $subscriptionTierID = $this->subscriptionTierModel->saveSubscriptionTier(null, $subscriptionTierName, $subscriptionTierDescription, $orderSequence, $userID);
     
         $response = [
             'success' => true,
-            'appModuleID' => $this->securityModel->encryptData($appModuleID),
-            'title' => 'Save App Module',
-            'message' => 'The app module has been saved successfully.',
+            'subscriptionTierID' => $this->securityModel->encryptData($subscriptionTierID),
+            'title' => 'Save Subscription Tier',
+            'message' => 'The subscription tier has been saved successfully.',
             'messageType' => 'success'
         ];
             
@@ -181,27 +171,26 @@ class AppModuleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function updateAppModule() {
+    public function updateSubscriptionTier() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
         
         $userID = $_SESSION['user_account_id'];
-        $appModuleID = filter_input(INPUT_POST, 'app_module_id', FILTER_VALIDATE_INT);
-        $appModuleName = filter_input(INPUT_POST, 'app_module_name', FILTER_SANITIZE_STRING);
-        $appModuleDescription = filter_input(INPUT_POST, 'app_module_description', FILTER_SANITIZE_STRING);
-        $menuItemID = filter_input(INPUT_POST, 'menu_item_id', FILTER_VALIDATE_INT);
+        $subscriptionTierID = filter_input(INPUT_POST, 'subscription_tier_id', FILTER_VALIDATE_INT);
+        $subscriptionTierName = filter_input(INPUT_POST, 'subscription_tier_name', FILTER_SANITIZE_STRING);
+        $subscriptionTierDescription = filter_input(INPUT_POST, 'subscription_tier_description', FILTER_SANITIZE_STRING);
         $orderSequence = filter_input(INPUT_POST, 'order_sequence', FILTER_VALIDATE_INT);
     
-        $checkAppModuleExist = $this->appModuleModel->checkAppModuleExist($appModuleID);
-        $total = $checkAppModuleExist['total'] ?? 0;
+        $checkSubscriptionTierExist = $this->subscriptionTierModel->checkSubscriptionTierExist($subscriptionTierID);
+        $total = $checkSubscriptionTierExist['total'] ?? 0;
 
         if($total === 0){
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Save App Module',
-                'message' => 'The app module does not exist.',
+                'title' => 'Save Subscription Tier',
+                'message' => 'The subscription tier does not exist.',
                 'messageType' => 'error'
             ];
             
@@ -209,176 +198,15 @@ class AppModuleController {
             exit;
         }
 
-        $menuItemDetails = $this->menuItemModel->getMenuItem($menuItemID);
-        $menuItemName = $menuItemDetails['menu_item_name'];
-
-        $this->appModuleModel->saveAppModule($appModuleID, $appModuleName, $appModuleDescription, $menuItemID, $menuItemName, $orderSequence, $userID);
+        $this->subscriptionTierModel->saveSubscriptionTier($subscriptionTierID, $subscriptionTierName, $subscriptionTierDescription, $orderSequence, $userID);
             
         $response = [
             'success' => true,
-            'title' => 'Save App Module',
-            'message' => 'The app module has been saved successfully.',
+            'title' => 'Save Subscription Tier',
+            'message' => 'The subscription tier has been saved successfully.',
             'messageType' => 'success'
         ];
         
-        echo json_encode($response);
-        exit;
-    }
-    # -------------------------------------------------------------
-
-    # -------------------------------------------------------------
-    public function updateAppLogo() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return;
-        }
-
-        $userID = $_SESSION['user_account_id'];
-
-        $appModuleID = filter_input(INPUT_POST, 'app_module_id', FILTER_VALIDATE_INT);
-
-        $checkAppModuleExist = $this->appModuleModel->checkAppModuleExist($appModuleID);
-        $total = $checkAppModuleExist['total'] ?? 0;
-
-        if($total === 0){
-            $response = [
-                'success' => false,
-                'notExist' => true,
-                'title' => 'Update App Logo',
-                'message' => 'The app logo does not exist.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-
-        $appLogoFileName = $_FILES['app_logo']['name'];
-        $appLogoFileSize = $_FILES['app_logo']['size'];
-        $appLogoFileError = $_FILES['app_logo']['error'];
-        $appLogoTempName = $_FILES['app_logo']['tmp_name'];
-        $appLogoFileExtension = explode('.', $appLogoFileName);
-        $appLogoActualFileExtension = strtolower(end($appLogoFileExtension));
-
-        $uploadSetting = $this->uploadSettingModel->getUploadSetting(1);
-        $maxFileSize = $uploadSetting['max_file_size'];
-
-        $uploadSettingFileExtension = $this->uploadSettingModel->getUploadSettingFileExtension(1);
-        $allowedFileExtensions = [];
-
-        foreach ($uploadSettingFileExtension as $row) {
-            $allowedFileExtensions[] = $row['file_extension'];
-        }
-
-        if (!in_array($appLogoActualFileExtension, $allowedFileExtensions)) {
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'The file uploaded is not supported.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-            
-        if(empty($appLogoTempName)){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'Please choose the app logo.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-            
-        if($appLogoFileError){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'An error occurred while uploading the file.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-            
-        if($appLogoFileSize > ($maxFileSize * 1024)){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'The app logo exceeds the maximum allowed size of ' . number_format($maxFileSize) . ' kb.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-
-        $fileName = $this->securityModel->generateFileName();
-        $fileNew = $fileName . '.' . $appLogoActualFileExtension;
-            
-        define('PROJECT_BASE_DIR', dirname(__DIR__));
-        define('APP_LOGO_DIR', 'image/logo/');
-
-        $directory = PROJECT_BASE_DIR . '/'. APP_LOGO_DIR. $appModuleID. '/';
-        $fileDestination = $directory. $fileNew;
-        $filePath = '../security/app-module/image/logo/'. $appModuleID . '/' . $fileNew;
-
-        $directoryChecker = $this->securityModel->directoryChecker(str_replace('./', '../', $directory));
-
-        if(!$directoryChecker){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo Error',
-                'message' => $directoryChecker,
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-
-        $appModuleDetails = $this->appModuleModel->getAppModule($appModuleID);
-        $appLogoPath = !empty($appModuleDetails['app_logo']) ? str_replace('../', '../../../../apps/', $appModuleDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Update App Logo',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
-        if(!move_uploaded_file($appLogoTempName, $fileDestination)){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'The app logo cannot be uploaded due to an error.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-
-        $this->appModuleModel->updateAppLogo($appModuleID, $filePath, $userID);
-
-        $response = [
-            'success' => true,
-            'title' => 'Update App Logo',
-            'message' => 'The app logo has been updated successfully.',
-            'messageType' => 'success'
-        ];
-
         echo json_encode($response);
         exit;
     }
@@ -389,22 +217,22 @@ class AppModuleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function deleteAppModule() {
+    public function deleteSubscriptionTier() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
 
-        $appModuleID = filter_input(INPUT_POST, 'app_module_id', FILTER_VALIDATE_INT);
+        $subscriptionTierID = filter_input(INPUT_POST, 'subscription_tier_id', FILTER_VALIDATE_INT);
         
-        $checkAppModuleExist = $this->appModuleModel->checkAppModuleExist($appModuleID);
-        $total = $checkAppModuleExist['total'] ?? 0;
+        $checkSubscriptionTierExist = $this->subscriptionTierModel->checkSubscriptionTierExist($subscriptionTierID);
+        $total = $checkSubscriptionTierExist['total'] ?? 0;
 
         if($total === 0){
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Delete App Module',
-                'message' => 'The app module does not exist.',
+                'title' => 'Delete Subscription Tier',
+                'message' => 'The subscription tier does not exist.',
                 'messageType' => 'error'
             ];
                 
@@ -412,29 +240,12 @@ class AppModuleController {
             exit;
         }
 
-        $appModuleDetails = $this->appModuleModel->getAppModule($appModuleID);
-        $appLogoPath = !empty($appModuleDetails['app_logo']) ? str_replace('../', '../../../../apps/', $appModuleDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete App Module',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
-        $this->appModuleModel->deleteAppModule($appModuleID);
+        $this->subscriptionTierModel->deleteSubscriptionTier($subscriptionTierID);
                 
         $response = [
             'success' => true,
-            'title' => 'Delete App Module',
-            'message' => 'The app module has been deleted successfully.',
+            'title' => 'Delete Subscription Tier',
+            'message' => 'The subscription tier has been deleted successfully.',
             'messageType' => 'success'
         ];
             
@@ -444,44 +255,27 @@ class AppModuleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function deleteMultipleAppModule() {
+    public function deleteMultipleSubscriptionTier() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
 
-        if (isset($_POST['app_module_id']) && !empty($_POST['app_module_id'])) {
-            $appModuleIDs = $_POST['app_module_id'];
+        if (isset($_POST['subscription_tier_id']) && !empty($_POST['subscription_tier_id'])) {
+            $subscriptionTierIDs = $_POST['subscription_tier_id'];
     
-            foreach($appModuleIDs as $appModuleID){
-                $checkAppModuleExist = $this->appModuleModel->checkAppModuleExist($appModuleID);
-                $total = $checkAppModuleExist['total'] ?? 0;
+            foreach($subscriptionTierIDs as $subscriptionTierID){
+                $checkSubscriptionTierExist = $this->subscriptionTierModel->checkSubscriptionTierExist($subscriptionTierID);
+                $total = $checkSubscriptionTierExist['total'] ?? 0;
 
                 if($total > 0){
-                    $appModuleDetails = $this->appModuleModel->getAppModule($appModuleID);
-                    $appLogoPath = !empty($appModuleDetails['app_logo']) ? str_replace('../', '../../../../apps/', $appModuleDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple App Module',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
-                    $this->appModuleModel->deleteAppModule($appModuleID);
+                    $this->subscriptionTierModel->deleteSubscriptionTier($subscriptionTierID);
                 }
             }
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple App Module',
-                'message' => 'The selected app modules have been deleted successfully.',
+                'title' => 'Delete Multiple Subscription Tier',
+                'message' => 'The selected subscription tiers have been deleted successfully.',
                 'messageType' => 'success'
             ];
             
@@ -518,7 +312,7 @@ class AppModuleController {
             $tableColumns = $_POST['table_column'];
             
             if ($exportTo == 'csv') {
-                $filename = "app_module_export_" . date('Y-m-d_H-i-s') . ".csv";
+                $filename = "subscription_tier_export_" . date('Y-m-d_H-i-s') . ".csv";
             
                 header('Content-Type: text/csv');
                 header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -530,10 +324,10 @@ class AppModuleController {
                 $columns = implode(", ", $tableColumns);
                 
                 $ids = implode(",", array_map('intval', $exportIDs));
-                $appModuleDetails = $this->appModuleModel->exportAppModule($columns, $ids);
+                $subscriptionTierDetails = $this->subscriptionTierModel->exportSubscriptionTier($columns, $ids);
 
-                foreach ($appModuleDetails as $appModuleDetail) {
-                    fputcsv($output, $appModuleDetail);
+                foreach ($subscriptionTierDetails as $subscriptionTierDetail) {
+                    fputcsv($output, $subscriptionTierDetail);
                 }
 
                 fclose($output);
@@ -541,7 +335,7 @@ class AppModuleController {
             }
             else {
                 ob_start();
-                $filename = "app_module_export_" . date('Y-m-d_H-i-s') . ".xlsx";
+                $filename = "subscription_tier_export_" . date('Y-m-d_H-i-s') . ".xlsx";
 
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
@@ -555,13 +349,13 @@ class AppModuleController {
                 $columns = implode(", ", $tableColumns);
                 
                 $ids = implode(",", array_map('intval', $exportIDs));
-                $appModuleDetails = $this->appModuleModel->exportAppModule($columns, $ids);
+                $subscriptionTierDetails = $this->subscriptionTierModel->exportSubscriptionTier($columns, $ids);
 
                 $rowNumber = 2;
-                foreach ($appModuleDetails as $appModuleDetail) {
+                foreach ($subscriptionTierDetails as $subscriptionTierDetail) {
                     $colIndex = 'A';
                     foreach ($tableColumns as $column) {
-                        $sheet->setCellValue($colIndex . $rowNumber, $appModuleDetail[$column]);
+                        $sheet->setCellValue($colIndex . $rowNumber, $subscriptionTierDetail[$column]);
                         $colIndex++;
                     }
                     $rowNumber++;
@@ -597,23 +391,23 @@ class AppModuleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function getAppModuleDetails() {
+    public function getSubscriptionTierDetails() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
     
         $userID = $_SESSION['user_account_id'];
-        $appModuleID = filter_input(INPUT_POST, 'app_module_id', FILTER_VALIDATE_INT);
+        $subscriptionTierID = filter_input(INPUT_POST, 'subscription_tier_id', FILTER_VALIDATE_INT);
 
-        $checkAppModuleExist = $this->appModuleModel->checkAppModuleExist($appModuleID);
-        $total = $checkAppModuleExist['total'] ?? 0;
+        $checkSubscriptionTierExist = $this->subscriptionTierModel->checkSubscriptionTierExist($subscriptionTierID);
+        $total = $checkSubscriptionTierExist['total'] ?? 0;
 
         if($total === 0){
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Get App Module Details',
-                'message' => 'The app module does not exist.',
+                'title' => 'Get Subscription Tier Details',
+                'message' => 'The subscription tier does not exist.',
                 'messageType' => 'error'
             ];
             
@@ -621,17 +415,12 @@ class AppModuleController {
             exit;
         }
 
-        $appModuleDetails = $this->appModuleModel->getAppModule($appModuleID);
-        $appLogo = $this->systemModel->checkImage(str_replace('../', './apps/', $appModuleDetails['app_logo'])  ?? null, 'app module logo');
-
+        $subscriptionTierDetails = $this->subscriptionTierModel->getSubscriptionTier($subscriptionTierID);
         $response = [
             'success' => true,
-            'appModuleName' => $appModuleDetails['app_module_name'] ?? null,
-            'appModuleDescription' => $appModuleDetails['app_module_description'] ?? null,
-            'menuItemID' => $appModuleDetails['menu_item_id'] ?? null,
-            'menuItemName' => $appModuleDetails['menu_item_name'] ?? null,
-            'orderSequence' => $appModuleDetails['order_sequence'] ?? null,
-            'appLogo' => $appLogo
+            'subscriptionTierName' => $subscriptionTierDetails['subscription_tier_name'] ?? null,
+            'subscriptionTierDescription' => $subscriptionTierDetails['subscription_tier_description'] ?? null,
+            'orderSequence' => $subscriptionTierDetails['order_sequence'] ?? null
         ];
 
         echo json_encode($response);

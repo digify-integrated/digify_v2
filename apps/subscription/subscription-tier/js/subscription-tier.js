@@ -2,17 +2,17 @@
     'use strict';
 
     $(function() {
-        if($('#app-module-table').length){
-            appModuleTable('#app-module-table');
+        if($('#subscription-tier-table').length){
+            subscriptionTierTable('#subscription-tier-table');
         }
 
-        $(document).on('click','.delete-app-module',function() {
-            const app_module_id = $(this).data('app-module-id');
-            const transaction = 'delete app module';
+        $(document).on('click','.delete-subscription-tier',function() {
+            const subscription_tier_id = $(this).data('subscription-tier-id');
+            const transaction = 'delete subscription tier';
     
             Swal.fire({
-                title: 'Confirm App Module Deletion',
-                text: 'Are you sure you want to delete this app module?',
+                title: 'Confirm Subscription Tier Deletion',
+                text: 'Are you sure you want to delete this subscription tier?',
                 icon: 'warning',
                 showCancelButton: !0,
                 confirmButtonText: 'Delete',
@@ -26,16 +26,16 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: 'components/app-module/controller/app-module-controller.php',
+                        url: 'apps/subscription/subscription-tier/controller/subscription-tier-controller.php',
                         dataType: 'json',
                         data: {
-                            app_module_id : app_module_id, 
+                            subscription_tier_id : subscription_tier_id, 
                             transaction : transaction
                         },
                         success: function (response) {
                             if (response.success) {
                                 showNotification(response.title, response.message, response.messageType);
-                                reloadDatatable('#app-module-table');
+                                reloadDatatable('#subscription-tier-table');
                             }
                             else {
                                 if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -44,7 +44,7 @@
                                 }
                                 else if (response.notExist) {
                                     setNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#app-module-table');
+                                    reloadDatatable('#subscription-tier-table');
                                 }
                                 else {
                                     showNotification(response.title, response.message, response.messageType);
@@ -64,20 +64,20 @@
             });
         });
 
-        $(document).on('click','#delete-app-module',function() {
-            let app_module_id = [];
-            const transaction = 'delete multiple app module';
+        $(document).on('click','#delete-subscription-tier',function() {
+            let subscription_tier_id = [];
+            const transaction = 'delete multiple subscription tier';
 
             $('.datatable-checkbox-children').each((index, element) => {
                 if ($(element).is(':checked')) {
-                    app_module_id.push(element.value);
+                    subscription_tier_id.push(element.value);
                 }
             });
     
-            if(app_module_id.length > 0){
+            if(subscription_tier_id.length > 0){
                 Swal.fire({
-                    title: 'Confirm Multiple App Modules Deletion',
-                    text: 'Are you sure you want to delete these app modules?',
+                    title: 'Confirm Multiple Subscription Tiers Deletion',
+                    text: 'Are you sure you want to delete these subscription tiers?',
                     icon: 'warning',
                     showCancelButton: !0,
                     confirmButtonText: 'Delete',
@@ -91,16 +91,16 @@
                     if (result.value) {
                         $.ajax({
                             type: 'POST',
-                            url: 'apps/security/app-module/controller/app-module-controller.php',
+                            url: 'apps/subscription/subscription-tier/controller/subscription-tier-controller.php',
                             dataType: 'json',
                             data: {
-                                app_module_id: app_module_id,
+                                subscription_tier_id: subscription_tier_id,
                                 transaction : transaction
                             },
                             success: function (response) {
                                 if (response.success) {
                                     showNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#app-module-table');
+                                    reloadDatatable('#subscription-tier-table');
                                 }
                                 else {
                                     if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -125,53 +125,55 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple App Module Error', 'Please select the app modules you wish to delete.', 'danger');
+                showNotification('Deletion Multiple Subscription Tier Error', 'Please select the subscription tiers you wish to delete.', 'danger');
             }
         });
 
         $(document).on('click','#export-data',function() {
-            generateExportColumns('app_module');
+            generateExportColumns('subscription_tier');
         });
 
         $(document).on('click','#submit-export',function() {
-            exportData('app_module');
+            exportData('subscription_tier');
         });
 
         $('#datatable-search').on('keyup', function () {
-            var table = $('#app-module-table').DataTable();
+            var table = $('#subscription-tier-table').DataTable();
             table.search(this.value).draw();
         });
 
         $('#datatable-length').on('change', function() {
-            var table = $('#app-module-table').DataTable();
+            var table = $('#subscription-tier-table').DataTable();
             var length = $(this).val(); 
             table.page.len(length).draw();
         });
     });
 })(jQuery);
 
-function appModuleTable(datatable_name) {
+function subscriptionTierTable(datatable_name) {
     toggleHideActionDropdown();
 
-    const type = 'app module table';
+    const type = 'subscription tier table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
 
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'APP_MODULE_NAME' }
+        { data: 'SUBSCRIPTION_TIER_NAME' },
+        { data: 'ORDER_SEQUENCE' }
     ];
 
     const columnDefs = [
         { width: '5%', bSortable: false, targets: 0, responsivePriority: 1 },
-        { width: 'auto', targets: 1, responsivePriority: 2 }
+        { width: 'auto', targets: 1, responsivePriority: 2 },
+        { width: 'auto', targets: 2, responsivePriority: 3 }
     ];
 
     const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
 
     const settings = {
         ajax: { 
-            url: 'apps/security/app-module/view/_app_module_generation.php',
+            url: 'apps/subscription/subscription-tier/view/_subscription_tier_generation.php',
             method: 'POST',
             dataType: 'json',
             data: {
@@ -185,7 +187,7 @@ function appModuleTable(datatable_name) {
             }
         },
         lengthChange: false,
-        order: [[1, 'asc']],
+        order: [[2, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,

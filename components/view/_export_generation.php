@@ -4,7 +4,7 @@ require('../../components/configurations/config.php');
 require('../../components/model/database-model.php');
 require('../../components/model/system-model.php');
 require('../../components/model/security-model.php');
-require('../../apps/security/authentication/model/authentication-model.php');
+require('../../apps/settings/authentication/model/authentication-model.php');
 
 $databaseModel = new DatabaseModel();
 $systemModel = new SystemModel();

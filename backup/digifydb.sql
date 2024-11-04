@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 03, 2024 at 02:13 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Nov 04, 2024 at 10:31 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -116,6 +116,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkAppModuleExist` (IN `p_app_mod
     WHERE app_module_id = p_app_module_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkBillingCycleExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkBillingCycleExist` (IN `p_billing_cycle_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM billing_cycle
+    WHERE billing_cycle_id = p_billing_cycle_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkLoginCredentialsExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkLoginCredentialsExist` (IN `p_user_account_id` INT, IN `p_credentials` VARCHAR(255))   BEGIN
     SELECT COUNT(*) AS total
@@ -167,6 +174,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkRoleUserAccountExist` (IN `p_r
     WHERE role_user_account_id = p_role_user_account_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkSubscriptionTierExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkSubscriptionTierExist` (IN `p_subscription_tier_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM subscription_tier
+    WHERE subscription_tier_id = p_subscription_tier_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkSystemActionAccessRights`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkSystemActionAccessRights` (IN `p_user_account_id` INT, IN `p_system_action_id` INT)   BEGIN
     SELECT COUNT(role_id) AS total
@@ -193,6 +207,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteAppModule` (IN `p_app_module_
     START TRANSACTION;
 
     DELETE FROM app_module WHERE app_module_id = p_app_module_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteBillingCycle`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteBillingCycle` (IN `p_billing_cycle_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM billing_cycle WHERE billing_cycle_id = p_billing_cycle_id;
 
     COMMIT;
 END$$
@@ -285,6 +313,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteRoleUserAccount` (IN `p_role_
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteSubscriptionTier`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteSubscriptionTier` (IN `p_subscription_tier_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM subscription_tier WHERE subscription_tier_id = p_subscription_tier_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `deleteSystemAction`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteSystemAction` (IN `p_system_action_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -325,6 +367,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateAppModuleTable` ()   BEGIN
 	SELECT app_module_id, app_module_name, app_module_description, app_logo, order_sequence 
     FROM app_module 
     ORDER BY app_module_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateBillingCycleOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBillingCycleOptions` ()   BEGIN
+	SELECT billing_cycle_id, billing_cycle_name 
+    FROM billing_cycle 
+    ORDER BY billing_cycle_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateBillingCycleTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBillingCycleTable` ()   BEGIN
+	SELECT billing_cycle_id, billing_cycle_name, billing_period_value, billing_period_unit, auto_closing 
+    FROM billing_cycle 
+    ORDER BY billing_cycle_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateExportOption`$$
@@ -496,6 +552,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateRoleUserAccountTable` (IN `
     ORDER BY file_as;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateSubscriptionTierOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateSubscriptionTierOptions` ()   BEGIN
+	SELECT subscription_tier_id, subscription_tier_name 
+    FROM subscription_tier 
+    ORDER BY subscription_tier_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateSubscriptionTierTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateSubscriptionTierTable` ()   BEGIN
+	SELECT subscription_tier_id, subscription_tier_name, subscription_tier_description, order_sequence 
+    FROM subscription_tier 
+    ORDER BY subscription_tier_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateSystemActionAssignedRoleTable`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateSystemActionAssignedRoleTable` (IN `p_system_action_id` INT)   BEGIN
     SELECT role_system_action_permission_id, role_name, system_action_access 
@@ -559,6 +629,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getAppModule` (IN `p_app_module_id`
 	WHERE app_module_id = p_app_module_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getBillingCycle`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getBillingCycle` (IN `p_billing_cycle_id` INT)   BEGIN
+	SELECT * FROM billing_cycle
+	WHERE billing_cycle_id = p_billing_cycle_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getEmailNotificationTemplate`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmailNotificationTemplate` (IN `p_notification_setting_id` INT)   BEGIN
 	SELECT * FROM notification_setting_email_template
@@ -615,6 +691,12 @@ DROP PROCEDURE IF EXISTS `getSecuritySetting`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getSecuritySetting` (IN `p_security_setting_id` INT)   BEGIN
 	SELECT * FROM security_setting
 	WHERE security_setting_id = p_security_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getSubscriptionTier`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getSubscriptionTier` (IN `p_subscription_tier_id` INT)   BEGIN
+	SELECT * FROM subscription_tier
+	WHERE subscription_tier_id = p_subscription_tier_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getSystemAction`$$
@@ -721,6 +803,35 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveAppModule` (IN `p_app_module_id
         WHERE app_module_id = p_app_module_id;
 
         SET p_new_app_module_id = p_app_module_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveBillingCycle`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBillingCycle` (IN `p_billing_cycle_id` INT, IN `p_billing_cycle_name` VARCHAR(100), IN `p_billing_period_value` INT, IN `p_billing_period_unit` VARCHAR(50), IN `p_auto_closing` INT, IN `p_last_log_by` INT, OUT `p_new_billing_cycle_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_billing_cycle_id IS NULL OR NOT EXISTS (SELECT 1 FROM billing_cycle WHERE billing_cycle_id = p_billing_cycle_id) THEN
+        INSERT INTO billing_cycle (billing_cycle_name, billing_period_value, billing_period_unit, auto_closing, last_log_by) 
+        VALUES(p_billing_cycle_name, p_billing_period_value, p_billing_period_unit, p_auto_closing, p_last_log_by);
+        
+        SET p_new_billing_cycle_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE billing_cycle
+        SET billing_cycle_name = p_billing_cycle_name,
+            billing_period_value = p_billing_period_value,
+            billing_period_unit = p_billing_period_unit,
+            auto_closing = p_auto_closing,
+            last_log_by = p_last_log_by
+        WHERE billing_cycle_id = p_billing_cycle_id;
+
+        SET p_new_billing_cycle_id = p_billing_cycle_id;
     END IF;
 
     COMMIT;
@@ -857,6 +968,34 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveRole` (IN `p_role_id` INT, IN `
         WHERE role_id = p_role_id;
 
         SET p_new_role_id = p_role_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveSubscriptionTier`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveSubscriptionTier` (IN `p_subscription_tier_id` INT, IN `p_subscription_tier_name` VARCHAR(100), IN `p_subscription_tier_description` VARCHAR(500), IN `p_order_sequence` TINYINT(10), IN `p_last_log_by` INT, OUT `p_new_subscription_tier_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_subscription_tier_id IS NULL OR NOT EXISTS (SELECT 1 FROM subscription_tier WHERE subscription_tier_id = p_subscription_tier_id) THEN
+        INSERT INTO subscription_tier (subscription_tier_name, subscription_tier_description, order_sequence, last_log_by) 
+        VALUES(p_subscription_tier_name, p_subscription_tier_description, p_order_sequence, p_last_log_by);
+        
+        SET p_new_subscription_tier_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE subscription_tier
+        SET subscription_tier_name = p_subscription_tier_name,
+            subscription_tier_description = p_subscription_tier_description,
+            order_sequence = p_order_sequence,
+            last_log_by = p_last_log_by
+        WHERE subscription_tier_id = p_subscription_tier_id;
+
+        SET p_new_subscription_tier_id = p_subscription_tier_id;
     END IF;
 
     COMMIT;
@@ -1153,8 +1292,8 @@ CREATE TABLE `app_module` (
 --
 
 INSERT INTO `app_module` (`app_module_id`, `app_module_name`, `app_module_description`, `app_logo`, `menu_item_id`, `menu_item_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../security/app-module/image/logo/1/Pboex.png', 1, 'App Module', 100, '2024-11-03 20:44:42', 1),
-(2, 'Subscription', 'Generate subscription code and manage renewals', '../security/app-module/image/logo/2/FhZ0gHo.png', 10, 'Subscriber', 99, '2024-11-03 20:44:42', 1);
+(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../settings/app-module/image/logo/1/Pboex.png', 1, 'App Module', 100, '2024-11-03 20:44:42', 1),
+(2, 'Subscription', 'Generate subscription code and manage renewals', '../settings/app-module/image/logo/2/FhZ0gHo.png', 10, 'Subscriber', 99, '2024-11-03 20:44:42', 1);
 
 -- --------------------------------------------------------
 
@@ -1178,7 +1317,80 @@ CREATE TABLE `audit_log` (
 --
 
 INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `changed_by`, `changed_at`, `created_date`) VALUES
-(1, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-01 18:50:30 -> 2024-11-03 19:24:29<br/>', 1, '2024-11-03 19:24:29', '2024-11-03 19:24:29');
+(1, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-01 18:50:30 -> 2024-11-03 19:24:29<br/>', 1, '2024-11-03 19:24:29', '2024-11-03 19:24:29'),
+(2, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-03 19:24:29 -> 2024-11-04 08:47:35<br/>', 1, '2024-11-04 08:47:35', '2024-11-04 08:47:35'),
+(3, 'subscription_tier', 5, 'Subscription tier created.', 2, '2024-11-04 12:32:25', '2024-11-04 12:32:25'),
+(4, 'subscription_tier', 5, 'Subscription tier changed.<br/><br/>Subscription Tier Name: asd -> 123123<br/>Subscription Tier Description: asd -> asd123123<br/>Order Sequence: 12 -> 127<br/>', 2, '2024-11-04 12:32:37', '2024-11-04 12:32:37'),
+(5, 'subscription_tier', 6, 'Subscription tier created.', 2, '2024-11-04 12:59:21', '2024-11-04 12:59:21'),
+(6, 'subscription_tier', 6, 'Subscription tier created.', 2, '2024-11-04 13:43:02', '2024-11-04 13:43:02'),
+(7, 'subscription_tier', 6, 'Subscription tier created.', 2, '2024-11-04 13:43:23', '2024-11-04 13:43:23');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `billing_cycle`
+--
+
+DROP TABLE IF EXISTS `billing_cycle`;
+CREATE TABLE `billing_cycle` (
+  `billing_cycle_id` int(10) UNSIGNED NOT NULL,
+  `billing_cycle_name` varchar(100) NOT NULL,
+  `billing_period_value` int(11) NOT NULL,
+  `billing_period_unit` varchar(50) NOT NULL,
+  `auto_closing` int(11) NOT NULL DEFAULT 0,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `billing_cycle`
+--
+
+INSERT INTO `billing_cycle` (`billing_cycle_id`, `billing_cycle_name`, `billing_period_value`, `billing_period_unit`, `auto_closing`, `created_date`, `last_log_by`) VALUES
+(1, 'Monthly', 1, 'Months', 15, '2024-11-04 15:05:24', 1),
+(2, 'Yearly', 1, 'Years', 15, '2024-11-04 15:05:24', 1);
+
+--
+-- Triggers `billing_cycle`
+--
+DROP TRIGGER IF EXISTS `billing_cycle_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `billing_cycle_trigger_insert` AFTER INSERT ON `billing_cycle` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Billing cycle created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('billing_cycle', NEW.billing_cycle_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `billing_cycle_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `billing_cycle_trigger_update` AFTER UPDATE ON `billing_cycle` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Billing cycle changed.<br/><br/>';
+
+    IF NEW.billing_cycle_name <> OLD.billing_cycle_name THEN
+        SET audit_log = CONCAT(audit_log, "Billing Cycle Name: ", OLD.billing_cycle_name, " -> ", NEW.billing_cycle_name, "<br/>");
+    END IF;
+
+    IF NEW.billing_period_value <> OLD.billing_period_value THEN
+        SET audit_log = CONCAT(audit_log, "Billing Period Value: ", OLD.billing_period_value, " -> ", NEW.billing_period_value, "<br/>");
+    END IF;
+
+    IF NEW.billing_period_unit <> OLD.billing_period_unit THEN
+        SET audit_log = CONCAT(audit_log, "Billing Period Unit: ", OLD.billing_period_unit, " -> ", NEW.billing_period_unit, "<br/>");
+    END IF;
+
+    IF NEW.auto_closing <> OLD.auto_closing THEN
+        SET audit_log = CONCAT(audit_log, "Auto Closing: ", OLD.auto_closing, " Days -> ", NEW.auto_closing, " Days<br/>");
+    END IF;
+    
+    IF audit_log <> 'Billing cycle changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('billing_cycle', NEW.billing_cycle_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -1425,19 +1637,19 @@ CREATE TABLE `menu_item` (
 --
 
 INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `menu_item_icon`, `app_module_id`, `app_module_name`, `parent_id`, `parent_name`, `table_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-11-03 20:31:40', 2),
-(2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-11-03 20:31:40', 2),
-(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-11-03 20:31:40', 2),
-(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-11-03 20:31:40', 2),
-(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-11-03 20:31:40', 2),
-(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-03 20:31:40', 2),
-(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-03 20:31:40', 2),
-(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-03 20:31:40', 2),
-(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-03 20:31:40', 2),
-(10, 'Subscriber', 'subscriber.php', 'ki-outline ki-people', 2, 'Subscription', 0, '', 'subscriber', 1, '2024-11-03 20:31:40', 2),
-(11, 'Subscription Settings', '', '', 2, 'Subscription', 0, '', '', 100, '2024-11-03 20:31:40', 2),
-(12, 'Subscription Tier', 'subscription-tier.php', 'ki-outline ki-abstract-19', 2, 'Subscription', 11, 'Subscription Settings', 'subscriber', 1, '2024-11-03 20:31:40', 2),
-(13, 'Billing Cycle', 'billing-cycle.php', 'ki-outline ki-cheque', 2, 'Subscription', 11, 'Subscription Settings', 'subscriber', 1, '2024-11-03 20:31:40', 2);
+(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-11-04 11:21:52', 2),
+(2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-11-04 11:21:52', 2),
+(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-11-04 11:21:52', 2),
+(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-11-04 11:21:52', 2),
+(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-11-04 11:21:52', 2),
+(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-04 11:21:52', 2),
+(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-04 11:21:52', 2),
+(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-04 11:21:52', 2),
+(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-04 11:21:52', 2),
+(10, 'Subscriber', 'subscriber.php', 'ki-outline ki-people', 2, 'Subscription', 0, '', 'subscriber', 1, '2024-11-04 11:21:52', 2),
+(11, 'Subscription Settings', '', '', 2, 'Subscription', 0, '', '', 100, '2024-11-04 11:21:52', 2),
+(12, 'Subscription Tier', 'subscription-tier.php', 'ki-outline ki-abstract-19', 2, 'Subscription', 11, 'Subscription Settings', 'subscription_tier', 1, '2024-11-04 11:21:52', 2),
+(13, 'Billing Cycle', 'billing-cycle.php', 'ki-outline ki-cheque', 2, 'Subscription', 11, 'Subscription Settings', 'billing_cycle', 1, '2024-11-04 11:21:52', 2);
 
 -- --------------------------------------------------------
 
@@ -1906,6 +2118,70 @@ CREATE TABLE `subscription_code` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `subscription_tier`
+--
+
+DROP TABLE IF EXISTS `subscription_tier`;
+CREATE TABLE `subscription_tier` (
+  `subscription_tier_id` int(10) UNSIGNED NOT NULL,
+  `subscription_tier_name` varchar(100) NOT NULL,
+  `subscription_tier_description` varchar(500) NOT NULL,
+  `order_sequence` tinyint(10) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `subscription_tier`
+--
+
+INSERT INTO `subscription_tier` (`subscription_tier_id`, `subscription_tier_name`, `subscription_tier_description`, `order_sequence`, `created_date`, `last_log_by`) VALUES
+(1, 'LaunchPad', 'A solid foundation for startups ready to take off, featuring essential tools for online presence.', 1, '2024-11-04 11:40:37', 2),
+(2, 'Accelerator', 'Aimed at propelling businesses forward with enhanced features for growth and engagement.', 2, '2024-11-04 11:40:37', 1),
+(3, 'Elevate', 'A powerful suite for businesses focused on optimizing their operations and driving performance.', 3, '2024-11-04 11:40:37', 1),
+(4, 'Infinity', 'A one-time investment for perpetual access to a comprehensive solution that adapts with your business needs.', 4, '2024-11-04 11:40:37', 1);
+
+--
+-- Triggers `subscription_tier`
+--
+DROP TRIGGER IF EXISTS `subscription_tier_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `subscription_tier_trigger_insert` AFTER INSERT ON `subscription_tier` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Subscription tier created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('subscription_tier', NEW.subscription_tier_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `subscription_tier_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `subscription_tier_trigger_update` AFTER UPDATE ON `subscription_tier` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Subscription tier changed.<br/><br/>';
+
+    IF NEW.subscription_tier_name <> OLD.subscription_tier_name THEN
+        SET audit_log = CONCAT(audit_log, "Subscription Tier Name: ", OLD.subscription_tier_name, " -> ", NEW.subscription_tier_name, "<br/>");
+    END IF;
+
+    IF NEW.subscription_tier_description <> OLD.subscription_tier_description THEN
+        SET audit_log = CONCAT(audit_log, "Subscription Tier Description: ", OLD.subscription_tier_description, " -> ", NEW.subscription_tier_description, "<br/>");
+    END IF;
+
+    IF NEW.order_sequence <> OLD.order_sequence THEN
+        SET audit_log = CONCAT(audit_log, "Order Sequence: ", OLD.order_sequence, " -> ", NEW.order_sequence, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Subscription tier changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('subscription_tier', NEW.subscription_tier_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `system_action`
 --
 
@@ -2151,7 +2427,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `linked_id`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, NULL, '2024-10-13 16:12:00', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-03 19:24:29', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'AOPBd%2BanKR%2FIGe84iOBke8AVS6M3H99%2Bi4mAJywZIpw%3D', NULL, '2024-10-13 16:12:00', 1);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-04 08:47:35', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '5gsnI%2Fr6knQzqcE8RfEUsA8AsXRRGpi7eYv0DS2v06E%3D', NULL, '2024-10-13 16:12:00', 1);
 
 --
 -- Triggers `user_account`
@@ -2229,6 +2505,14 @@ ALTER TABLE `audit_log`
   ADD KEY `audit_log_index_table_name` (`table_name`),
   ADD KEY `audit_log_index_reference_id` (`reference_id`),
   ADD KEY `audit_log_index_changed_by` (`changed_by`);
+
+--
+-- Indexes for table `billing_cycle`
+--
+ALTER TABLE `billing_cycle`
+  ADD PRIMARY KEY (`billing_cycle_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `billing_cycle_index_billing_cycle_id` (`billing_cycle_id`);
 
 --
 -- Indexes for table `email_setting`
@@ -2379,6 +2663,14 @@ ALTER TABLE `subscription_code`
   ADD KEY `subscription_code_index_no_users` (`no_users`);
 
 --
+-- Indexes for table `subscription_tier`
+--
+ALTER TABLE `subscription_tier`
+  ADD PRIMARY KEY (`subscription_tier_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `subscription_tier_index_subscription_tier_id` (`subscription_tier_id`);
+
+--
 -- Indexes for table `system_action`
 --
 ALTER TABLE `system_action`
@@ -2439,7 +2731,13 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `billing_cycle`
+--
+ALTER TABLE `billing_cycle`
+  MODIFY `billing_cycle_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -2538,6 +2836,12 @@ ALTER TABLE `subscription_code`
   MODIFY `subscription_code_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `subscription_tier`
+--
+ALTER TABLE `subscription_tier`
+  MODIFY `subscription_tier_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `system_action`
 --
 ALTER TABLE `system_action`
@@ -2582,6 +2886,12 @@ ALTER TABLE `app_module`
 --
 ALTER TABLE `audit_log`
   ADD CONSTRAINT `audit_log_ibfk_1` FOREIGN KEY (`changed_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `billing_cycle`
+--
+ALTER TABLE `billing_cycle`
+  ADD CONSTRAINT `billing_cycle_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `email_setting`
@@ -2684,6 +2994,12 @@ ALTER TABLE `role_user_account`
 --
 ALTER TABLE `subscription_code`
   ADD CONSTRAINT `subscription_code_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `subscription_tier`
+--
+ALTER TABLE `subscription_tier`
+  ADD CONSTRAINT `subscription_tier_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

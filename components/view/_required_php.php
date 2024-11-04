@@ -5,9 +5,9 @@
     require('components/model/database-model.php');
     require('components/model/system-model.php');
     require('components/model/security-model.php');
-    require('apps/security/authentication/model/authentication-model.php');
-    require('apps/security/app-module/model/app-module-model.php');
-    require('apps/security/menu-item/model/menu-item-model.php');
+    require('apps/settings/authentication/model/authentication-model.php');
+    require('apps/settings/app-module/model/app-module-model.php');
+    require('apps/settings/menu-item/model/menu-item-model.php');
 
     $databaseModel = new DatabaseModel();
     $systemModel = new SystemModel();

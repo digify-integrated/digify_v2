@@ -6,8 +6,8 @@ require_once '../../components/model/database-model.php';
 require_once '../../components/model/security-model.php';
 require_once '../../components/model/system-model.php';
 require_once '../../components/model/import-model.php';
-require_once '../../apps/security/authentication/model/authentication-model.php';
-require_once '../../apps/security/upload-setting/model/upload-setting-model.php';
+require_once '../../apps/settings/authentication/model/authentication-model.php';
+require_once '../../apps/settings/upload-setting/model/upload-setting-model.php';
 
 $controller = new ImportController(new ImportModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new UploadSettingModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();

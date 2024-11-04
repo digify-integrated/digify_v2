@@ -34,16 +34,16 @@
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
                                     if($newRecord){
-                                        require_once('apps/security/menu-item/view/_menu_item_new.php');
+                                        require_once('apps/settings/menu-item/view/_menu_item_new.php');
                                     }
                                     else if(!empty($detailID)){
-                                        require_once('apps/security/menu-item/view/_menu_item_details.php');
+                                        require_once('apps/settings/menu-item/view/_menu_item_details.php');
                                     }
                                     else if(isset($_GET['import']) && !empty($_GET['import'])){
                                         require_once('components/view/_import.php');
                                     }
                                     else{
-                                        require_once('apps/security/menu-item/view/_menu_item.php');
+                                        require_once('apps/settings/menu-item/view/_menu_item.php');
                                     }
                                 ?>
                             </div>
@@ -64,16 +64,16 @@
         $version = rand();
 
         if ($newRecord) {
-            $scriptFile = './apps/security/menu-item/js/menu-item-new.js';
+            $scriptFile = './apps/settings/menu-item/js/menu-item-new.js';
         } 
         elseif (!empty($detailID)) {
-            $scriptFile = './apps/security/menu-item/js/menu-item-details.js';
+            $scriptFile = './apps/settings/menu-item/js/menu-item-details.js';
         } 
         elseif (isset($_GET['import']) && !empty($_GET['import'])) {
             $scriptFile = './components/js/import.js'; 
         } 
         else {
-            $scriptFile = './apps/security/menu-item/js/menu-item.js';
+            $scriptFile = './apps/settings/menu-item/js/menu-item.js';
         }
 
         $scriptLink = '<script src="' . $scriptFile . '?v=' . $version . '"></script>';

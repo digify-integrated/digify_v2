@@ -34,16 +34,16 @@
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
                                     if($newRecord){
-                                        require_once('apps/security/user-account/view/_user_account_new.php');
+                                        require_once('apps/settings/user-account/view/_user_account_new.php');
                                     }
                                     else if(!empty($detailID)){
-                                        require_once('apps/security/user-account/view/_user_account_details.php');
+                                        require_once('apps/settings/user-account/view/_user_account_details.php');
                                     }
                                     else if(isset($_GET['import']) && !empty($_GET['import'])){
                                         require_once('components/view/_import.php');
                                     }
                                     else{
-                                        require_once('apps/security/user-account/view/_user_account.php');
+                                        require_once('apps/settings/user-account/view/_user_account.php');
                                     }
                                 ?>
                             </div>
@@ -64,16 +64,16 @@
         $version = rand();
 
         if ($newRecord) {
-            $scriptFile = './apps/security/user-account/js/user-account-new.js';
+            $scriptFile = './apps/settings/user-account/js/user-account-new.js';
         } 
         elseif (!empty($detailID)) {
-            $scriptFile = './apps/security/user-account/js/user-account-details.js';
+            $scriptFile = './apps/settings/user-account/js/user-account-details.js';
         } 
         elseif (isset($_GET['import']) && !empty($_GET['import'])) {
             $scriptFile = './components/js/import.js'; 
         } 
         else {
-            $scriptFile = './apps/security/user-account/js/user-account.js';
+            $scriptFile = './apps/settings/user-account/js/user-account.js';
         }
 
         $scriptLink = '<script src="' . $scriptFile . '?v=' . $version . '"></script>';

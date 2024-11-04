@@ -2,30 +2,24 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('menu item options');
+        displayDetails('get subscription tier details');
 
-        displayDetails('get app module details');
-
-        if($('#app-module-form').length){
-            appModuleForm();
-        }
-
-        if($('#app-logo-form').length){
-            updateAppLogoForm();
+        if($('#subscription-tier-form').length){
+            subscriptionTierForm();
         }
 
         $(document).on('click','#edit-details',function() {
-            displayDetails('get app module details');
+            displayDetails('get subscription tier details');
         });
 
-        $(document).on('click','#delete-app-module',function() {
-            const app_module_id = $('#details-id').text();
+        $(document).on('click','#delete-subscription-tier',function() {
+            const subscription_tier_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'delete app module';
+            const transaction = 'delete subscription tier';
     
             Swal.fire({
-                title: 'Confirm App Module Deletion',
-                text: 'Are you sure you want to delete this app module?',
+                title: 'Confirm Subscription Tier Deletion',
+                text: 'Are you sure you want to delete this subscription tier?',
                 icon: 'warning',
                 showCancelButton: !0,
                 confirmButtonText: 'Delete',
@@ -39,10 +33,10 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: 'apps/security/app-module/controller/app-module-controller.php',
+                        url: 'apps/subscription/subscription-tier/controller/subscription-tier-controller.php',
                         dataType: 'json',
                         data: {
-                            app_module_id : app_module_id, 
+                            subscription_tier_id : subscription_tier_id, 
                             transaction : transaction
                         },
                         success: function (response) {
@@ -74,78 +68,20 @@
         });
 
         $(document).on('click','#log-notes-main',function() {
-            const app_module_id = $('#details-id').text();
+            const subscription_tier_id = $('#details-id').text();
 
-            logNotes('app_module', app_module_id);
+            logNotes('subscription_tier', subscription_tier_id);
         });
-
-        $(document).on('change','#app_logo',function() {
-            if ($(this).val() !== '' && $(this)[0].files.length > 0) {
-                const transaction = 'update app logo';
-                const app_module_id = $('#details-id').text();
-                var formData = new FormData();
-                formData.append('app_logo', $(this)[0].files[0]);
-                formData.append('transaction', transaction);
-                formData.append('app_module_id', app_module_id);
-        
-                $.ajax({
-                    type: 'POST',
-                    url: 'apps/security/app-module/controller/app-module-controller.php',
-                    dataType: 'json',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        if (response.success) {
-                            showNotification(response.title, response.message, response.messageType);
-                            displayDetails('get app module details');
-                        }
-                        else {
-                            if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                                setNotification(response.title, response.message, response.messageType);
-                                window.location = 'logout.php?logout';
-                            }
-                            else if (response.notExist) {
-                                setNotification(response.title, response.message, response.messageType);
-                                window.location = page_link;
-                            }
-                            else {
-                                showNotification(response.title, response.message, response.messageType);
-                            }
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                        if (xhr.responseText) {
-                            fullErrorMessage += `, Response: ${xhr.responseText}`;
-                        }
-                        showErrorDialog(fullErrorMessage);
-                    }
-                });
-            }
-        });
-
-        if($('#internal-notes').length){
-            const app_module_id = $('#details-id').text();
-
-            internalNotes('app_module', app_module_id);
-        }
-
-        if($('#internal-notes-form').length){
-            const app_module_id = $('#details-id').text();
-
-            internalNotesForm('app_module', app_module_id);
-        }
     });
 })(jQuery);
 
-function appModuleForm(){
-    $('#app-module-form').validate({
+function subscriptionTierForm(){
+    $('#subscription-tier-form').validate({
         rules: {
-            app_module_name: {
+            subscription_tier_name: {
                 required: true
             },
-            app_module_description: {
+            subscription_tier_description: {
                 required: true
             },
             menu_item_id: {
@@ -156,10 +92,10 @@ function appModuleForm(){
             }
         },
         messages: {
-            app_module_name: {
+            subscription_tier_name: {
                 required: 'Enter the display name'
             },
-            app_module_description: {
+            subscription_tier_description: {
                 required: 'Enter the description'
             },
             menu_item_id: {
@@ -183,14 +119,14 @@ function appModuleForm(){
             $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
-            const app_module_id = $('#details-id').text();
+            const subscription_tier_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update app module';
+            const transaction = 'update subscription tier';
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/security/app-module/controller/app-module-controller.php',
-                data: $(form).serialize() + '&transaction=' + transaction + '&app_module_id=' + encodeURIComponent(app_module_id),
+                url: 'apps/subscription/subscription-tier/controller/subscription-tier-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&subscription_tier_id=' + encodeURIComponent(subscription_tier_id),
                 dataType: 'json',
                 beforeSend: function() {
                     disableFormSubmitButton('submit-data');
@@ -198,8 +134,8 @@ function appModuleForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get app module details');
-                        $('#app-module-modal').modal('hide');
+                        displayDetails('get subscription tier details');
+                        $('#subscription-tier-modal').modal('hide');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -220,79 +156,7 @@ function appModuleForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('app_module', app_module_id);
-                }
-            });
-        
-            return false;
-        }
-    });
-}
-
-function updateAppLogoForm(){
-    $('#app-logo-form').validate({
-        rules: {
-            app_logo: {
-                required: true
-            }
-        },
-        messages: {
-            app_logo: {
-                required: 'Choose the app logo'
-            }
-        },
-        errorPlacement: function(error, element) {
-            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
-        },
-        highlight: function(element) {
-            const $element = $(element);
-            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
-            $target.addClass('is-invalid');
-        },
-        unhighlight: function(element) {
-            const $element = $(element);
-            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
-            $target.removeClass('is-invalid');
-        },
-        submitHandler: function(form) {
-            const app_module_id = $('#details-id').text();
-            const transaction = 'update app logo';
-
-            var formData = new FormData(form);
-            formData.append('app_module_id', encodeURIComponent(app_module_id));
-            formData.append('transaction', transaction);
-        
-            $.ajax({
-                type: 'POST',
-                url: 'apps/security/app-module/controller/app-module-controller.php',
-                data: formData,
-                processData: false,
-                contentType: false,
-                dataType: 'json',
-                beforeSend: function() {
-                    disableFormSubmitButton('submit-app-logo');
-                },
-                success: function (response) {
-                    if (response.success) {
-                        showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get app module details');
-                        $('#app-logo-modal').modal('hide');
-                    }
-                    else {
-                        if (response.isInactive || response.notExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                            setNotification(response.title, response.message, response.messageType);
-                            window.location = 'logout.php?logout';
-                        }
-                        else {
-                            showNotification(response.title, response.message, response.messageType);
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                },
-                complete: function() {
-                    enableFormSubmitButton('submit-app-logo');
+                    logNotesMain('subscription_tier', subscription_tier_id);
                 }
             });
         
@@ -303,30 +167,26 @@ function updateAppLogoForm(){
 
 function displayDetails(transaction){
     switch (transaction) {
-        case 'get app module details':
-            var app_module_id = $('#details-id').text();
+        case 'get subscription tier details':
+            var subscription_tier_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
             
             $.ajax({
-                url: 'apps/security/app-module/controller/app-module-controller.php',
+                url: 'apps/subscription/subscription-tier/controller/subscription-tier-controller.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    app_module_id : app_module_id, 
+                    subscription_tier_id : subscription_tier_id, 
                     transaction : transaction
                 },
                 beforeSend: function(){
-                    resetModalForm('app-module-form');
+                    resetModalForm('subscription-tier-form');
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#app_module_name').val(response.appModuleName);
-                        $('#app_module_description').val(response.appModuleDescription);
+                        $('#subscription_tier_name').val(response.subscriptionTierName);
+                        $('#subscription_tier_description').val(response.subscriptionTierDescription);
                         $('#order_sequence').val(response.orderSequence);
-                        
-                        $('#menu_item_id').val(response.menuItemID).trigger('change');
-
-                        document.getElementById('app_thumbnail').style.backgroundImage = `url(${response.appLogo})`;
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -341,32 +201,6 @@ function displayDetails(transaction){
                             showNotification(response.title, response.message, response.messageType);
                         }
                     }
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                }
-            });
-            break;
-    }
-}
-
-function generateDropdownOptions(type){
-    switch (type) {
-        case 'menu item options':
-            
-            $.ajax({
-                url: 'apps/security/menu-item/view/_menu_item_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type
-                },
-                success: function(response) {
-                    $('#menu_item_id').select2({
-                        data: response
-                    }).on('change', function (e) {
-                        $(this).valid()
-                    });
                 },
                 error: function(xhr, status, error) {
                     handleSystemError(xhr, status, error);

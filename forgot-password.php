@@ -43,6 +43,6 @@
     <?php require_once('components/view/_error_modal.php'); ?>
     <?php require_once('components/view/_required_js.php'); ?>
 
-    <script src="./apps/security/authentication/js/forgot-password.js?v=<?php echo rand(); ?>"></script>
+    <script src="./apps/settings/authentication/js/forgot-password.js?v=<?php echo rand(); ?>"></script>
 </body>
 </html>

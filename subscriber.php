@@ -34,16 +34,16 @@
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
                                     if($newRecord){
-                                        require_once('apps/security/subscribers/view/_subscriber_new.php');
+                                        require_once('apps/subscription/subscribers/view/_subscriber_new.php');
                                     }
                                     else if(!empty($detailID)){
-                                        require_once('apps/security/subscribers/view/_subscriber_details.php');
+                                        require_once('apps/subscription/subscribers/view/_subscriber_details.php');
                                     }
                                     else if(isset($_GET['import']) && !empty($_GET['import'])){
                                         require_once('components/view/_import.php');
                                     }
                                     else{
-                                        require_once('apps/security/subscribers/view/_subscriber.php');
+                                        require_once('apps/subscription/subscribers/view/_subscriber.php');
                                     }
                                 ?>
                             </div>
@@ -64,16 +64,16 @@
         $version = rand();
 
         if ($newRecord) {
-            $scriptFile = './apps/security/subscribers/js/subscribers-new.js';
+            $scriptFile = './apps/subscription/subscribers/js/subscribers-new.js';
         } 
         elseif (!empty($detailID)) {
-            $scriptFile = './apps/security/subscribers/js/subscribers-details.js';
+            $scriptFile = './apps/subscription/subscribers/js/subscribers-details.js';
         } 
         elseif (isset($_GET['import']) && !empty($_GET['import'])) {
             $scriptFile = './components/js/import.js'; 
         } 
         else {
-            $scriptFile = './apps/security/subscribers/js/subscribers.js';
+            $scriptFile = './apps/subscription/subscribers/js/subscribers.js';
         }
 
         $scriptLink = '<script src="' . $scriptFile . '?v=' . $version . '"></script>';
