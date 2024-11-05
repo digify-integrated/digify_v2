@@ -2,17 +2,17 @@
     'use strict';
 
     $(function() {
-        if($('#app-module-table').length){
-            appModuleTable('#app-module-table');
+        if($('#subscriber-table').length){
+            subscriberTable('#subscriber-table');
         }
 
-        $(document).on('click','.delete-app-module',function() {
-            const app_module_id = $(this).data('app-module-id');
-            const transaction = 'delete app module';
+        $(document).on('click','.delete-subscriber',function() {
+            const subscriber_id = $(this).data('subscriber-id');
+            const transaction = 'delete subscriber';
     
             Swal.fire({
-                title: 'Confirm App Module Deletion',
-                text: 'Are you sure you want to delete this app module?',
+                title: 'Confirm Subscriber Deletion',
+                text: 'Are you sure you want to delete this subscriber?',
                 icon: 'warning',
                 showCancelButton: !0,
                 confirmButtonText: 'Delete',
@@ -26,16 +26,16 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: 'apps/settings/app-module/controller/app-module-controller.php',
+                        url: 'apps/subscription/subscriber/controller/subscriber-controller.php',
                         dataType: 'json',
                         data: {
-                            app_module_id : app_module_id, 
+                            subscriber_id : subscriber_id, 
                             transaction : transaction
                         },
                         success: function (response) {
                             if (response.success) {
                                 showNotification(response.title, response.message, response.messageType);
-                                reloadDatatable('#app-module-table');
+                                reloadDatatable('#subscriber-table');
                             }
                             else {
                                 if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -44,7 +44,7 @@
                                 }
                                 else if (response.notExist) {
                                     setNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#app-module-table');
+                                    reloadDatatable('#subscriber-table');
                                 }
                                 else {
                                     showNotification(response.title, response.message, response.messageType);
@@ -64,20 +64,20 @@
             });
         });
 
-        $(document).on('click','#delete-app-module',function() {
-            let app_module_id = [];
-            const transaction = 'delete multiple app module';
+        $(document).on('click','#delete-subscriber',function() {
+            let subscriber_id = [];
+            const transaction = 'delete multiple subscriber';
 
             $('.datatable-checkbox-children').each((index, element) => {
                 if ($(element).is(':checked')) {
-                    app_module_id.push(element.value);
+                    subscriber_id.push(element.value);
                 }
             });
     
-            if(app_module_id.length > 0){
+            if(subscriber_id.length > 0){
                 Swal.fire({
-                    title: 'Confirm Multiple App Modules Deletion',
-                    text: 'Are you sure you want to delete these app modules?',
+                    title: 'Confirm Multiple Subscribers Deletion',
+                    text: 'Are you sure you want to delete these subscribers?',
                     icon: 'warning',
                     showCancelButton: !0,
                     confirmButtonText: 'Delete',
@@ -91,16 +91,16 @@
                     if (result.value) {
                         $.ajax({
                             type: 'POST',
-                            url: 'apps/settings/app-module/controller/app-module-controller.php',
+                            url: 'apps/subscription/subscriber/controller/subscriber-controller.php',
                             dataType: 'json',
                             data: {
-                                app_module_id: app_module_id,
+                                subscriber_id: subscriber_id,
                                 transaction : transaction
                             },
                             success: function (response) {
                                 if (response.success) {
                                     showNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#app-module-table');
+                                    reloadDatatable('#subscriber-table');
                                 }
                                 else {
                                     if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -125,41 +125,41 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple App Module Error', 'Please select the app modules you wish to delete.', 'danger');
+                showNotification('Deletion Multiple Subscriber Error', 'Please select the subscribers you wish to delete.', 'danger');
             }
         });
 
         $(document).on('click','#export-data',function() {
-            generateExportColumns('app_module');
+            generateExportColumns('subscriber');
         });
 
         $(document).on('click','#submit-export',function() {
-            exportData('app_module');
+            exportData('subscriber');
         });
 
         $('#datatable-search').on('keyup', function () {
-            var table = $('#app-module-table').DataTable();
+            var table = $('#subscriber-table').DataTable();
             table.search(this.value).draw();
         });
 
         $('#datatable-length').on('change', function() {
-            var table = $('#app-module-table').DataTable();
+            var table = $('#subscriber-table').DataTable();
             var length = $(this).val(); 
             table.page.len(length).draw();
         });
     });
 })(jQuery);
 
-function appModuleTable(datatable_name) {
+function subscriberTable(datatable_name) {
     toggleHideActionDropdown();
 
-    const type = 'app module table';
+    const type = 'subscriber table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
 
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'APP_MODULE_NAME' }
+        { data: 'BILLING_CYCLE_NAME' }
     ];
 
     const columnDefs = [
@@ -171,7 +171,7 @@ function appModuleTable(datatable_name) {
 
     const settings = {
         ajax: { 
-            url: 'apps/settings/app-module/view/_app_module_generation.php',
+            url: 'apps/subscription/subscriber/view/_subscriber_generation.php',
             method: 'POST',
             dataType: 'json',
             data: {
@@ -185,7 +185,7 @@ function appModuleTable(datatable_name) {
             }
         },
         lengthChange: false,
-        order: [[1, 'asc']],
+        order: [[2, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,

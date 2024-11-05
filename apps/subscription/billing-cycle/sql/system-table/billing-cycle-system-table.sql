@@ -11,7 +11,7 @@ CREATE TABLE billing_cycle (
 
 CREATE INDEX billing_cycle_index_billing_cycle_id ON billing_cycle(billing_cycle_id);
 
-INSERT INTO billing_cycle (billing_cycle_name last_log_by) VALUES
+INSERT INTO billing_cycle (billing_cycle_name, last_log_by) VALUES
 ('Monthly', 1),
 ('Yearly', 1);
 

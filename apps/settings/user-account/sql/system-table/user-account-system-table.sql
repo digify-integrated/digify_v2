@@ -10,7 +10,7 @@ CREATE TABLE user_account (
     profile_picture VARCHAR(500) NULL,
     company_id INT UNSIGNED,
     company_name INT UNSIGNED,
-    phone VARCHAR(100),
+    phone VARCHAR(50),
     locked VARCHAR(255) NOT NULL DEFAULT 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0%3D',
     active VARCHAR(255) NOT NULL DEFAULT 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0%3D',
     last_failed_login_attempt DATETIME,

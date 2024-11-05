@@ -23,7 +23,7 @@
                     
                         if ($deleteAccess['total'] > 0) {
                             $action .= '<div class="menu-item px-3">
-                                            <a href="javascript:void(0);" class="menu-link px-3" id="delete-app-module">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="delete-subscriber">
                                                 Delete
                                             </a>
                                         </div>';
@@ -39,7 +39,7 @@
     </div>
     <div class="card-body pt-9">
         <div class="table-responsive">
-            <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5" id="app-module-table">
+            <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5" id="subscriber-table">
                 <thead>
                     <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
                         <th>
@@ -47,7 +47,7 @@
                                 <input class="form-check-input" id="datatable-checkbox" type="checkbox">
                             </div>
                         </th>
-                        <th>App Module</th>
+                        <th>Subscriber</th>
                     </tr>
                 </thead>
                 <tbody class="fw-semibold text-gray-800"></tbody>

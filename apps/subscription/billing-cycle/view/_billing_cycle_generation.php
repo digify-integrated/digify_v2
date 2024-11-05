@@ -17,7 +17,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
     
     switch ($type) {
         # -------------------------------------------------------------
-        case 'subscription tier table':
+        case 'billing cycle table':
             $sql = $databaseModel->getConnection()->prepare('CALL generateBillingCycleTable()');
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
@@ -26,9 +26,6 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $billingCycleID = $row['billing_cycle_id'];
                 $billingCycleName = $row['billing_cycle_name'];
-                $billingPeriodValue = $row['billing_period_value'];
-                $billingPeriodUnit = $row['billing_period_unit'];
-                $autoClosing = $row['auto_closing'];
 
                 $billingCycleIDEncrypted = $securityModel->encryptData($billingCycleID);
 
@@ -37,7 +34,6 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                                         <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $billingCycleID .'">
                                     </div>',
                     'BILLING_CYCLE_NAME' => $billingCycleName,
-                    'ORDER_SEQUENCE' => $orderSequence,
                     'LINK' => $pageLink .'&id='. $billingCycleIDEncrypted
                 ];
             }
@@ -47,7 +43,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
         # -------------------------------------------------------------
 
         # -------------------------------------------------------------
-        case 'subscription tier options':
+        case 'billing cycle options':
             $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;
 
             $sql = $databaseModel->getConnection()->prepare('CALL generateBillingCycleOptions()');

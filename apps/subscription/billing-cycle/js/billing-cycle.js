@@ -8,11 +8,11 @@
 
         $(document).on('click','.delete-billing-cycle',function() {
             const billing_cycle_id = $(this).data('billing-cycle-id');
-            const transaction = 'delete subscription tier';
+            const transaction = 'delete billing cycle';
     
             Swal.fire({
                 title: 'Confirm Billing Cycle Deletion',
-                text: 'Are you sure you want to delete this subscription tier?',
+                text: 'Are you sure you want to delete this billing cycle?',
                 icon: 'warning',
                 showCancelButton: !0,
                 confirmButtonText: 'Delete',
@@ -66,7 +66,7 @@
 
         $(document).on('click','#delete-billing-cycle',function() {
             let billing_cycle_id = [];
-            const transaction = 'delete multiple subscription tier';
+            const transaction = 'delete multiple billing cycle';
 
             $('.datatable-checkbox-children').each((index, element) => {
                 if ($(element).is(':checked')) {
@@ -77,7 +77,7 @@
             if(billing_cycle_id.length > 0){
                 Swal.fire({
                     title: 'Confirm Multiple Billing Cycles Deletion',
-                    text: 'Are you sure you want to delete these subscription tiers?',
+                    text: 'Are you sure you want to delete these billing cycles?',
                     icon: 'warning',
                     showCancelButton: !0,
                     confirmButtonText: 'Delete',
@@ -125,7 +125,7 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple Billing Cycle Error', 'Please select the subscription tiers you wish to delete.', 'danger');
+                showNotification('Deletion Multiple Billing Cycle Error', 'Please select the billing cycles you wish to delete.', 'danger');
             }
         });
 
@@ -153,20 +153,18 @@
 function billingCycleTable(datatable_name) {
     toggleHideActionDropdown();
 
-    const type = 'subscription tier table';
+    const type = 'billing cycle table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
 
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'SUBSCRIPTION_TIER_NAME' },
-        { data: 'ORDER_SEQUENCE' }
+        { data: 'BILLING_CYCLE_NAME' }
     ];
 
     const columnDefs = [
         { width: '5%', bSortable: false, targets: 0, responsivePriority: 1 },
-        { width: 'auto', targets: 1, responsivePriority: 2 },
-        { width: 'auto', targets: 2, responsivePriority: 3 }
+        { width: 'auto', targets: 1, responsivePriority: 2 }
     ];
 
     const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];

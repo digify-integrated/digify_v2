@@ -13,23 +13,11 @@ function billingCycleForm(){
         rules: {
             billing_cycle_name: {
                 required: true
-            },
-            billing_cycle_description: {
-                required: true
-            },
-            order_sequence: {
-                required: true
             }
         },
         messages: {
             billing_cycle_name: {
                 required: 'Enter the display name'
-            },
-            billing_cycle_description: {
-                required: 'Enter the description'
-            },
-            order_sequence: {
-                required: 'Enter the order sequence'
             }
         },
         errorPlacement: function(error, element) {
@@ -46,7 +34,7 @@ function billingCycleForm(){
             $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
-            const transaction = 'add subscription tier';
+            const transaction = 'add billing cycle';
             const page_link = document.getElementById('page-link').getAttribute('href');
           
             $.ajax({

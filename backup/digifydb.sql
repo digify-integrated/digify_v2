@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 04, 2024 at 10:31 AM
+-- Generation Time: Nov 05, 2024 at 10:26 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -378,7 +378,7 @@ END$$
 
 DROP PROCEDURE IF EXISTS `generateBillingCycleTable`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBillingCycleTable` ()   BEGIN
-	SELECT billing_cycle_id, billing_cycle_name, billing_period_value, billing_period_unit, auto_closing 
+	SELECT billing_cycle_id, billing_cycle_name
     FROM billing_cycle 
     ORDER BY billing_cycle_id;
 END$$
@@ -809,7 +809,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveAppModule` (IN `p_app_module_id
 END$$
 
 DROP PROCEDURE IF EXISTS `saveBillingCycle`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBillingCycle` (IN `p_billing_cycle_id` INT, IN `p_billing_cycle_name` VARCHAR(100), IN `p_billing_period_value` INT, IN `p_billing_period_unit` VARCHAR(50), IN `p_auto_closing` INT, IN `p_last_log_by` INT, OUT `p_new_billing_cycle_id` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBillingCycle` (IN `p_billing_cycle_id` INT, IN `p_billing_cycle_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_billing_cycle_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
@@ -818,16 +818,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBillingCycle` (IN `p_billing_cy
     START TRANSACTION;
 
     IF p_billing_cycle_id IS NULL OR NOT EXISTS (SELECT 1 FROM billing_cycle WHERE billing_cycle_id = p_billing_cycle_id) THEN
-        INSERT INTO billing_cycle (billing_cycle_name, billing_period_value, billing_period_unit, auto_closing, last_log_by) 
-        VALUES(p_billing_cycle_name, p_billing_period_value, p_billing_period_unit, p_auto_closing, p_last_log_by);
+        INSERT INTO billing_cycle (billing_cycle_name, last_log_by) 
+        VALUES(p_billing_cycle_name, p_last_log_by);
         
         SET p_new_billing_cycle_id = LAST_INSERT_ID();
     ELSE
         UPDATE billing_cycle
         SET billing_cycle_name = p_billing_cycle_name,
-            billing_period_value = p_billing_period_value,
-            billing_period_unit = p_billing_period_unit,
-            auto_closing = p_auto_closing,
             last_log_by = p_last_log_by
         WHERE billing_cycle_id = p_billing_cycle_id;
 
@@ -1323,7 +1320,13 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (4, 'subscription_tier', 5, 'Subscription tier changed.<br/><br/>Subscription Tier Name: asd -> 123123<br/>Subscription Tier Description: asd -> asd123123<br/>Order Sequence: 12 -> 127<br/>', 2, '2024-11-04 12:32:37', '2024-11-04 12:32:37'),
 (5, 'subscription_tier', 6, 'Subscription tier created.', 2, '2024-11-04 12:59:21', '2024-11-04 12:59:21'),
 (6, 'subscription_tier', 6, 'Subscription tier created.', 2, '2024-11-04 13:43:02', '2024-11-04 13:43:02'),
-(7, 'subscription_tier', 6, 'Subscription tier created.', 2, '2024-11-04 13:43:23', '2024-11-04 13:43:23');
+(7, 'subscription_tier', 6, 'Subscription tier created.', 2, '2024-11-04 13:43:23', '2024-11-04 13:43:23'),
+(8, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-04 08:47:35 -> 2024-11-05 10:28:59<br/>', 1, '2024-11-05 10:28:59', '2024-11-05 10:28:59'),
+(9, 'billing_cycle', 5, 'Billing cycle created.', 2, '2024-11-05 11:00:05', '2024-11-05 11:00:05'),
+(10, 'billing_cycle', 5, 'Billing cycle changed.<br/><br/>Billing Cycle Name: test -> tests<br/>', 2, '2024-11-05 11:00:07', '2024-11-05 11:00:07'),
+(11, 'billing_cycle', 5, 'Billing cycle changed.<br/><br/>Billing Cycle Name: tests -> testsss<br/>', 2, '2024-11-05 11:00:14', '2024-11-05 11:00:14'),
+(12, 'billing_cycle', 6, 'Billing cycle created.', 2, '2024-11-05 11:00:19', '2024-11-05 11:00:19'),
+(13, 'billing_cycle', 5, 'Billing cycle created.', 2, '2024-11-05 11:00:53', '2024-11-05 11:00:53');
 
 -- --------------------------------------------------------
 
@@ -1335,9 +1338,6 @@ DROP TABLE IF EXISTS `billing_cycle`;
 CREATE TABLE `billing_cycle` (
   `billing_cycle_id` int(10) UNSIGNED NOT NULL,
   `billing_cycle_name` varchar(100) NOT NULL,
-  `billing_period_value` int(11) NOT NULL,
-  `billing_period_unit` varchar(50) NOT NULL,
-  `auto_closing` int(11) NOT NULL DEFAULT 0,
   `created_date` datetime DEFAULT current_timestamp(),
   `last_log_by` int(10) UNSIGNED DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1346,9 +1346,9 @@ CREATE TABLE `billing_cycle` (
 -- Dumping data for table `billing_cycle`
 --
 
-INSERT INTO `billing_cycle` (`billing_cycle_id`, `billing_cycle_name`, `billing_period_value`, `billing_period_unit`, `auto_closing`, `created_date`, `last_log_by`) VALUES
-(1, 'Monthly', 1, 'Months', 15, '2024-11-04 15:05:24', 1),
-(2, 'Yearly', 1, 'Years', 15, '2024-11-04 15:05:24', 1);
+INSERT INTO `billing_cycle` (`billing_cycle_id`, `billing_cycle_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Monthly', '2024-11-05 10:34:13', 1),
+(2, 'Yearly', '2024-11-05 10:34:13', 1);
 
 --
 -- Triggers `billing_cycle`
@@ -1370,18 +1370,6 @@ CREATE TRIGGER `billing_cycle_trigger_update` AFTER UPDATE ON `billing_cycle` FO
 
     IF NEW.billing_cycle_name <> OLD.billing_cycle_name THEN
         SET audit_log = CONCAT(audit_log, "Billing Cycle Name: ", OLD.billing_cycle_name, " -> ", NEW.billing_cycle_name, "<br/>");
-    END IF;
-
-    IF NEW.billing_period_value <> OLD.billing_period_value THEN
-        SET audit_log = CONCAT(audit_log, "Billing Period Value: ", OLD.billing_period_value, " -> ", NEW.billing_period_value, "<br/>");
-    END IF;
-
-    IF NEW.billing_period_unit <> OLD.billing_period_unit THEN
-        SET audit_log = CONCAT(audit_log, "Billing Period Unit: ", OLD.billing_period_unit, " -> ", NEW.billing_period_unit, "<br/>");
-    END IF;
-
-    IF NEW.auto_closing <> OLD.auto_closing THEN
-        SET audit_log = CONCAT(audit_log, "Auto Closing: ", OLD.auto_closing, " Days -> ", NEW.auto_closing, " Days<br/>");
     END IF;
     
     IF audit_log <> 'Billing cycle changed.<br/><br/>' THEN
@@ -2427,7 +2415,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `linked_id`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, NULL, '2024-10-13 16:12:00', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-04 08:47:35', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '5gsnI%2Fr6knQzqcE8RfEUsA8AsXRRGpi7eYv0DS2v06E%3D', NULL, '2024-10-13 16:12:00', 1);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-05 10:28:59', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'JJ%2FKRCkkUH2nIh5gZhIhBoNN6wRnE73x804YXeYmfM4%3D', NULL, '2024-10-13 16:12:00', 1);
 
 --
 -- Triggers `user_account`
@@ -2731,13 +2719,13 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `billing_cycle`
 --
 ALTER TABLE `billing_cycle`
-  MODIFY `billing_cycle_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `billing_cycle_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `email_setting`

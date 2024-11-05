@@ -23,6 +23,7 @@ define('DB_PASS', 'qKHJpbkgC6t93nQr'); // Password for the database user
 // Encryption Configuration
 // -------------------------------------------------------------
 define('ENCRYPTION_KEY', '4b$Gy#89%q*aX@^p&cT!sPv6(5w)zSd+R'); // Key for data encryption and decryption
+define('SECRET_KEY', '9n6ui[N];T\?{Wju[@zq^7)y>gsz2ltMT'); // Key for data encryption and decryption
 
 // -------------------------------------------------------------
 // Email Configuration

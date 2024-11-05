@@ -6,24 +6,24 @@ require_once '../../../../components/model/database-model.php';
 require_once '../../../../components/model/security-model.php';
 require_once '../../../../components/model/system-model.php';
 require_once '../../../settings/authentication/model/authentication-model.php';
-require_once '../../billing-cycle/model/billing-cycle-model.php';
+require_once '../../subscriber/model/subscriber-model.php';
 require_once '../../../settings/security-setting/model/security-setting-model.php';
 
 require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new BillingCycleController(new BillingCycleModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SecurityModel(), new SystemModel());
+$controller = new SubscriberController(new SubscriberModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
-class BillingCycleController {
-    private $billingCycleModel;
+class SubscriberController {
+    private $subscriberModel;
     private $authenticationModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(BillingCycleModel $billingCycleModel, AuthenticationModel $authenticationModel, SecurityModel $securityModel, SystemModel $systemModel) {
-        $this->billingCycleModel = $billingCycleModel;
+    public function __construct(SubscriberModel $subscriberModel, AuthenticationModel $authenticationModel, SecurityModel $securityModel, SystemModel $systemModel) {
+        $this->subscriberModel = $subscriberModel;
         $this->authenticationModel = $authenticationModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
@@ -100,23 +100,23 @@ class BillingCycleController {
             $transaction = isset($_POST['transaction']) ? $_POST['transaction'] : null;
 
             switch ($transaction) {
-                case 'add billing cycle':
-                    $this->addBillingCycle();
+                case 'add subscriber':
+                    $this->addSubscriber();
                     break;
-                case 'update billing cycle':
-                    $this->updateBillingCycle();
+                case 'update subscriber':
+                    $this->updateSubscriber();
                     break;
                 case 'update app logo':
                     $this->updateAppLogo();
                     break;
-                case 'get billing cycle details':
-                    $this->getBillingCycleDetails();
+                case 'get subscriber details':
+                    $this->getSubscriberDetails();
                     break;
-                case 'delete billing cycle':
-                    $this->deleteBillingCycle();
+                case 'delete subscriber':
+                    $this->deleteSubscriber();
                     break;
-                case 'delete multiple billing cycle':
-                    $this->deleteMultipleBillingCycle();
+                case 'delete multiple subscriber':
+                    $this->deleteMultipleSubscriber();
                     break;
                 case 'export data':
                     $this->exportData();
@@ -141,21 +141,21 @@ class BillingCycleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function addBillingCycle() {
+    public function addSubscriber() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
 
         $userID = $_SESSION['user_account_id'];
-        $billingCycleName = filter_input(INPUT_POST, 'billing_cycle_name', FILTER_SANITIZE_STRING);
+        $subscriberName = filter_input(INPUT_POST, 'subscriber_name', FILTER_SANITIZE_STRING);
         
-        $billingCycleID = $this->billingCycleModel->saveBillingCycle(null, $billingCycleName, $userID);
+        $subscriberID = $this->subscriberModel->saveSubscriber(null, $subscriberName, $userID);
     
         $response = [
             'success' => true,
-            'billingCycleID' => $this->securityModel->encryptData($billingCycleID),
-            'title' => 'Save Billing Cycle',
-            'message' => 'The billing cycle has been saved successfully.',
+            'subscriberID' => $this->securityModel->encryptData($subscriberID),
+            'title' => 'Save Subscriber',
+            'message' => 'The subscriber has been saved successfully.',
             'messageType' => 'success'
         ];
             
@@ -169,24 +169,24 @@ class BillingCycleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function updateBillingCycle() {
+    public function updateSubscriber() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
         
         $userID = $_SESSION['user_account_id'];
-        $billingCycleID = filter_input(INPUT_POST, 'billing_cycle_id', FILTER_VALIDATE_INT);
-        $billingCycleName = filter_input(INPUT_POST, 'billing_cycle_name', FILTER_SANITIZE_STRING);
+        $subscriberID = filter_input(INPUT_POST, 'subscriber_id', FILTER_VALIDATE_INT);
+        $subscriberName = filter_input(INPUT_POST, 'subscriber_name', FILTER_SANITIZE_STRING);
     
-        $checkBillingCycleExist = $this->billingCycleModel->checkBillingCycleExist($billingCycleID);
-        $total = $checkBillingCycleExist['total'] ?? 0;
+        $checkSubscriberExist = $this->subscriberModel->checkSubscriberExist($subscriberID);
+        $total = $checkSubscriberExist['total'] ?? 0;
 
         if($total === 0){
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Save Billing Cycle',
-                'message' => 'The billing cycle does not exist.',
+                'title' => 'Save Subscriber',
+                'message' => 'The subscriber does not exist.',
                 'messageType' => 'error'
             ];
             
@@ -194,12 +194,12 @@ class BillingCycleController {
             exit;
         }
 
-        $this->billingCycleModel->saveBillingCycle($billingCycleID, $billingCycleName, $userID);
+        $this->subscriberModel->saveSubscriber($subscriberID, $subscriberName, $userID);
             
         $response = [
             'success' => true,
-            'title' => 'Save Billing Cycle',
-            'message' => 'The billing cycle has been saved successfully.',
+            'title' => 'Save Subscriber',
+            'message' => 'The subscriber has been saved successfully.',
             'messageType' => 'success'
         ];
         
@@ -213,22 +213,22 @@ class BillingCycleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function deleteBillingCycle() {
+    public function deleteSubscriber() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
 
-        $billingCycleID = filter_input(INPUT_POST, 'billing_cycle_id', FILTER_VALIDATE_INT);
+        $subscriberID = filter_input(INPUT_POST, 'subscriber_id', FILTER_VALIDATE_INT);
         
-        $checkBillingCycleExist = $this->billingCycleModel->checkBillingCycleExist($billingCycleID);
-        $total = $checkBillingCycleExist['total'] ?? 0;
+        $checkSubscriberExist = $this->subscriberModel->checkSubscriberExist($subscriberID);
+        $total = $checkSubscriberExist['total'] ?? 0;
 
         if($total === 0){
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Delete Billing Cycle',
-                'message' => 'The billing cycle does not exist.',
+                'title' => 'Delete Subscriber',
+                'message' => 'The subscriber does not exist.',
                 'messageType' => 'error'
             ];
                 
@@ -236,12 +236,12 @@ class BillingCycleController {
             exit;
         }
 
-        $this->billingCycleModel->deleteBillingCycle($billingCycleID);
+        $this->subscriberModel->deleteSubscriber($subscriberID);
                 
         $response = [
             'success' => true,
-            'title' => 'Delete Billing Cycle',
-            'message' => 'The billing cycle has been deleted successfully.',
+            'title' => 'Delete Subscriber',
+            'message' => 'The subscriber has been deleted successfully.',
             'messageType' => 'success'
         ];
             
@@ -251,27 +251,27 @@ class BillingCycleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function deleteMultipleBillingCycle() {
+    public function deleteMultipleSubscriber() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
 
-        if (isset($_POST['billing_cycle_id']) && !empty($_POST['billing_cycle_id'])) {
-            $billingCycleIDs = $_POST['billing_cycle_id'];
+        if (isset($_POST['subscriber_id']) && !empty($_POST['subscriber_id'])) {
+            $subscriberIDs = $_POST['subscriber_id'];
     
-            foreach($billingCycleIDs as $billingCycleID){
-                $checkBillingCycleExist = $this->billingCycleModel->checkBillingCycleExist($billingCycleID);
-                $total = $checkBillingCycleExist['total'] ?? 0;
+            foreach($subscriberIDs as $subscriberID){
+                $checkSubscriberExist = $this->subscriberModel->checkSubscriberExist($subscriberID);
+                $total = $checkSubscriberExist['total'] ?? 0;
 
                 if($total > 0){
-                    $this->billingCycleModel->deleteBillingCycle($billingCycleID);
+                    $this->subscriberModel->deleteSubscriber($subscriberID);
                 }
             }
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple Billing Cycle',
-                'message' => 'The selected billing cycles have been deleted successfully.',
+                'title' => 'Delete Multiple Subscriber',
+                'message' => 'The selected subscribers have been deleted successfully.',
                 'messageType' => 'success'
             ];
             
@@ -308,7 +308,7 @@ class BillingCycleController {
             $tableColumns = $_POST['table_column'];
             
             if ($exportTo == 'csv') {
-                $filename = "billing_cycle_export_" . date('Y-m-d_H-i-s') . ".csv";
+                $filename = "subscriber_export_" . date('Y-m-d_H-i-s') . ".csv";
             
                 header('Content-Type: text/csv');
                 header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -320,10 +320,10 @@ class BillingCycleController {
                 $columns = implode(", ", $tableColumns);
                 
                 $ids = implode(",", array_map('intval', $exportIDs));
-                $billingCycleDetails = $this->billingCycleModel->exportBillingCycle($columns, $ids);
+                $subscriberDetails = $this->subscriberModel->exportSubscriber($columns, $ids);
 
-                foreach ($billingCycleDetails as $billingCycleDetail) {
-                    fputcsv($output, $billingCycleDetail);
+                foreach ($subscriberDetails as $subscriberDetail) {
+                    fputcsv($output, $subscriberDetail);
                 }
 
                 fclose($output);
@@ -331,7 +331,7 @@ class BillingCycleController {
             }
             else {
                 ob_start();
-                $filename = "billing_cycle_export_" . date('Y-m-d_H-i-s') . ".xlsx";
+                $filename = "subscriber_export_" . date('Y-m-d_H-i-s') . ".xlsx";
 
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
@@ -345,13 +345,13 @@ class BillingCycleController {
                 $columns = implode(", ", $tableColumns);
                 
                 $ids = implode(",", array_map('intval', $exportIDs));
-                $billingCycleDetails = $this->billingCycleModel->exportBillingCycle($columns, $ids);
+                $subscriberDetails = $this->subscriberModel->exportSubscriber($columns, $ids);
 
                 $rowNumber = 2;
-                foreach ($billingCycleDetails as $billingCycleDetail) {
+                foreach ($subscriberDetails as $subscriberDetail) {
                     $colIndex = 'A';
                     foreach ($tableColumns as $column) {
-                        $sheet->setCellValue($colIndex . $rowNumber, $billingCycleDetail[$column]);
+                        $sheet->setCellValue($colIndex . $rowNumber, $subscriberDetail[$column]);
                         $colIndex++;
                     }
                     $rowNumber++;
@@ -387,23 +387,23 @@ class BillingCycleController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function getBillingCycleDetails() {
+    public function getSubscriberDetails() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
     
         $userID = $_SESSION['user_account_id'];
-        $billingCycleID = filter_input(INPUT_POST, 'billing_cycle_id', FILTER_VALIDATE_INT);
+        $subscriberID = filter_input(INPUT_POST, 'subscriber_id', FILTER_VALIDATE_INT);
 
-        $checkBillingCycleExist = $this->billingCycleModel->checkBillingCycleExist($billingCycleID);
-        $total = $checkBillingCycleExist['total'] ?? 0;
+        $checkSubscriberExist = $this->subscriberModel->checkSubscriberExist($subscriberID);
+        $total = $checkSubscriberExist['total'] ?? 0;
 
         if($total === 0){
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Get Billing Cycle Details',
-                'message' => 'The billing cycle does not exist.',
+                'title' => 'Get Subscriber Details',
+                'message' => 'The subscriber does not exist.',
                 'messageType' => 'error'
             ];
             
@@ -411,12 +411,12 @@ class BillingCycleController {
             exit;
         }
 
-        $billingCycleDetails = $this->billingCycleModel->getBillingCycle($billingCycleID);
+        $subscriberDetails = $this->subscriberModel->getSubscriber($subscriberID);
         $response = [
             'success' => true,
-            'billingCycleName' => $billingCycleDetails['billing_cycle_name'] ?? null,
-            'billingCycleDescription' => $billingCycleDetails['billing_cycle_description'] ?? null,
-            'orderSequence' => $billingCycleDetails['order_sequence'] ?? null
+            'subscriberName' => $subscriberDetails['subscriber_name'] ?? null,
+            'subscriberDescription' => $subscriberDetails['subscriber_description'] ?? null,
+            'orderSequence' => $subscriberDetails['order_sequence'] ?? null
         ];
 
         echo json_encode($response);

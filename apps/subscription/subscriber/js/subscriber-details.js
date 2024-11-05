@@ -2,24 +2,24 @@
     'use strict';
 
     $(function() {
-        displayDetails('get billing cycle details');
+        displayDetails('get subscriber details');
 
-        if($('#billing-cycle-form').length){
-            billingCycleForm();
+        if($('#subscriber-form').length){
+            subscriberForm();
         }
 
         $(document).on('click','#edit-details',function() {
-            displayDetails('get billing cycle details');
+            displayDetails('get subscriber details');
         });
 
-        $(document).on('click','#delete-billing-cycle',function() {
-            const billing_cycle_id = $('#details-id').text();
+        $(document).on('click','#delete-subscriber',function() {
+            const subscriber_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'delete billing cycle';
+            const transaction = 'delete subscriber';
     
             Swal.fire({
-                title: 'Confirm Billing Cycle Deletion',
-                text: 'Are you sure you want to delete this billing cycle?',
+                title: 'Confirm Subscriber Deletion',
+                text: 'Are you sure you want to delete this subscriber?',
                 icon: 'warning',
                 showCancelButton: !0,
                 confirmButtonText: 'Delete',
@@ -33,10 +33,10 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: 'apps/subscription/billing-cycle/controller/billing-cycle-controller.php',
+                        url: 'apps/subscription/subscriber/controller/subscriber-controller.php',
                         dataType: 'json',
                         data: {
-                            billing_cycle_id : billing_cycle_id, 
+                            subscriber_id : subscriber_id, 
                             transaction : transaction
                         },
                         success: function (response) {
@@ -68,22 +68,22 @@
         });
 
         $(document).on('click','#log-notes-main',function() {
-            const billing_cycle_id = $('#details-id').text();
+            const subscriber_id = $('#details-id').text();
 
-            logNotes('billing_cycle', billing_cycle_id);
+            logNotes('subscriber', subscriber_id);
         });
     });
 })(jQuery);
 
-function billingCycleForm(){
-    $('#billing-cycle-form').validate({
+function subscriberForm(){
+    $('#subscriber-form').validate({
         rules: {
-            billing_cycle_name: {
+            subscriber_name: {
                 required: true
             }
         },
         messages: {
-            billing_cycle_name: {
+            subscriber_name: {
                 required: 'Enter the display name'
             }
         },
@@ -101,14 +101,14 @@ function billingCycleForm(){
             $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
-            const billing_cycle_id = $('#details-id').text();
+            const subscriber_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update billing cycle';
+            const transaction = 'update subscriber';
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/subscription/billing-cycle/controller/billing-cycle-controller.php',
-                data: $(form).serialize() + '&transaction=' + transaction + '&billing_cycle_id=' + encodeURIComponent(billing_cycle_id),
+                url: 'apps/subscription/subscriber/controller/subscriber-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&subscriber_id=' + encodeURIComponent(subscriber_id),
                 dataType: 'json',
                 beforeSend: function() {
                     disableFormSubmitButton('submit-data');
@@ -116,8 +116,8 @@ function billingCycleForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get billing cycle details');
-                        $('#billing-cycle-modal').modal('hide');
+                        displayDetails('get subscriber details');
+                        $('#subscriber-modal').modal('hide');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -138,7 +138,7 @@ function billingCycleForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('billing_cycle', billing_cycle_id);
+                    logNotesMain('subscriber', subscriber_id);
                 }
             });
         
@@ -149,24 +149,24 @@ function billingCycleForm(){
 
 function displayDetails(transaction){
     switch (transaction) {
-        case 'get billing cycle details':
-            var billing_cycle_id = $('#details-id').text();
+        case 'get subscriber details':
+            var subscriber_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
             
             $.ajax({
-                url: 'apps/subscription/billing-cycle/controller/billing-cycle-controller.php',
+                url: 'apps/subscription/subscriber/controller/subscriber-controller.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    billing_cycle_id : billing_cycle_id, 
+                    subscriber_id : subscriber_id, 
                     transaction : transaction
                 },
                 beforeSend: function(){
-                    resetModalForm('billing-cycle-form');
+                    resetModalForm('subscriber-form');
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#billing_cycle_name').val(response.billingCycleName);
+                        $('#subscriber_name').val(response.subscriberName);
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {

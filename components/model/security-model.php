@@ -13,6 +13,23 @@ class SecurityModel {
         return $ciphertext ? rawurlencode(base64_encode($iv . $ciphertext)) : false;
     }
     # -------------------------------------------------------------
+   
+    # -------------------------------------------------------------
+    public function encryptProductKey($plainText) {
+        $plainText = trim($plainText);
+        if (empty($plainText)) return false;
+    
+        $iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+    
+        $ciphertext = openssl_encrypt($plainText, 'aes-256-cbc', SECRET_KEY, OPENSSL_RAW_DATA, $iv);
+        
+        $encodedData = base64_encode($iv . $ciphertext);
+    
+        $shortProductKey = substr($encodedData, 0, 16);
+    
+        return $shortProductKey;
+    }
+    # -------------------------------------------------------------
     
     # -------------------------------------------------------------
     public function decryptData($ciphertext) {
@@ -34,7 +51,28 @@ class SecurityModel {
     
         return $plainText ? $plainText : false;
     }
-    
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function decryptProductKey($productKey) {
+        $fullEncodedData = $this->retrieveFullEncodedData($productKey);
+        
+        $decodedData = base64_decode($fullEncodedData);
+        if (!$decodedData) return false;
+
+        $iv_length = openssl_cipher_iv_length('aes-256-cbc');
+
+        if (strlen($decodedData) < $iv_length) {
+            return false;
+        }
+
+        $iv = substr($decodedData, 0, $iv_length);
+        $ciphertext = substr($decodedData, $iv_length);
+
+        $plainText = openssl_decrypt($ciphertext, 'aes-256-cbc', SECRET_KEY, OPENSSL_RAW_DATA, $iv);
+
+        return $plainText ? $plainText : false;
+    }
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------

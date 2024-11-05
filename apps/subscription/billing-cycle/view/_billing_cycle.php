@@ -48,7 +48,6 @@
                             </div>
                         </th>
                         <th>Billing Cycle</th>
-                        <th>Order Sequence</th>
                     </tr>
                 </thead>
                 <tbody class="fw-semibold text-gray-800"></tbody>
