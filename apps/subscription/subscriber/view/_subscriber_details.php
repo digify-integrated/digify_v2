@@ -1,3 +1,6 @@
+<?php
+    $addSubscription = $authenticationModel->checkSystemActionAccessRights($userID, 15);
+?>
 <div class="card mb-10">
     <div class="card-header border-0">
         <div class="card-title m-0">
@@ -29,26 +32,218 @@
         <form id="subscriber-form" method="post" action="#">
             <div class="row mb-6">
                 <label class="col-lg-4 col-form-label fw-semibold fs-6" for="subscriber_name">
-                    <span class="required">Display Name</span>
+                    <span class="required">Subscriber Name</span>
                 </label>
 
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-12">
-                            <input type="text" class="form-control form-control-solid maxlength" id="subscriber_name" name="subscriber_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                            <input type="text" class="form-control form-control-solid maxlength" id="subscriber_name" name="subscriber_name" maxlength="500" autocomplete="off" <?php echo $disabled ?>>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="company_name">
+                    <span class="required">Company</span>
+                </label>
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input type="text" class="form-control form-control-solid maxlength" id="company_name" name="company_name" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="phone">
+                    <span class="required">Phone</span>
+                </label>
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input type="text" class="form-control form-control-solid maxlength" id="phone" name="phone" maxlength="50" autocomplete="off" <?php echo $disabled ?>>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="email">
+                    <span class="required">Email</span>
+                </label>
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input type="email" class="form-control form-control-solid maxlength" id="email" name="email" maxlength="50" autocomplete="off" <?php echo $disabled ?>>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="subscription_tier_id">
+                    <span class="required">Subscription Tier</span>
+                </label>
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <select id="subscription_tier_id" name="subscription_tier_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="billing_cycle_id">
+                    <span class="required">Billing Cycle</span>
+                </label>
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <select id="billing_cycle_id" name="billing_cycle_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="subscriber_status">
+                    <span class="required">Status</span>
+                </label>
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <select id="subscriber_status" name="subscriber_status" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
                         </div>
                     </div>
                 </div>
             </div>
         </form>
     </div>
-
+    
     <?php
         echo ($writeAccess['total'] > 0) ? ' <div class="card-footer d-flex justify-content-end py-6 px-9">
                                                 <button type="button" id="discard-create" class="btn btn-light btn-active-light-primary me-2">Discard</button>
                                                 <button type="submit" form="subscriber-form" class="btn btn-primary" id="submit-data">Save</button>
                                             </div>' : '';
     ?>
+</div>
+
+<div class="card">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <div class="d-flex align-items-center position-relative my-1 me-3">
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i> <input type="text" class="form-control form-control-solid w-250px ps-12" id="subscription-datatable-search" placeholder="Search..." autocomplete="off" />
+            </div>
+            <select id="subscription-datatable-length" class="form-select form-select-solid w-auto">
+                <option value="-1">All</option>
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                <?php
+                    echo $addSubscription['total'] > 0 ? '<button type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" data-bs-target="#subscription-modal" id="add-subscription"><i class="ki-outline ki-plus fs-2"></i> Add Subscription</button>' : '';
+                ?>
+            </div>
+        </div>
+    </div>
+    <div class="card-body pt-9">
+        <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5 gs-7" id="subscription-table">
+            <thead>
+                <tr class="fw-semibold fs-6 text-gray-800">
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Deactivation Date</th>
+                    <th>Number of Users</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody class="fw-semibold text-gray-600"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="subscription-modal" class="modal fade" tabindex="-1" aria-labelledby="subscription-modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Subscription</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form id="subscription-form" method="post" action="#">
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="subscriber_name">
+                            <span class="required">Subscription Start Date</span>
+                        </label>
+
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="position-relative d-flex align-items-center">
+                                        <!--begin::Icon-->
+                                        <i class="ki-outline ki-calendar-8 fs-2 position-absolute mx-4"></i>                                <!--end::Icon-->
+
+                                        <!--begin::Datepicker-->
+                                        <input class="form-control form-control-solid ps-12" placeholder="Select a date" name="due_date"/>
+                                        <!--end::Datepicker-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="no_users">
+                            <span class="required">Number of Users</span>
+                        </label>
+
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="number" class="form-control form-control-solid" id="no_users" name="no_users" min="-1" step="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="remarks">
+                            Remarks
+                        </label>
+
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <textarea class="form-control form-control-solid maxlength" id="remarks" name="remarks" maxlength="1000" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="subscription-form" class="btn btn-primary" id="submit-assignment">Assign</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <?php require_once('components/view/_log_notes_modal.php'); ?>

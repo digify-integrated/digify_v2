@@ -18,7 +18,16 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
     switch ($type) {
         # -------------------------------------------------------------
         case 'subscriber table':
-            $sql = $databaseModel->getConnection()->prepare('CALL generateSubscriberTable()');
+            $filterSubscriptionTier = isset($_POST['subscription_tier_filter']) && is_array($_POST['subscription_tier_filter']) 
+            ? "'" . implode("','", array_map('trim', $_POST['subscription_tier_filter'])) . "'" 
+            : null;
+            $filterBillingCycle = isset($_POST['billing_cycle_filter']) && is_array($_POST['billing_cycle_filter']) 
+            ? "'" . implode("','", array_map('trim', $_POST['billing_cycle_filter'])) . "'" 
+            : null;
+
+            $sql = $databaseModel->getConnection()->prepare('CALL generateSubscriberTable(:filterSubscriptionTier, :filterBillingCycle)');
+            $sql->bindValue(':filterSubscriptionTier', $filterSubscriptionTier, PDO::PARAM_STR);
+            $sql->bindValue(':filterBillingCycle', $filterBillingCycle, PDO::PARAM_STR);
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
             $sql->closeCursor();
@@ -26,6 +35,15 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $subscriberID = $row['subscriber_id'];
                 $subscriberName = $row['subscriber_name'];
+                $companyName = $row['company_name'];
+                $phone = $row['phone'];
+                $email = $row['email'];
+                $subscriberStatus = $row['subscriber_status'];
+                $subscriptionTierName = $row['subscription_tier_name'];
+                $billingCycleName = $row['billing_cycle_name'];
+
+                $badgeClass = $subscriberStatus == 'Active' ? 'badge-light-success' : 'badge-light-danger';
+                $subscriberStatusBadge = '<div class="badge ' . $badgeClass . ' fw-bold">' . $subscriberStatus . '</div>';
 
                 $subscriberIDEncrypted = $securityModel->encryptData($subscriberID);
 
@@ -33,7 +51,17 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                     'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $subscriberID .'">
                                     </div>',
-                    'BILLING_CYCLE_NAME' => $subscriberName,
+                    'SUBSCRIBER' => '<div class="d-flex align-items-center">
+                                        <div class="d-flex flex-column">
+                                            <span class="text-gray-800 fw-bold mb-1">'. $subscriberName .'</span>
+                                            <small class="text-gray-600">'. $companyName .'</small>
+                                        </div>
+                                    </div>',
+                    'PHONE' => $phone,
+                    'EMAIL' => $email,
+                    'SUBSCRIPTION_TIER' => $subscriptionTierName,
+                    'BILLING_CYCLE' => $billingCycleName,
+                    'SUBSCRIBER_STATUS' => $subscriberStatusBadge,
                     'LINK' => $pageLink .'&id='. $subscriberIDEncrypted
                 ];
             }

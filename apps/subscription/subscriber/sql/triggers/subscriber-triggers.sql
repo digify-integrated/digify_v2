@@ -41,15 +41,15 @@ BEGIN
     END IF;
 END //
 
-DROP TRIGGER IF EXISTS subscription_trigger_insert//
-CREATE TRIGGER subscription_trigger_insert
-AFTER INSERT ON subscription
+DROP TRIGGER IF EXISTS subscriber_trigger_insert//
+CREATE TRIGGER subscriber_trigger_insert
+AFTER INSERT ON subscriber
 FOR EACH ROW
 BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Subscription created.';
+    DECLARE audit_log TEXT DEFAULT 'Subscriber created.';
 
     INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('subscription', NEW.subscription_id, audit_log, NEW.last_log_by, NOW());
+    VALUES ('subscriber', NEW.subscriber_id, audit_log, NEW.last_log_by, NOW());
 END //
 
 DROP TRIGGER IF EXISTS subscription_trigger_update//

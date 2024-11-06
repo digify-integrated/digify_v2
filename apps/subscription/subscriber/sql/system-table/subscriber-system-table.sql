@@ -3,7 +3,7 @@
 DROP TABLE IF EXISTS subscriber;
 CREATE TABLE subscriber (
     subscriber_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    subscriber_name VARCHAR(100) NOT NULL,
+    subscriber_name VARCHAR(500) NOT NULL,
     company_name VARCHAR(200),
     phone VARCHAR(50),
     email VARCHAR(255),

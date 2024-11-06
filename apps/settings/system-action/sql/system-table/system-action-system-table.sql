@@ -27,7 +27,8 @@ INSERT INTO `system_action` (`system_action_id`, `system_action_name`, `system_a
 (12, 'Add Role System Action Access', 'Access to add the role system action access.'),
 (13, 'Update Role System Action Access', 'Access to update the role system action access.'),
 (14, 'Delete Role System Action Access', 'Access to delete the role system action access.'),
-(15, 'Add File Extension Access', 'Access to assign the file extension to the upload setting.'),
-(16, 'Delete File Extension Access', 'Access to delete the file extension to the upload setting.');
+(15, 'Add Subscription', 'Access to add subscription to a subscriber.'),
+(16, 'Delete Subscription', 'Access to delete subscription to a subscriber.');
+(17, 'Generate Subscription Code', 'Access to delete subscription to a subscriber.'),;
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

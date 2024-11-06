@@ -2,6 +2,9 @@
     'use strict';
 
     $(function() {
+        generateDropdownOptions('subscription tier options');
+        generateDropdownOptions('billing cycle options');
+
         if($('#subscriber-form').length){
             subscriberForm();
         }
@@ -13,11 +16,41 @@ function subscriberForm(){
         rules: {
             subscriber_name: {
                 required: true
+            },
+            company_name: {
+                required: true
+            },
+            phone: {
+                required: true
+            },
+            email: {
+                required: true
+            },
+            subscription_tier_id: {
+                required: true
+            },
+            billing_cycle_id: {
+                required: true
             }
         },
         messages: {
             subscriber_name: {
-                required: 'Enter the display name'
+                required: 'Enter the subscriber name'
+            },
+            company_name: {
+                required: 'Enter the company'
+            },
+            phone: {
+                required: 'Enter the phone'
+            },
+            email: {
+                required: 'Enter the email'
+            },
+            subscription_tier_id: {
+                required: 'Choose the subscription tier'
+            },
+            billing_cycle_id: {
+                required: 'Choose the billing cycle'
             }
         },
         errorPlacement: function(error, element) {
@@ -71,4 +104,51 @@ function subscriberForm(){
             return false;
         }
     });
+}
+
+function generateDropdownOptions(type){
+    switch (type) {
+        case 'subscription tier options':
+            
+            $.ajax({
+                url: 'apps/subscription/subscription-tier/view/_subscription_tier_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type
+                },
+                success: function(response) {
+                    $('#subscription_tier_id').select2({
+                        data: response
+                    }).on('change', function (e) {
+                        $(this).valid()
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+        case 'billing cycle options':
+            
+            $.ajax({
+                url: 'apps/subscription/billing-cycle/view/_billing_cycle_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type
+                },
+                success: function(response) {
+                    $('#billing_cycle_id').select2({
+                        data: response
+                    }).on('change', function (e) {
+                        $(this).valid()
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+    }
 }

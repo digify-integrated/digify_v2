@@ -37,6 +37,11 @@ BEGIN
         
         SET p_new_billing_cycle_id = LAST_INSERT_ID();
     ELSE
+        UPDATE subscriber
+        SET billing_cycle_name = p_billing_cycle_name,
+            last_log_by = p_last_log_by
+        WHERE billing_cycle_id = p_billing_cycle_id;
+
         UPDATE billing_cycle
         SET billing_cycle_name = p_billing_cycle_name,
             last_log_by = p_last_log_by

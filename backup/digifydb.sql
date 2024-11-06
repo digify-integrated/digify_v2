@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 05, 2024 at 10:26 AM
+-- Generation Time: Nov 06, 2024 at 10:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -174,6 +174,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkRoleUserAccountExist` (IN `p_r
     WHERE role_user_account_id = p_role_user_account_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkSubscriberExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkSubscriberExist` (IN `p_subscriber_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM subscriber
+    WHERE subscriber_id = p_subscriber_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkSubscriptionTierExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkSubscriptionTierExist` (IN `p_subscription_tier_id` INT)   BEGIN
 	SELECT COUNT(*) AS total
@@ -309,6 +316,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteRoleUserAccount` (IN `p_role_
     START TRANSACTION;
 
     DELETE FROM role_user_account WHERE role_user_account_id = p_role_user_account_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteSubscriber`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteSubscriber` (IN `p_subscriber_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM subscription WHERE subscriber_id = p_subscriber_id;
+    DELETE FROM subscriber WHERE subscriber_id = p_subscriber_id;
 
     COMMIT;
 END$$
@@ -552,6 +574,43 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateRoleUserAccountTable` (IN `
     ORDER BY file_as;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateSubscriberOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateSubscriberOptions` ()   BEGIN
+	SELECT subscriber_id, subscriber_name 
+    FROM subscriber 
+    ORDER BY subscriber_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateSubscriberTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateSubscriberTable` (IN `p_filter_by_subscription_tier` TEXT, IN `p_filter_by_billing_cycle` TEXT)   BEGIN
+    DECLARE query TEXT;
+    DECLARE filter_conditions TEXT DEFAULT '';
+
+    SET query = 'SELECT subscriber_id, subscriber_name, company_name, phone, email, subscriber_status, subscription_tier_name, billing_cycle_name 
+                FROM subscriber ';
+
+    IF p_filter_by_subscription_tier IS NOT NULL AND p_filter_by_subscription_tier <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' subscription_tier_id IN (', p_filter_by_subscription_tier, ')');
+    END IF;
+
+    IF p_filter_by_billing_cycle IS NOT NULL AND p_filter_by_billing_cycle <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+        SET filter_conditions = CONCAT(filter_conditions, ' billing_cycle_id IN (', p_filter_by_billing_cycle, ')');
+    END IF;
+
+    IF filter_conditions <> '' THEN
+        SET query = CONCAT(query, ' WHERE ', filter_conditions);
+    END IF;
+
+    SET query = CONCAT(query, ' ORDER BY subscriber_name');
+
+    PREPARE stmt FROM query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateSubscriptionTierOptions`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateSubscriptionTierOptions` ()   BEGIN
 	SELECT subscription_tier_id, subscription_tier_name 
@@ -693,6 +752,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getSecuritySetting` (IN `p_security
 	WHERE security_setting_id = p_security_setting_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getSubscriber`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getSubscriber` (IN `p_subscriber_id` INT)   BEGIN
+	SELECT * FROM subscriber
+	WHERE subscriber_id = p_subscriber_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getSubscriptionTier`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getSubscriptionTier` (IN `p_subscription_tier_id` INT)   BEGIN
 	SELECT * FROM subscription_tier
@@ -823,6 +888,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBillingCycle` (IN `p_billing_cy
         
         SET p_new_billing_cycle_id = LAST_INSERT_ID();
     ELSE
+        UPDATE subscriber
+        SET billing_cycle_name = p_billing_cycle_name,
+            last_log_by = p_last_log_by
+        WHERE billing_cycle_id = p_billing_cycle_id;
+
         UPDATE billing_cycle
         SET billing_cycle_name = p_billing_cycle_name,
             last_log_by = p_last_log_by
@@ -970,6 +1040,40 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveRole` (IN `p_role_id` INT, IN `
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveSubscriber`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveSubscriber` (IN `p_subscriber_id` INT, IN `p_subscriber_name` VARCHAR(500), IN `p_company_name` VARCHAR(200), IN `p_phone` VARCHAR(50), IN `p_email` VARCHAR(255), IN `p_subscriber_status` VARCHAR(10), IN `p_subscription_tier_id` INT, IN `p_subscription_tier_name` VARCHAR(100), IN `p_billing_cycle_id` INT, IN `p_billing_cycle_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_subscriber_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_subscriber_id IS NULL OR NOT EXISTS (SELECT 1 FROM subscriber WHERE subscriber_id = p_subscriber_id) THEN
+        INSERT INTO subscriber (subscriber_name, company_name, phone, email, subscription_tier_id, subscription_tier_name, billing_cycle_id, billing_cycle_name, last_log_by) 
+        VALUES(p_subscriber_name, p_company_name, p_phone, p_email, p_subscription_tier_id, p_subscription_tier_name, p_billing_cycle_id, p_billing_cycle_name, p_last_log_by);
+        
+        SET p_new_subscriber_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE subscriber
+        SET subscriber_name = p_subscriber_name,
+            company_name = p_company_name,
+            phone = p_phone,
+            email = p_email,
+            subscriber_status = p_subscriber_status,
+            subscription_tier_id = p_subscription_tier_id,
+            subscription_tier_name = p_subscription_tier_name,
+            billing_cycle_id = p_billing_cycle_id,
+            billing_cycle_name = p_billing_cycle_name,
+            last_log_by = p_last_log_by
+        WHERE subscriber_id = p_subscriber_id;
+
+        SET p_new_subscriber_id = p_subscriber_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveSubscriptionTier`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveSubscriptionTier` (IN `p_subscription_tier_id` INT, IN `p_subscription_tier_name` VARCHAR(100), IN `p_subscription_tier_description` VARCHAR(500), IN `p_order_sequence` TINYINT(10), IN `p_last_log_by` INT, OUT `p_new_subscription_tier_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -985,6 +1089,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveSubscriptionTier` (IN `p_subscr
         
         SET p_new_subscription_tier_id = LAST_INSERT_ID();
     ELSE
+        UPDATE subscriber
+        SET subscription_tier_name = p_subscription_tier_name,
+            last_log_by = p_last_log_by
+        WHERE subscription_tier_id = p_subscription_tier_id;
+
         UPDATE subscription_tier
         SET subscription_tier_name = p_subscription_tier_name,
             subscription_tier_description = p_subscription_tier_description,
@@ -1326,7 +1435,13 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (10, 'billing_cycle', 5, 'Billing cycle changed.<br/><br/>Billing Cycle Name: test -> tests<br/>', 2, '2024-11-05 11:00:07', '2024-11-05 11:00:07'),
 (11, 'billing_cycle', 5, 'Billing cycle changed.<br/><br/>Billing Cycle Name: tests -> testsss<br/>', 2, '2024-11-05 11:00:14', '2024-11-05 11:00:14'),
 (12, 'billing_cycle', 6, 'Billing cycle created.', 2, '2024-11-05 11:00:19', '2024-11-05 11:00:19'),
-(13, 'billing_cycle', 5, 'Billing cycle created.', 2, '2024-11-05 11:00:53', '2024-11-05 11:00:53');
+(13, 'billing_cycle', 5, 'Billing cycle created.', 2, '2024-11-05 11:00:53', '2024-11-05 11:00:53'),
+(14, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-05 10:28:59 -> 2024-11-06 13:02:30<br/>', 1, '2024-11-06 13:02:30', '2024-11-06 13:02:30'),
+(15, 'subscriber', 1, 'Subscriber changed.<br/><br/>Subscriber Name: asd -> asdasdasd<br/>Company Name: asd -> asdasdas<br/>Phone: asd -> asddasd<br/>Email: asd@gmail.com -> asasdasdasdd@gmail.com<br/>Status: Active -> Inactive<br/>Subscription Tier: Accelerator -> Infinity<br/>Billing Cycle: Yearly -> Monthly<br/>', 2, '2024-11-06 16:15:59', '2024-11-06 16:15:59'),
+(16, 'subscriber', 2, 'Subscriber created.', 2, '2024-11-06 16:19:20', '2024-11-06 16:19:20'),
+(17, 'subscriber', 2, 'Subscriber changed.<br/><br/>Subscriber Name: asd -> asdasdasd<br/>Company Name: dasda -> dasdaasdasd<br/>Phone: asda -> asdaasdasd<br/>Email: sdasd@gmail.com -> sdasdasdasdasd@gmail.com<br/>Status: Active -> Inactive<br/>Subscription Tier: LaunchPad -> Infinity<br/>Billing Cycle: Monthly -> Yearly<br/>', 2, '2024-11-06 16:22:39', '2024-11-06 16:22:39'),
+(18, 'subscriber', 1, 'Subscriber created.', 2, '2024-11-06 16:29:22', '2024-11-06 16:29:22'),
+(19, 'subscriber', 2, 'Subscriber created.', 2, '2024-11-06 16:29:22', '2024-11-06 16:29:22');
 
 -- --------------------------------------------------------
 
@@ -1978,22 +2093,23 @@ CREATE TABLE `role_system_action_permission` (
 --
 
 INSERT INTO `role_system_action_permission` (`role_system_action_permission_id`, `role_id`, `role_name`, `system_action_id`, `system_action_name`, `system_action_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'Update System Settings', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(2, 1, 'Administrator', 2, 'Update Security Settings', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(10, 1, 'Administrator', 10, 'Update Role Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(11, 1, 'Administrator', 11, 'Delete Role Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(15, 1, 'Administrator', 15, 'Add File Extension Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(16, 1, 'Administrator', 16, 'Delete File Extension Access', 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1);
+(1, 1, 'Administrator', 1, 'Update System Settings', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(2, 1, 'Administrator', 2, 'Update Security Settings', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(10, 1, 'Administrator', 10, 'Update Role Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(11, 1, 'Administrator', 11, 'Delete Role Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(15, 1, 'Administrator', 15, 'Add Subscription', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(16, 1, 'Administrator', 16, 'Delete Subscription', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
+(17, 1, 'Administrator', 17, 'Generate Subscription Code', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1);
 
 -- --------------------------------------------------------
 
@@ -2078,6 +2194,160 @@ CREATE TRIGGER `security_setting_trigger_update` AFTER UPDATE ON `security_setti
     IF audit_log <> 'Security setting changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('security_setting', NEW.security_setting_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `subscriber`
+--
+
+DROP TABLE IF EXISTS `subscriber`;
+CREATE TABLE `subscriber` (
+  `subscriber_id` int(10) UNSIGNED NOT NULL,
+  `subscriber_name` varchar(100) NOT NULL,
+  `company_name` varchar(200) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `subscriber_status` varchar(10) DEFAULT 'Active',
+  `subscription_tier_id` int(10) UNSIGNED NOT NULL,
+  `subscription_tier_name` varchar(100) NOT NULL,
+  `billing_cycle_id` int(10) UNSIGNED NOT NULL,
+  `billing_cycle_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `subscriber`
+--
+
+INSERT INTO `subscriber` (`subscriber_id`, `subscriber_name`, `company_name`, `phone`, `email`, `subscriber_status`, `subscription_tier_id`, `subscription_tier_name`, `billing_cycle_id`, `billing_cycle_name`, `created_date`, `last_log_by`) VALUES
+(1, 'asdasdasd', 'asdasdas', 'asddasd', 'asasdasdasdd@gmail.com', 'Inactive', 4, 'Infinity', 1, 'Monthly', '2024-11-06 16:12:00', 2),
+(2, 'asdasdasd', 'dasdaasdasd', 'asdaasdasd', 'sdasdasdasdasd@gmail.com', 'Inactive', 4, 'Infinity', 2, 'Yearly', '2024-11-06 16:19:20', 2);
+
+--
+-- Triggers `subscriber`
+--
+DROP TRIGGER IF EXISTS `subscriber_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `subscriber_trigger_insert` AFTER INSERT ON `subscriber` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Subscriber created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('subscriber', NEW.subscriber_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `subscriber_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `subscriber_trigger_update` AFTER UPDATE ON `subscriber` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Subscriber changed.<br/><br/>';
+
+    IF NEW.subscriber_name <> OLD.subscriber_name THEN
+        SET audit_log = CONCAT(audit_log, "Subscriber Name: ", OLD.subscriber_name, " -> ", NEW.subscriber_name, "<br/>");
+    END IF;
+
+    IF NEW.company_name <> OLD.company_name THEN
+        SET audit_log = CONCAT(audit_log, "Company Name: ", OLD.company_name, " -> ", NEW.company_name, "<br/>");
+    END IF;
+
+    IF NEW.phone <> OLD.phone THEN
+        SET audit_log = CONCAT(audit_log, "Phone: ", OLD.phone, " -> ", NEW.phone, "<br/>");
+    END IF;
+
+    IF NEW.email <> OLD.email THEN
+        SET audit_log = CONCAT(audit_log, "Email: ", OLD.email, " -> ", NEW.email, "<br/>");
+    END IF;
+
+    IF NEW.subscriber_status <> OLD.subscriber_status THEN
+        SET audit_log = CONCAT(audit_log, "Status: ", OLD.subscriber_status, " -> ", NEW.subscriber_status, "<br/>");
+    END IF;
+
+    IF NEW.subscription_tier_name <> OLD.subscription_tier_name THEN
+        SET audit_log = CONCAT(audit_log, "Subscription Tier: ", OLD.subscription_tier_name, " -> ", NEW.subscription_tier_name, "<br/>");
+    END IF;
+
+    IF NEW.billing_cycle_name <> OLD.billing_cycle_name THEN
+        SET audit_log = CONCAT(audit_log, "Billing Cycle: ", OLD.billing_cycle_name, " -> ", NEW.billing_cycle_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Subscriber changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('subscriber', NEW.subscriber_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `subscription`
+--
+
+DROP TABLE IF EXISTS `subscription`;
+CREATE TABLE `subscription` (
+  `subscription_id` int(10) UNSIGNED NOT NULL,
+  `subscriber_id` int(10) UNSIGNED NOT NULL,
+  `subscription_start_date` date DEFAULT NULL,
+  `subscription_end_date` date DEFAULT NULL,
+  `deactivation_date` date DEFAULT NULL,
+  `grace_period` int(11) DEFAULT NULL,
+  `no_users` int(11) NOT NULL,
+  `remarks` varchar(1000) DEFAULT NULL,
+  `created_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Triggers `subscription`
+--
+DROP TRIGGER IF EXISTS `subscription_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `subscription_trigger_insert` AFTER INSERT ON `subscription` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Subscription created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('subscription', NEW.subscription_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `subscription_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `subscription_trigger_update` AFTER UPDATE ON `subscription` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Subscription changed.<br/><br/>';
+
+    IF NEW.subscription_start_date <> OLD.subscription_start_date THEN
+        SET audit_log = CONCAT(audit_log, "Subscription Start Date: ", OLD.subscription_start_date, " -> ", NEW.subscription_start_date, "<br/>");
+    END IF;
+
+    IF NEW.subscription_end_date <> OLD.subscription_end_date THEN
+        SET audit_log = CONCAT(audit_log, "Subscription End Date: ", OLD.subscription_end_date, " -> ", NEW.subscription_end_date, "<br/>");
+    END IF;
+
+    IF NEW.deactivation_date <> OLD.deactivation_date THEN
+        SET audit_log = CONCAT(audit_log, "Deactivation Date: ", OLD.deactivation_date, " -> ", NEW.deactivation_date, "<br/>");
+    END IF;
+
+    IF NEW.grace_period <> OLD.grace_period THEN
+        SET audit_log = CONCAT(audit_log, "Deactivation Date: ", OLD.grace_period, " Day(s) -> ", NEW.grace_period, " Day(s)<br/>");
+    END IF;
+
+    IF NEW.no_users <> OLD.no_users THEN
+        SET audit_log = CONCAT(audit_log, "Number of Users: ", OLD.no_users, " Day(s) -> ", NEW.no_users, " Day(s)<br/>");
+    END IF;
+
+    IF NEW.remarks <> OLD.remarks THEN
+        SET audit_log = CONCAT(audit_log, "Remarks: ", OLD.remarks, " Day(s) -> ", NEW.remarks, " Day(s)<br/>");
+    END IF;
+    
+    IF audit_log <> 'Subscription changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('subscription', NEW.subscription_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -2187,56 +2457,22 @@ CREATE TABLE `system_action` (
 --
 
 INSERT INTO `system_action` (`system_action_id`, `system_action_name`, `system_action_description`, `created_date`, `last_log_by`) VALUES
-(1, 'Update System Settings', 'Access to update the system settings.', '2024-10-13 16:12:41', 1),
-(2, 'Update Security Settings', 'Access to update the security settings.', '2024-10-13 16:12:41', 1),
-(3, 'Activate User Account', 'Access to activate the user account.', '2024-10-13 16:12:41', 2),
-(4, 'Deactivate User Account', 'Access to deactivate the user account.', '2024-10-13 16:12:41', 1),
-(5, 'Lock User Account', 'Access to lock the user account.', '2024-10-13 16:12:41', 1),
-(6, 'Unlock User Account', 'Access to unlock the user account.', '2024-10-13 16:12:41', 1),
-(7, 'Add Role User Account', 'Access to assign roles to user account.', '2024-10-13 16:12:41', 1),
-(8, 'Delete Role User Account', 'Access to delete roles to user account.', '2024-10-13 16:12:41', 1),
-(9, 'Add Role Access', 'Access to add role access.', '2024-10-13 16:12:41', 1),
-(10, 'Update Role Access', 'Access to update role access.', '2024-10-13 16:12:41', 1),
-(11, 'Delete Role Access', 'Access to delete role access.', '2024-10-13 16:12:41', 1),
-(12, 'Add Role System Action Access', 'Access to add the role system action access.', '2024-10-13 16:12:41', 1),
-(13, 'Update Role System Action Access', 'Access to update the role system action access.', '2024-10-13 16:12:41', 1),
-(14, 'Delete Role System Action Access', 'Access to delete the role system action access.', '2024-10-13 16:12:41', 1),
-(15, 'Add File Extension Access', 'Access to assign the file extension to the upload setting.', '2024-10-13 16:12:41', 1),
-(16, 'Delete File Extension Access', 'Access to delete the file extension to the upload setting.', '2024-10-13 16:12:41', 1);
-
---
--- Triggers `system_action`
---
-DROP TRIGGER IF EXISTS `system_action_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `system_action_trigger_insert` AFTER INSERT ON `system_action` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'System action created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('system_action', NEW.system_action_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `system_action_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `system_action_trigger_update` AFTER UPDATE ON `system_action` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'System action changed.<br/><br/>';
-
-    IF NEW.system_action_name <> OLD.system_action_name THEN
-        SET audit_log = CONCAT(audit_log, "System Action Name: ", OLD.system_action_name, " -> ", NEW.system_action_name, "<br/>");
-    END IF;
-
-    IF NEW.system_action_description <> OLD.system_action_description THEN
-        SET audit_log = CONCAT(audit_log, "System Action Description: ", OLD.system_action_description, " -> ", NEW.system_action_description, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'System action changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('system_action', NEW.system_action_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
+(1, 'Update System Settings', 'Access to update the system settings.', '2024-11-06 16:52:04', 1),
+(2, 'Update Security Settings', 'Access to update the security settings.', '2024-11-06 16:52:04', 1),
+(3, 'Activate User Account', 'Access to activate the user account.', '2024-11-06 16:52:04', 1),
+(4, 'Deactivate User Account', 'Access to deactivate the user account.', '2024-11-06 16:52:04', 1),
+(5, 'Lock User Account', 'Access to lock the user account.', '2024-11-06 16:52:04', 1),
+(6, 'Unlock User Account', 'Access to unlock the user account.', '2024-11-06 16:52:04', 1),
+(7, 'Add Role User Account', 'Access to assign roles to user account.', '2024-11-06 16:52:04', 1),
+(8, 'Delete Role User Account', 'Access to delete roles to user account.', '2024-11-06 16:52:04', 1),
+(9, 'Add Role Access', 'Access to add role access.', '2024-11-06 16:52:04', 1),
+(10, 'Update Role Access', 'Access to update role access.', '2024-11-06 16:52:04', 1),
+(11, 'Delete Role Access', 'Access to delete role access.', '2024-11-06 16:52:04', 1),
+(12, 'Add Role System Action Access', 'Access to add the role system action access.', '2024-11-06 16:52:04', 1),
+(13, 'Update Role System Action Access', 'Access to update the role system action access.', '2024-11-06 16:52:04', 1),
+(14, 'Delete Role System Action Access', 'Access to delete the role system action access.', '2024-11-06 16:52:04', 1),
+(15, 'Add Subscription', 'Access to add subscription to a subscriber.', '2024-11-06 16:52:04', 1),
+(16, 'Delete Subscription', 'Access to delete subscription to a subscriber.', '2024-11-06 16:52:04', 1);
 
 -- --------------------------------------------------------
 
@@ -2415,7 +2651,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `linked_id`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, NULL, '2024-10-13 16:12:00', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-05 10:28:59', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'JJ%2FKRCkkUH2nIh5gZhIhBoNN6wRnE73x804YXeYmfM4%3D', NULL, '2024-10-13 16:12:00', 1);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-06 13:02:30', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '4mVW%2Beu%2BcGDkUmVkY5Is%2B7GiQCZVg6lUt65VmmulNxY%3D', NULL, '2024-10-13 16:12:00', 1);
 
 --
 -- Triggers `user_account`
@@ -2638,6 +2874,26 @@ ALTER TABLE `security_setting`
   ADD KEY `security_setting_index_security_setting_id` (`security_setting_id`);
 
 --
+-- Indexes for table `subscriber`
+--
+ALTER TABLE `subscriber`
+  ADD PRIMARY KEY (`subscriber_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `subscriber_index_subscriber_id` (`subscriber_id`),
+  ADD KEY `subscriber_index_subscriber_status` (`subscriber_status`),
+  ADD KEY `subscriber_index_subscription_tier_id` (`subscription_tier_id`),
+  ADD KEY `subscriber_index_billing_cycle_id` (`billing_cycle_id`);
+
+--
+-- Indexes for table `subscription`
+--
+ALTER TABLE `subscription`
+  ADD PRIMARY KEY (`subscription_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `subscription_index_subscription_id` (`subscription_id`),
+  ADD KEY `subscription_index_subscriber_id` (`subscriber_id`);
+
+--
 -- Indexes for table `subscription_code`
 --
 ALTER TABLE `subscription_code`
@@ -2719,7 +2975,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `billing_cycle`
@@ -2803,7 +3059,7 @@ ALTER TABLE `role_permission`
 -- AUTO_INCREMENT for table `role_system_action_permission`
 --
 ALTER TABLE `role_system_action_permission`
-  MODIFY `role_system_action_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `role_system_action_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `role_user_account`
@@ -2816,6 +3072,18 @@ ALTER TABLE `role_user_account`
 --
 ALTER TABLE `security_setting`
   MODIFY `security_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `subscriber`
+--
+ALTER TABLE `subscriber`
+  MODIFY `subscriber_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `subscription`
+--
+ALTER TABLE `subscription`
+  MODIFY `subscription_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `subscription_code`
@@ -2833,7 +3101,7 @@ ALTER TABLE `subscription_tier`
 -- AUTO_INCREMENT for table `system_action`
 --
 ALTER TABLE `system_action`
-  MODIFY `system_action_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `system_action_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `system_subscription`
@@ -2978,6 +3246,21 @@ ALTER TABLE `role_user_account`
   ADD CONSTRAINT `role_user_account_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
+-- Constraints for table `subscriber`
+--
+ALTER TABLE `subscriber`
+  ADD CONSTRAINT `subscriber_ibfk_1` FOREIGN KEY (`subscription_tier_id`) REFERENCES `subscription_tier` (`subscription_tier_id`),
+  ADD CONSTRAINT `subscriber_ibfk_2` FOREIGN KEY (`billing_cycle_id`) REFERENCES `billing_cycle` (`billing_cycle_id`),
+  ADD CONSTRAINT `subscriber_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `subscription`
+--
+ALTER TABLE `subscription`
+  ADD CONSTRAINT `subscription_ibfk_1` FOREIGN KEY (`subscriber_id`) REFERENCES `subscriber` (`subscriber_id`),
+  ADD CONSTRAINT `subscription_ibfk_2` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
 -- Constraints for table `subscription_code`
 --
 ALTER TABLE `subscription_code`
@@ -2988,6 +3271,12 @@ ALTER TABLE `subscription_code`
 --
 ALTER TABLE `subscription_tier`
   ADD CONSTRAINT `subscription_tier_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `system_action`
+--
+ALTER TABLE `system_action`
+  ADD CONSTRAINT `system_action_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

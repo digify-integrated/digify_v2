@@ -39,6 +39,11 @@ BEGIN
         
         SET p_new_subscription_tier_id = LAST_INSERT_ID();
     ELSE
+        UPDATE subscriber
+        SET subscription_tier_name = p_subscription_tier_name,
+            last_log_by = p_last_log_by
+        WHERE subscription_tier_id = p_subscription_tier_id;
+
         UPDATE subscription_tier
         SET subscription_tier_name = p_subscription_tier_name,
             subscription_tier_description = p_subscription_tier_description,

@@ -2,6 +2,9 @@
     'use strict';
 
     $(function() {
+        generateDropdownOptions('subscription tier options');
+        generateDropdownOptions('billing cycle options');
+
         if($('#subscriber-table').length){
             subscriberTable('#subscriber-table');
         }
@@ -147,6 +150,17 @@
             var length = $(this).val(); 
             table.page.len(length).draw();
         });
+
+        $(document).on('click','#apply-filter',function() {
+            subscriberTable('#subscriber-table');
+        });
+
+        $(document).on('click', '#reset-filter', function() {
+            $('#subscription_tier_filter').val(null).trigger('change');
+            $('#billing_cycle_filter').val(null).trigger('change');
+            
+            subscriberTable('#subscriber-table');
+        });
     });
 })(jQuery);
 
@@ -156,15 +170,26 @@ function subscriberTable(datatable_name) {
     const type = 'subscriber table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
+    const subscription_tier_filter = $('#subscription_tier_filter').val();
+    const billing_cycle_filter = $('#billing_cycle_filter').val();
+
 
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'BILLING_CYCLE_NAME' }
+        { data: 'SUBSCRIBER' },
+        { data: 'PHONE' },
+        { data: 'EMAIL' },
+        { data: 'SUBSCRIPTION_TIER' },
+        { data: 'BILLING_CYCLE' },
+        { data: 'SUBSCRIBER_STATUS' }
     ];
 
     const columnDefs = [
         { width: '5%', bSortable: false, targets: 0, responsivePriority: 1 },
-        { width: 'auto', targets: 1, responsivePriority: 2 }
+        { width: 'auto', targets: 1, responsivePriority: 2 },
+        { width: 'auto', targets: 2, responsivePriority: 3 },
+        { width: 'auto', targets: 3, responsivePriority: 4 },
+        { width: 'auto', targets: 4, responsivePriority: 5 }
     ];
 
     const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
@@ -177,7 +202,9 @@ function subscriberTable(datatable_name) {
             data: {
                 type: type,
                 page_id: page_id,
-                page_link: page_link
+                page_link: page_link,
+                subscription_tier_filter: subscription_tier_filter,
+                billing_cycle_filter: billing_cycle_filter
             },
             dataSrc: '',
             error: function(xhr, status, error) {
@@ -185,7 +212,7 @@ function subscriberTable(datatable_name) {
             }
         },
         lengthChange: false,
-        order: [[2, 'asc']],
+        order: [[1, 'asc']],
         columns: columns,
         columnDefs: columnDefs,
         lengthMenu: lengthMenu,
@@ -210,4 +237,49 @@ function subscriberTable(datatable_name) {
 
     destroyDatatable(datatable_name);
     $(datatable_name).dataTable(settings);
+}
+
+function generateDropdownOptions(type){
+    switch (type) {
+        case 'subscription tier options':
+            
+            $.ajax({
+                url: 'apps/subscription/subscription-tier/view/_subscription_tier_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type,
+                    multiple : 1
+                },
+                success: function(response) {
+                    $('#subscription_tier_filter').select2({
+                        data: response
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+        case 'billing cycle options':
+            
+            $.ajax({
+                url: 'apps/subscription/billing-cycle/view/_billing_cycle_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type,
+                    multiple : 1
+                },
+                success: function(response) {
+                    $('#billing_cycle_filter').select2({
+                        data: response
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+    }
 }

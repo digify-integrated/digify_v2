@@ -99,8 +99,9 @@ INSERT INTO `role_system_action_permission` (`role_system_action_permission_id`,
 (12, 1, 'Administrator', 12, 'Add Role System Action Access', 1),
 (13, 1, 'Administrator', 13, 'Update Role System Action Access', 1),
 (14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1),
-(15, 1, 'Administrator', 15, 'Add File Extension Access', 1),
-(16, 1, 'Administrator', 16, 'Delete File Extension Access', 1);
+(15, 1, 'Administrator', 15, 'Add Subscription', 1),
+(16, 1, 'Administrator', 16, 'Delete Subscription', 1),
+(17, 1, 'Administrator', 17, 'Generate Subscription Code', 1);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 

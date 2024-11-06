@@ -7,24 +7,30 @@ require_once '../../../../components/model/security-model.php';
 require_once '../../../../components/model/system-model.php';
 require_once '../../../settings/authentication/model/authentication-model.php';
 require_once '../../subscriber/model/subscriber-model.php';
+require_once '../../subscription-tier/model/subscription-tier-model.php';
+require_once '../../billing-cycle/model/billing-cycle-model.php';
 require_once '../../../settings/security-setting/model/security-setting-model.php';
 
 require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new SubscriberController(new SubscriberModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SecurityModel(), new SystemModel());
+$controller = new SubscriberController(new SubscriberModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SubscriptionTierModel(new DatabaseModel), new BillingCycleModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
 class SubscriberController {
     private $subscriberModel;
     private $authenticationModel;
+    private $subscriptionTierModel;
+    private $billingCycleModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(SubscriberModel $subscriberModel, AuthenticationModel $authenticationModel, SecurityModel $securityModel, SystemModel $systemModel) {
+    public function __construct(SubscriberModel $subscriberModel, AuthenticationModel $authenticationModel, SubscriptionTierModel $subscriptionTierModel, BillingCycleModel $billingCycleModel, SecurityModel $securityModel, SystemModel $systemModel) {
         $this->subscriberModel = $subscriberModel;
         $this->authenticationModel = $authenticationModel;
+        $this->subscriptionTierModel = $subscriptionTierModel;
+        $this->billingCycleModel = $billingCycleModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
     }
@@ -148,8 +154,19 @@ class SubscriberController {
 
         $userID = $_SESSION['user_account_id'];
         $subscriberName = filter_input(INPUT_POST, 'subscriber_name', FILTER_SANITIZE_STRING);
+        $companyName = filter_input(INPUT_POST, 'company_name', FILTER_SANITIZE_STRING);
+        $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
+        $subscriptionTierID = filter_input(INPUT_POST, 'subscription_tier_id', FILTER_VALIDATE_INT);
+        $billingCycleID = filter_input(INPUT_POST, 'billing_cycle_id', FILTER_VALIDATE_INT);
+
+        $subscriptionTierDetails = $this->subscriptionTierModel->getSubscriptionTier($subscriptionTierID);
+        $subscriptionTierName = $subscriptionTierDetails['subscription_tier_name'];
+
+        $billingCycleDetails = $this->billingCycleModel->getBillingCycle($billingCycleID);
+        $billingCycleName = $billingCycleDetails['billing_cycle_name'];
         
-        $subscriberID = $this->subscriberModel->saveSubscriber(null, $subscriberName, $userID);
+        $subscriberID = $this->subscriberModel->saveSubscriber(null, $subscriberName, $companyName, $phone, $email, '', $subscriptionTierID, $subscriptionTierName, $billingCycleID, $billingCycleName, $userID);
     
         $response = [
             'success' => true,
@@ -177,6 +194,12 @@ class SubscriberController {
         $userID = $_SESSION['user_account_id'];
         $subscriberID = filter_input(INPUT_POST, 'subscriber_id', FILTER_VALIDATE_INT);
         $subscriberName = filter_input(INPUT_POST, 'subscriber_name', FILTER_SANITIZE_STRING);
+        $companyName = filter_input(INPUT_POST, 'company_name', FILTER_SANITIZE_STRING);
+        $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
+        $subscriptionTierID = filter_input(INPUT_POST, 'subscription_tier_id', FILTER_VALIDATE_INT);
+        $billingCycleID = filter_input(INPUT_POST, 'billing_cycle_id', FILTER_VALIDATE_INT);
+        $subscriberStatus = filter_input(INPUT_POST, 'subscriber_status', FILTER_SANITIZE_STRING);
     
         $checkSubscriberExist = $this->subscriberModel->checkSubscriberExist($subscriberID);
         $total = $checkSubscriberExist['total'] ?? 0;
@@ -193,8 +216,14 @@ class SubscriberController {
             echo json_encode($response);
             exit;
         }
+        
+        $subscriptionTierDetails = $this->subscriptionTierModel->getSubscriptionTier($subscriptionTierID);
+        $subscriptionTierName = $subscriptionTierDetails['subscription_tier_name'];
 
-        $this->subscriberModel->saveSubscriber($subscriberID, $subscriberName, $userID);
+        $billingCycleDetails = $this->billingCycleModel->getBillingCycle($billingCycleID);
+        $billingCycleName = $billingCycleDetails['billing_cycle_name'];
+        
+        $subscriberID = $this->subscriberModel->saveSubscriber($subscriberID, $subscriberName, $companyName, $phone, $email, $subscriberStatus, $subscriptionTierID, $subscriptionTierName, $billingCycleID, $billingCycleName, $userID);
             
         $response = [
             'success' => true,
@@ -412,11 +441,16 @@ class SubscriberController {
         }
 
         $subscriberDetails = $this->subscriberModel->getSubscriber($subscriberID);
+
         $response = [
             'success' => true,
             'subscriberName' => $subscriberDetails['subscriber_name'] ?? null,
-            'subscriberDescription' => $subscriberDetails['subscriber_description'] ?? null,
-            'orderSequence' => $subscriberDetails['order_sequence'] ?? null
+            'companyName' => $subscriberDetails['company_name'] ?? null,
+            'phone' => $subscriberDetails['phone'] ?? null,
+            'email' => $subscriberDetails['email'] ?? null,
+            'subscriberStatus' => $subscriberDetails['subscriber_status'] ?? null,
+            'subscriptionTierID' => $subscriberDetails['subscription_tier_id'] ?? null,
+            'billingCycleID' => $subscriberDetails['billing_cycle_id'] ?? null
         ];
 
         echo json_encode($response);

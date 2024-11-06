@@ -27,10 +27,18 @@ class SubscriberModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function saveSubscriber($p_subscriber_id, $p_subscriber_name, $p_last_log_by) {
-        $stmt = $this->db->getConnection()->prepare('CALL saveSubscriber(:p_subscriber_id, :p_subscriber_name, :p_last_log_by, @p_new_subscriber_id)');
+    public function saveSubscriber($p_subscriber_id, $p_subscriber_name, $p_company_name, $p_phone, $p_email, $p_subscriber_status, $p_subscription_tier_id, $p_subscription_tier_name, $p_billing_cycle_id, $p_billing_cycle_name, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL saveSubscriber(:p_subscriber_id, :p_subscriber_name, :p_company_name, :p_phone, :p_email, :p_subscriber_status, :p_subscription_tier_id, :p_subscription_tier_name, :p_billing_cycle_id, :p_billing_cycle_name, :p_last_log_by, @p_new_subscriber_id)');
         $stmt->bindValue(':p_subscriber_id', $p_subscriber_id, PDO::PARAM_INT);
         $stmt->bindValue(':p_subscriber_name', $p_subscriber_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_company_name', $p_company_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_phone', $p_phone, PDO::PARAM_STR);
+        $stmt->bindValue(':p_email', $p_email, PDO::PARAM_STR);
+        $stmt->bindValue(':p_subscriber_status', $p_subscriber_status, PDO::PARAM_STR);
+        $stmt->bindValue(':p_subscription_tier_id', $p_subscription_tier_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_subscription_tier_name', $p_subscription_tier_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_billing_cycle_id', $p_billing_cycle_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_billing_cycle_name', $p_billing_cycle_name, PDO::PARAM_STR);
         $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
         $stmt->execute();
 
