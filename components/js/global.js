@@ -48,6 +48,31 @@
             });
         }
 
+        if ($('.daterange-picker').length) {
+            $('.daterange-picker').daterangepicker({
+                    showDropdowns: true,
+                    autoApply: false,
+                    minYear: 1901,
+                    maxYear: parseInt(moment().format("YYYY"),12)
+                }
+            );
+
+            $('.daterange-picker').val('');
+        }
+
+        if ($('.single-date-picker').length) {
+            $('.single-date-picker').daterangepicker({
+                    singleDatePicker: true,
+                    showDropdowns: true,
+                    autoApply: true,
+                    minYear: 1901,
+                    maxYear: parseInt(moment().format("YYYY"),12)
+                }
+            );
+
+            $('.single-date-picker').val('');
+        }
+
         $(document).on('click','.datatable-checkbox-children',function() {
             toggleActionDropdown();
         });

@@ -35,7 +35,6 @@ CREATE TABLE subscription (
     subscription_start_date DATE,
     subscription_end_date DATE,
     deactivation_date DATE,
-    grace_period INT,
     no_users INT NOT NULL,
     remarks VARCHAR(1000),
     created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

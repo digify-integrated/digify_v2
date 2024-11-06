@@ -163,11 +163,9 @@
         <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5 gs-7" id="subscription-table">
             <thead>
                 <tr class="fw-semibold fs-6 text-gray-800">
-                    <th>Start Date</th>
-                    <th>End Date</th>
+                    <th>Subscription Date</th>
                     <th>Deactivation Date</th>
                     <th>Number of Users</th>
-                    <th>Status</th>
                     <th>Remarks</th>
                     <th>Action</th>
                 </tr>
@@ -190,21 +188,27 @@
             <div class="modal-body">
                 <form id="subscription-form" method="post" action="#">
                     <div class="row mb-6">
-                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="subscriber_name">
-                            <span class="required">Subscription Start Date</span>
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="subscription_date">
+                            <span class="required">Subscription Date</span>
                         </label>
 
                         <div class="col-lg-8">
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <div class="position-relative d-flex align-items-center">
-                                        <!--begin::Icon-->
-                                        <i class="ki-outline ki-calendar-8 fs-2 position-absolute mx-4"></i>                                <!--end::Icon-->
+                                <input type="text" class="form-control form-control-solid daterange-picker" id="subscription_date" name="subscription_date" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="deactivation_date">
+                            <span class="required">Deactivation Date</span>
+                        </label>
 
-                                        <!--begin::Datepicker-->
-                                        <input class="form-control form-control-solid ps-12" placeholder="Select a date" name="due_date"/>
-                                        <!--end::Datepicker-->
-                                    </div>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                <input type="text" class="form-control form-control-solid single-date-picker" id="deactivation_date" name="deactivation_date" autocomplete="off">
                                 </div>
                             </div>
                         </div>
@@ -240,7 +244,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="subscription-form" class="btn btn-primary" id="submit-assignment">Assign</button>
+                <button type="submit" form="subscription-form" class="btn btn-primary" id="submit-subsription">Submit</button>
             </div>
         </div>
     </div>

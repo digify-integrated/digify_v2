@@ -11,6 +11,10 @@
             subscriberForm();
         }
 
+        if($('#subscription-form').length){
+            subscriptionForm();
+        }
+
         $(document).on('click','#edit-details',function() {
             displayDetails('get subscriber details');
         });
@@ -176,6 +180,87 @@ function subscriberForm(){
                 complete: function() {
                     enableFormSubmitButton('submit-data');
                     logNotesMain('subscriber', subscriber_id);
+                }
+            });
+        
+            return false;
+        }
+    });
+}
+
+function subscriptionForm(){
+    $('#subscription-form').validate({
+        rules: {
+            subscription_date: {
+                required: true
+            },
+            deactivation_date: {
+                required: true
+            },
+            no_users: {
+                required: true
+            }
+        },
+        messages: {
+            subscription_date: {
+                required: 'Choose the subscription date'
+            },
+            deactivation_date: {
+                required: 'Choose the deactivation date'
+            },
+            no_users: {
+                required: 'Enter the number of users'
+            }
+        },
+        errorPlacement: function(error, element) {
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
+        },
+        highlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
+        },
+        unhighlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
+        },
+        submitHandler: function(form) {
+            const subscriber_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'add subscription';
+          
+            $.ajax({
+                type: 'POST',
+                url: 'apps/subscription/subscriber/controller/subscriber-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&subscriber_id=' + encodeURIComponent(subscriber_id),
+                dataType: 'json',
+                beforeSend: function() {
+                    disableFormSubmitButton('submit-subsription');
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = page_link;
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                },
+                complete: function() {
+                    enableFormSubmitButton('submit-subsription');
                 }
             });
         

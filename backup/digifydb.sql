@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 06, 2024 at 10:32 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Nov 06, 2024 at 02:43 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -2296,62 +2296,11 @@ CREATE TABLE `subscription` (
   `subscription_start_date` date DEFAULT NULL,
   `subscription_end_date` date DEFAULT NULL,
   `deactivation_date` date DEFAULT NULL,
-  `grace_period` int(11) DEFAULT NULL,
   `no_users` int(11) NOT NULL,
   `remarks` varchar(1000) DEFAULT NULL,
   `created_date` datetime NOT NULL DEFAULT current_timestamp(),
   `last_log_by` int(10) UNSIGNED DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Triggers `subscription`
---
-DROP TRIGGER IF EXISTS `subscription_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `subscription_trigger_insert` AFTER INSERT ON `subscription` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Subscription created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('subscription', NEW.subscription_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `subscription_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `subscription_trigger_update` AFTER UPDATE ON `subscription` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Subscription changed.<br/><br/>';
-
-    IF NEW.subscription_start_date <> OLD.subscription_start_date THEN
-        SET audit_log = CONCAT(audit_log, "Subscription Start Date: ", OLD.subscription_start_date, " -> ", NEW.subscription_start_date, "<br/>");
-    END IF;
-
-    IF NEW.subscription_end_date <> OLD.subscription_end_date THEN
-        SET audit_log = CONCAT(audit_log, "Subscription End Date: ", OLD.subscription_end_date, " -> ", NEW.subscription_end_date, "<br/>");
-    END IF;
-
-    IF NEW.deactivation_date <> OLD.deactivation_date THEN
-        SET audit_log = CONCAT(audit_log, "Deactivation Date: ", OLD.deactivation_date, " -> ", NEW.deactivation_date, "<br/>");
-    END IF;
-
-    IF NEW.grace_period <> OLD.grace_period THEN
-        SET audit_log = CONCAT(audit_log, "Deactivation Date: ", OLD.grace_period, " Day(s) -> ", NEW.grace_period, " Day(s)<br/>");
-    END IF;
-
-    IF NEW.no_users <> OLD.no_users THEN
-        SET audit_log = CONCAT(audit_log, "Number of Users: ", OLD.no_users, " Day(s) -> ", NEW.no_users, " Day(s)<br/>");
-    END IF;
-
-    IF NEW.remarks <> OLD.remarks THEN
-        SET audit_log = CONCAT(audit_log, "Remarks: ", OLD.remarks, " Day(s) -> ", NEW.remarks, " Day(s)<br/>");
-    END IF;
-    
-    IF audit_log <> 'Subscription changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('subscription', NEW.subscription_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -3230,14 +3179,6 @@ ALTER TABLE `role_permission`
   ADD CONSTRAINT `role_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
--- Constraints for table `role_system_action_permission`
---
-ALTER TABLE `role_system_action_permission`
-  ADD CONSTRAINT `role_system_action_permission_ibfk_1` FOREIGN KEY (`system_action_id`) REFERENCES `system_action` (`system_action_id`),
-  ADD CONSTRAINT `role_system_action_permission_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
-  ADD CONSTRAINT `role_system_action_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
 -- Constraints for table `role_user_account`
 --
 ALTER TABLE `role_user_account`
@@ -3246,37 +3187,11 @@ ALTER TABLE `role_user_account`
   ADD CONSTRAINT `role_user_account_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
--- Constraints for table `subscriber`
---
-ALTER TABLE `subscriber`
-  ADD CONSTRAINT `subscriber_ibfk_1` FOREIGN KEY (`subscription_tier_id`) REFERENCES `subscription_tier` (`subscription_tier_id`),
-  ADD CONSTRAINT `subscriber_ibfk_2` FOREIGN KEY (`billing_cycle_id`) REFERENCES `billing_cycle` (`billing_cycle_id`),
-  ADD CONSTRAINT `subscriber_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
 -- Constraints for table `subscription`
 --
 ALTER TABLE `subscription`
   ADD CONSTRAINT `subscription_ibfk_1` FOREIGN KEY (`subscriber_id`) REFERENCES `subscriber` (`subscriber_id`),
   ADD CONSTRAINT `subscription_ibfk_2` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `subscription_code`
---
-ALTER TABLE `subscription_code`
-  ADD CONSTRAINT `subscription_code_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `subscription_tier`
---
-ALTER TABLE `subscription_tier`
-  ADD CONSTRAINT `subscription_tier_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `system_action`
---
-ALTER TABLE `system_action`
-  ADD CONSTRAINT `system_action_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
