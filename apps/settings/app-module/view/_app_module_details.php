@@ -49,58 +49,40 @@
 
             <form id="app-module-form" class="form" method="post" action="#">
                 <div class="card-body border-top p-9">
-                    <div class="row mb-6">
-                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="app_module_name">
+                    <div class="fv-row mb-4">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="app_module_name">
                             <span class="required">Display Name</span>
                         </label>
 
-                        <div class="col-lg-8">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <input type="text" class="form-control form-control-solid maxlength" id="app_module_name" name="app_module_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
-                                </div>
-                            </div>
-                        </div>
+                        <input type="text" class="form-control" id="app_module_name" name="app_module_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
                     </div>
-
-                    <div class="row mb-6">
-                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="app_module_description">
+                    <div class="fv-row mb-4">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="app_module_description">
                             <span class="required">Description</span>
                         </label>
 
-                        <div class="col-lg-8">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <textarea class="form-control form-control-solid maxlength" id="app_module_description" name="app_module_description" maxlength="500" rows="3" <?php echo $disabled ?>></textarea>
-                                </div>
-                            </div>
-                        </div>
+                        <textarea class="form-control" id="app_module_description" name="app_module_description" maxlength="500" rows="3" <?php echo $disabled ?>></textarea>
                     </div>
 
-                    <div class="row mb-6">
-                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="menu_item_id">
-                            <span class="required">Default Page</span>
-                        </label>
+                    <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
+                        <div class="col">
+                            <div class="fv-row mb-7">
+                                <label class="fs-6 fw-semibold form-label mt-3" for="menu_item_id">
+                                    <span class="required">Default Page</span>
+                                </label>
 
-                        <div class="col-lg-8">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <select id="menu_item_id" name="menu_item_id" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
-                                </div>
+                                <select id="menu_item_id" name="menu_item_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
                             </div>
+
                         </div>
-                    </div>
 
-                    <div class="row mb-0">
-                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="order_sequence">
-                            <span class="required">Order Sequence</span>
-                        </label>
+                        <div class="col">
+                            <div class="fv-row mb-7">
+                                <label class="fs-6 fw-semibold form-label mt-3" for="order_sequence">
+                                    <span class="required">Order Sequence</span>
+                                </label>
 
-                        <div class="col-lg-8">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <input type="number" class="form-control form-control-solid" id="order_sequence" name="order_sequence" min="0" <?php echo $disabled ?>>
-                                </div>
+                                <input type="number" class="form-control" id="order_sequence" name="order_sequence" min="0" <?php echo $disabled ?>>
                             </div>
                         </div>
                     </div>

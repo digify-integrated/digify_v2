@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 06, 2024 at 02:43 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Nov 07, 2024 at 10:25 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -366,11 +366,7 @@ END$$
 
 DROP PROCEDURE IF EXISTS `exportData`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `exportData` (IN `p_table_name` VARCHAR(255), IN `p_columns` TEXT, IN `p_ids` TEXT)   BEGIN
-    SET @sql = CONCAT('SELECT ', p_columns, ' FROM ', p_table_name);
-
-    IF p_table_name = 'app_module' THEN
-        SET @sql = CONCAT(@sql, ' WHERE app_module_id IN (', p_ids, ')');
-    END IF;
+    SET @sql = CONCAT('SELECT ', p_columns, ' FROM ', p_table_name, ' WHERE ', p_table_name, '_id IN (', p_ids, ')');
 
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
@@ -1055,6 +1051,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveSubscriber` (IN `p_subscriber_i
         
         SET p_new_subscriber_id = LAST_INSERT_ID();
     ELSE
+        UPDATE subscription
+        SET subscriber_name = p_subscriber_name,
+            last_log_by = p_last_log_by
+        WHERE subscriber_id = p_subscriber_id;
+
         UPDATE subscriber
         SET subscriber_name = p_subscriber_name,
             company_name = p_company_name,
@@ -1398,8 +1399,7 @@ CREATE TABLE `app_module` (
 --
 
 INSERT INTO `app_module` (`app_module_id`, `app_module_name`, `app_module_description`, `app_logo`, `menu_item_id`, `menu_item_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../settings/app-module/image/logo/1/Pboex.png', 1, 'App Module', 100, '2024-11-03 20:44:42', 1),
-(2, 'Subscription', 'Generate subscription code and manage renewals', '../settings/app-module/image/logo/2/FhZ0gHo.png', 10, 'Subscriber', 99, '2024-11-03 20:44:42', 1);
+(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control.', '../settings/app-module/image/logo/1/Pboex.png', 1, 'App Module', 100, '2024-11-03 20:44:42', 2);
 
 -- --------------------------------------------------------
 
@@ -1441,59 +1441,9 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (16, 'subscriber', 2, 'Subscriber created.', 2, '2024-11-06 16:19:20', '2024-11-06 16:19:20'),
 (17, 'subscriber', 2, 'Subscriber changed.<br/><br/>Subscriber Name: asd -> asdasdasd<br/>Company Name: dasda -> dasdaasdasd<br/>Phone: asda -> asdaasdasd<br/>Email: sdasd@gmail.com -> sdasdasdasdasd@gmail.com<br/>Status: Active -> Inactive<br/>Subscription Tier: LaunchPad -> Infinity<br/>Billing Cycle: Monthly -> Yearly<br/>', 2, '2024-11-06 16:22:39', '2024-11-06 16:22:39'),
 (18, 'subscriber', 1, 'Subscriber created.', 2, '2024-11-06 16:29:22', '2024-11-06 16:29:22'),
-(19, 'subscriber', 2, 'Subscriber created.', 2, '2024-11-06 16:29:22', '2024-11-06 16:29:22');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `billing_cycle`
---
-
-DROP TABLE IF EXISTS `billing_cycle`;
-CREATE TABLE `billing_cycle` (
-  `billing_cycle_id` int(10) UNSIGNED NOT NULL,
-  `billing_cycle_name` varchar(100) NOT NULL,
-  `created_date` datetime DEFAULT current_timestamp(),
-  `last_log_by` int(10) UNSIGNED DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `billing_cycle`
---
-
-INSERT INTO `billing_cycle` (`billing_cycle_id`, `billing_cycle_name`, `created_date`, `last_log_by`) VALUES
-(1, 'Monthly', '2024-11-05 10:34:13', 1),
-(2, 'Yearly', '2024-11-05 10:34:13', 1);
-
---
--- Triggers `billing_cycle`
---
-DROP TRIGGER IF EXISTS `billing_cycle_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `billing_cycle_trigger_insert` AFTER INSERT ON `billing_cycle` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Billing cycle created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('billing_cycle', NEW.billing_cycle_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `billing_cycle_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `billing_cycle_trigger_update` AFTER UPDATE ON `billing_cycle` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Billing cycle changed.<br/><br/>';
-
-    IF NEW.billing_cycle_name <> OLD.billing_cycle_name THEN
-        SET audit_log = CONCAT(audit_log, "Billing Cycle Name: ", OLD.billing_cycle_name, " -> ", NEW.billing_cycle_name, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'Billing cycle changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('billing_cycle', NEW.billing_cycle_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
+(19, 'subscriber', 2, 'Subscriber created.', 2, '2024-11-06 16:29:22', '2024-11-06 16:29:22'),
+(20, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-06 13:02:30 -> 2024-11-07 08:44:17<br/>', 1, '2024-11-07 08:44:17', '2024-11-07 08:44:17'),
+(21, 'subscriber', 1, 'Subscriber changed.<br/><br/>Status: Inactive -> Active<br/>Subscription Tier: Infinity -> Accelerator<br/>', 2, '2024-11-07 10:18:20', '2024-11-07 10:18:20');
 
 -- --------------------------------------------------------
 
@@ -1595,64 +1545,6 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `internal_notes`
---
-
-DROP TABLE IF EXISTS `internal_notes`;
-CREATE TABLE `internal_notes` (
-  `internal_notes_id` int(10) UNSIGNED NOT NULL,
-  `table_name` varchar(255) NOT NULL,
-  `reference_id` int(11) NOT NULL,
-  `internal_note` varchar(5000) NOT NULL,
-  `internal_note_by` int(10) UNSIGNED NOT NULL,
-  `internal_note_date` datetime NOT NULL DEFAULT current_timestamp(),
-  `created_date` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `internal_notes`
---
-
-INSERT INTO `internal_notes` (`internal_notes_id`, `table_name`, `reference_id`, `internal_note`, `internal_note_by`, `internal_note_date`, `created_date`) VALUES
-(1, 'app_module', 1, 'asdasdasdasdsdad', 1, '2024-10-21 16:32:17', '2024-10-21 16:32:17'),
-(37, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:43', '2024-10-21 21:07:43'),
-(38, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:47', '2024-10-21 21:07:47'),
-(39, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:47', '2024-10-21 21:07:47'),
-(40, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:47', '2024-10-21 21:07:47'),
-(41, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:56', '2024-10-21 21:07:56'),
-(42, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:56', '2024-10-21 21:07:56'),
-(43, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:56', '2024-10-21 21:07:56'),
-(44, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:56', '2024-10-21 21:07:56'),
-(45, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:56', '2024-10-21 21:07:56'),
-(46, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:56', '2024-10-21 21:07:56'),
-(47, 'app_module', 1, 'asdasdasd', 1, '2024-10-21 21:07:56', '2024-10-21 21:07:56');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `internal_notes_attachment`
---
-
-DROP TABLE IF EXISTS `internal_notes_attachment`;
-CREATE TABLE `internal_notes_attachment` (
-  `internal_notes_attachment_id` int(10) UNSIGNED NOT NULL,
-  `internal_notes_id` int(10) UNSIGNED NOT NULL,
-  `attachment_file_name` varchar(500) NOT NULL,
-  `attachment_file_size` double NOT NULL,
-  `attachment_path_file` varchar(500) NOT NULL,
-  `created_date` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `internal_notes_attachment`
---
-
-INSERT INTO `internal_notes_attachment` (`internal_notes_attachment_id`, `internal_notes_id`, `attachment_file_name`, `attachment_file_size`, `attachment_path_file`, `created_date`) VALUES
-(1, 1, 'asdasd', 120000, 'asdasd.pdf', '2024-10-21 21:14:26');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `menu_group`
 --
 
@@ -1740,19 +1632,15 @@ CREATE TABLE `menu_item` (
 --
 
 INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `menu_item_icon`, `app_module_id`, `app_module_name`, `parent_id`, `parent_name`, `table_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-11-04 11:21:52', 2),
-(2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-11-04 11:21:52', 2),
-(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-11-04 11:21:52', 2),
-(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-11-04 11:21:52', 2),
-(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-11-04 11:21:52', 2),
-(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-04 11:21:52', 2),
-(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-04 11:21:52', 2),
-(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-04 11:21:52', 2),
-(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-04 11:21:52', 2),
-(10, 'Subscriber', 'subscriber.php', 'ki-outline ki-people', 2, 'Subscription', 0, '', 'subscriber', 1, '2024-11-04 11:21:52', 2),
-(11, 'Subscription Settings', '', '', 2, 'Subscription', 0, '', '', 100, '2024-11-04 11:21:52', 2),
-(12, 'Subscription Tier', 'subscription-tier.php', 'ki-outline ki-abstract-19', 2, 'Subscription', 11, 'Subscription Settings', 'subscription_tier', 1, '2024-11-04 11:21:52', 2),
-(13, 'Billing Cycle', 'billing-cycle.php', 'ki-outline ki-cheque', 2, 'Subscription', 11, 'Subscription Settings', 'billing_cycle', 1, '2024-11-04 11:21:52', 2);
+(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-11-07 10:43:23', 2),
+(2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-11-07 10:43:23', 2),
+(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-11-07 10:43:23', 2),
+(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-11-07 10:43:23', 2),
+(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-11-07 10:43:23', 2),
+(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-07 10:43:23', 2),
+(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-07 10:43:23', 2),
+(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-07 10:43:23', 2),
+(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-07 10:43:23', 2);
 
 -- --------------------------------------------------------
 
@@ -2023,7 +1911,7 @@ CREATE TABLE `role` (
 --
 
 INSERT INTO `role` (`role_id`, `role_name`, `role_description`, `created_date`, `last_log_by`) VALUES
-(1, 'Administrator', 'Full access to all features and data within the system. This role have similar access levels to the Admin but is not as powerful as the Super Admin.', '2024-11-03 20:31:39', 1);
+(1, 'Administrator', 'Full access to all features and data within the system. This role have similar access levels to the Admin but is not as powerful as the Super Admin.', '2024-11-07 10:43:23', 1);
 
 -- --------------------------------------------------------
 
@@ -2055,19 +1943,15 @@ CREATE TABLE `role_permission` (
 --
 
 INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `menu_item_id`, `menu_item_name`, `read_access`, `write_access`, `create_access`, `delete_access`, `import_access`, `export_access`, `log_notes_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(2, 1, 'Administrator', 2, 'General Settings', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(3, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(8, 1, 'Administrator', 8, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(10, 1, 'Administrator', 10, 'Subscriber', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(11, 1, 'Administrator', 11, 'Subscription Settings', 1, 0, 0, 0, 0, 0, 0, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(12, 1, 'Administrator', 12, 'Subscription Tier', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1),
-(13, 1, 'Administrator', 13, 'Billing Cycle', 1, 1, 1, 1, 1, 1, 1, '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1);
+(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(2, 1, 'Administrator', 2, 'General Settings', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(3, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(8, 1, 'Administrator', 8, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1);
 
 -- --------------------------------------------------------
 
@@ -2093,23 +1977,20 @@ CREATE TABLE `role_system_action_permission` (
 --
 
 INSERT INTO `role_system_action_permission` (`role_system_action_permission_id`, `role_id`, `role_name`, `system_action_id`, `system_action_name`, `system_action_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'Update System Settings', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(2, 1, 'Administrator', 2, 'Update Security Settings', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(10, 1, 'Administrator', 10, 'Update Role Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(11, 1, 'Administrator', 11, 'Delete Role Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(15, 1, 'Administrator', 15, 'Add Subscription', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(16, 1, 'Administrator', 16, 'Delete Subscription', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1),
-(17, 1, 'Administrator', 17, 'Generate Subscription Code', 1, '2024-11-06 17:12:00', '2024-11-06 17:12:00', 1);
+(1, 1, 'Administrator', 1, 'Update System Settings', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(2, 1, 'Administrator', 2, 'Update Security Settings', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(10, 1, 'Administrator', 10, 'Update Role Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(11, 1, 'Administrator', 11, 'Delete Role Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1);
 
 -- --------------------------------------------------------
 
@@ -2134,7 +2015,7 @@ CREATE TABLE `role_user_account` (
 --
 
 INSERT INTO `role_user_account` (`role_user_account_id`, `role_id`, `role_name`, `user_account_id`, `file_as`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 2, 'Administrator', '2024-11-03 20:31:39', '2024-11-03 20:31:39', 1);
+(1, 1, 'Administrator', 2, 'Administrator', '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1);
 
 -- --------------------------------------------------------
 
@@ -2194,193 +2075,6 @@ CREATE TRIGGER `security_setting_trigger_update` AFTER UPDATE ON `security_setti
     IF audit_log <> 'Security setting changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('security_setting', NEW.security_setting_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `subscriber`
---
-
-DROP TABLE IF EXISTS `subscriber`;
-CREATE TABLE `subscriber` (
-  `subscriber_id` int(10) UNSIGNED NOT NULL,
-  `subscriber_name` varchar(100) NOT NULL,
-  `company_name` varchar(200) DEFAULT NULL,
-  `phone` varchar(50) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `subscriber_status` varchar(10) DEFAULT 'Active',
-  `subscription_tier_id` int(10) UNSIGNED NOT NULL,
-  `subscription_tier_name` varchar(100) NOT NULL,
-  `billing_cycle_id` int(10) UNSIGNED NOT NULL,
-  `billing_cycle_name` varchar(100) NOT NULL,
-  `created_date` datetime DEFAULT current_timestamp(),
-  `last_log_by` int(10) UNSIGNED DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `subscriber`
---
-
-INSERT INTO `subscriber` (`subscriber_id`, `subscriber_name`, `company_name`, `phone`, `email`, `subscriber_status`, `subscription_tier_id`, `subscription_tier_name`, `billing_cycle_id`, `billing_cycle_name`, `created_date`, `last_log_by`) VALUES
-(1, 'asdasdasd', 'asdasdas', 'asddasd', 'asasdasdasdd@gmail.com', 'Inactive', 4, 'Infinity', 1, 'Monthly', '2024-11-06 16:12:00', 2),
-(2, 'asdasdasd', 'dasdaasdasd', 'asdaasdasd', 'sdasdasdasdasd@gmail.com', 'Inactive', 4, 'Infinity', 2, 'Yearly', '2024-11-06 16:19:20', 2);
-
---
--- Triggers `subscriber`
---
-DROP TRIGGER IF EXISTS `subscriber_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `subscriber_trigger_insert` AFTER INSERT ON `subscriber` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Subscriber created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('subscriber', NEW.subscriber_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `subscriber_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `subscriber_trigger_update` AFTER UPDATE ON `subscriber` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Subscriber changed.<br/><br/>';
-
-    IF NEW.subscriber_name <> OLD.subscriber_name THEN
-        SET audit_log = CONCAT(audit_log, "Subscriber Name: ", OLD.subscriber_name, " -> ", NEW.subscriber_name, "<br/>");
-    END IF;
-
-    IF NEW.company_name <> OLD.company_name THEN
-        SET audit_log = CONCAT(audit_log, "Company Name: ", OLD.company_name, " -> ", NEW.company_name, "<br/>");
-    END IF;
-
-    IF NEW.phone <> OLD.phone THEN
-        SET audit_log = CONCAT(audit_log, "Phone: ", OLD.phone, " -> ", NEW.phone, "<br/>");
-    END IF;
-
-    IF NEW.email <> OLD.email THEN
-        SET audit_log = CONCAT(audit_log, "Email: ", OLD.email, " -> ", NEW.email, "<br/>");
-    END IF;
-
-    IF NEW.subscriber_status <> OLD.subscriber_status THEN
-        SET audit_log = CONCAT(audit_log, "Status: ", OLD.subscriber_status, " -> ", NEW.subscriber_status, "<br/>");
-    END IF;
-
-    IF NEW.subscription_tier_name <> OLD.subscription_tier_name THEN
-        SET audit_log = CONCAT(audit_log, "Subscription Tier: ", OLD.subscription_tier_name, " -> ", NEW.subscription_tier_name, "<br/>");
-    END IF;
-
-    IF NEW.billing_cycle_name <> OLD.billing_cycle_name THEN
-        SET audit_log = CONCAT(audit_log, "Billing Cycle: ", OLD.billing_cycle_name, " -> ", NEW.billing_cycle_name, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'Subscriber changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('subscriber', NEW.subscriber_id, audit_log, NEW.last_log_by, NOW());
-    END IF;
-END
-$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `subscription`
---
-
-DROP TABLE IF EXISTS `subscription`;
-CREATE TABLE `subscription` (
-  `subscription_id` int(10) UNSIGNED NOT NULL,
-  `subscriber_id` int(10) UNSIGNED NOT NULL,
-  `subscription_start_date` date DEFAULT NULL,
-  `subscription_end_date` date DEFAULT NULL,
-  `deactivation_date` date DEFAULT NULL,
-  `no_users` int(11) NOT NULL,
-  `remarks` varchar(1000) DEFAULT NULL,
-  `created_date` datetime NOT NULL DEFAULT current_timestamp(),
-  `last_log_by` int(10) UNSIGNED DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `subscription_code`
---
-
-DROP TABLE IF EXISTS `subscription_code`;
-CREATE TABLE `subscription_code` (
-  `subscription_code_id` int(11) NOT NULL,
-  `subscription_code_for` varchar(500) NOT NULL,
-  `subscription_code` text NOT NULL,
-  `subscription_tier` varchar(500) DEFAULT NULL,
-  `billing_cycle` varchar(500) DEFAULT NULL,
-  `subscription_validity` varchar(500) DEFAULT NULL,
-  `no_users` varchar(500) DEFAULT NULL,
-  `subscription_status` varchar(500) DEFAULT NULL,
-  `created_date` datetime NOT NULL DEFAULT current_timestamp(),
-  `last_log_by` int(10) UNSIGNED DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `subscription_tier`
---
-
-DROP TABLE IF EXISTS `subscription_tier`;
-CREATE TABLE `subscription_tier` (
-  `subscription_tier_id` int(10) UNSIGNED NOT NULL,
-  `subscription_tier_name` varchar(100) NOT NULL,
-  `subscription_tier_description` varchar(500) NOT NULL,
-  `order_sequence` tinyint(10) NOT NULL,
-  `created_date` datetime DEFAULT current_timestamp(),
-  `last_log_by` int(10) UNSIGNED DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `subscription_tier`
---
-
-INSERT INTO `subscription_tier` (`subscription_tier_id`, `subscription_tier_name`, `subscription_tier_description`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'LaunchPad', 'A solid foundation for startups ready to take off, featuring essential tools for online presence.', 1, '2024-11-04 11:40:37', 2),
-(2, 'Accelerator', 'Aimed at propelling businesses forward with enhanced features for growth and engagement.', 2, '2024-11-04 11:40:37', 1),
-(3, 'Elevate', 'A powerful suite for businesses focused on optimizing their operations and driving performance.', 3, '2024-11-04 11:40:37', 1),
-(4, 'Infinity', 'A one-time investment for perpetual access to a comprehensive solution that adapts with your business needs.', 4, '2024-11-04 11:40:37', 1);
-
---
--- Triggers `subscription_tier`
---
-DROP TRIGGER IF EXISTS `subscription_tier_trigger_insert`;
-DELIMITER $$
-CREATE TRIGGER `subscription_tier_trigger_insert` AFTER INSERT ON `subscription_tier` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Subscription tier created.';
-
-    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-    VALUES ('subscription_tier', NEW.subscription_tier_id, audit_log, NEW.last_log_by, NOW());
-END
-$$
-DELIMITER ;
-DROP TRIGGER IF EXISTS `subscription_tier_trigger_update`;
-DELIMITER $$
-CREATE TRIGGER `subscription_tier_trigger_update` AFTER UPDATE ON `subscription_tier` FOR EACH ROW BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Subscription tier changed.<br/><br/>';
-
-    IF NEW.subscription_tier_name <> OLD.subscription_tier_name THEN
-        SET audit_log = CONCAT(audit_log, "Subscription Tier Name: ", OLD.subscription_tier_name, " -> ", NEW.subscription_tier_name, "<br/>");
-    END IF;
-
-    IF NEW.subscription_tier_description <> OLD.subscription_tier_description THEN
-        SET audit_log = CONCAT(audit_log, "Subscription Tier Description: ", OLD.subscription_tier_description, " -> ", NEW.subscription_tier_description, "<br/>");
-    END IF;
-
-    IF NEW.order_sequence <> OLD.order_sequence THEN
-        SET audit_log = CONCAT(audit_log, "Order Sequence: ", OLD.order_sequence, " -> ", NEW.order_sequence, "<br/>");
-    END IF;
-    
-    IF audit_log <> 'Subscription tier changed.<br/><br/>' THEN
-        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
-        VALUES ('subscription_tier', NEW.subscription_tier_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -2571,6 +2265,7 @@ CREATE TABLE `user_account` (
   `username` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `profile_picture` varchar(500) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
   `locked` varchar(255) NOT NULL DEFAULT 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0%3D',
   `active` varchar(255) NOT NULL DEFAULT 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0%3D',
   `last_failed_login_attempt` datetime DEFAULT NULL,
@@ -2589,7 +2284,6 @@ CREATE TABLE `user_account` (
   `last_password_reset` datetime DEFAULT NULL,
   `multiple_session` varchar(255) DEFAULT 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D',
   `session_token` varchar(255) DEFAULT NULL,
-  `linked_id` int(10) UNSIGNED DEFAULT NULL,
   `created_date` datetime DEFAULT current_timestamp(),
   `last_log_by` int(10) UNSIGNED DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2598,9 +2292,9 @@ CREATE TABLE `user_account` (
 -- Dumping data for table `user_account`
 --
 
-INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `linked_id`, `created_date`, `last_log_by`) VALUES
-(1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, NULL, '2024-10-13 16:12:00', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-06 13:02:30', 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '4mVW%2Beu%2BcGDkUmVkY5Is%2B7GiQCZVg6lUt65VmmulNxY%3D', NULL, '2024-10-13 16:12:00', 1);
+INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
+(1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 1),
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 1);
 
 --
 -- Triggers `user_account`
@@ -2630,6 +2324,10 @@ CREATE TRIGGER `user_account_trigger_update` AFTER UPDATE ON `user_account` FOR 
 
     IF NEW.username <> OLD.username THEN
         SET audit_log = CONCAT(audit_log, "Username: ", OLD.username, " -> ", NEW.username, "<br/>");
+    END IF;
+
+    IF NEW.phone <> OLD.phone THEN
+        SET audit_log = CONCAT(audit_log, "Phone: ", OLD.phone, " -> ", NEW.phone, "<br/>");
     END IF;
 
     IF NEW.last_failed_login_attempt <> OLD.last_failed_login_attempt THEN
@@ -2680,38 +2378,12 @@ ALTER TABLE `audit_log`
   ADD KEY `audit_log_index_changed_by` (`changed_by`);
 
 --
--- Indexes for table `billing_cycle`
---
-ALTER TABLE `billing_cycle`
-  ADD PRIMARY KEY (`billing_cycle_id`),
-  ADD KEY `last_log_by` (`last_log_by`),
-  ADD KEY `billing_cycle_index_billing_cycle_id` (`billing_cycle_id`);
-
---
 -- Indexes for table `email_setting`
 --
 ALTER TABLE `email_setting`
   ADD PRIMARY KEY (`email_setting_id`),
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `email_setting_index_email_setting_id` (`email_setting_id`);
-
---
--- Indexes for table `internal_notes`
---
-ALTER TABLE `internal_notes`
-  ADD PRIMARY KEY (`internal_notes_id`),
-  ADD KEY `internal_note_by` (`internal_note_by`),
-  ADD KEY `internal_notes_index_internal_notes_id` (`internal_notes_id`),
-  ADD KEY `internal_notes_index_table_name` (`table_name`),
-  ADD KEY `internal_notes_index_reference_id` (`reference_id`);
-
---
--- Indexes for table `internal_notes_attachment`
---
-ALTER TABLE `internal_notes_attachment`
-  ADD PRIMARY KEY (`internal_notes_attachment_id`),
-  ADD KEY `internal_notes_attachment_index_internal_notes_id` (`internal_notes_attachment_id`),
-  ADD KEY `internal_notes_attachment_index_table_name` (`internal_notes_id`);
 
 --
 -- Indexes for table `menu_group`
@@ -2823,47 +2495,6 @@ ALTER TABLE `security_setting`
   ADD KEY `security_setting_index_security_setting_id` (`security_setting_id`);
 
 --
--- Indexes for table `subscriber`
---
-ALTER TABLE `subscriber`
-  ADD PRIMARY KEY (`subscriber_id`),
-  ADD KEY `last_log_by` (`last_log_by`),
-  ADD KEY `subscriber_index_subscriber_id` (`subscriber_id`),
-  ADD KEY `subscriber_index_subscriber_status` (`subscriber_status`),
-  ADD KEY `subscriber_index_subscription_tier_id` (`subscription_tier_id`),
-  ADD KEY `subscriber_index_billing_cycle_id` (`billing_cycle_id`);
-
---
--- Indexes for table `subscription`
---
-ALTER TABLE `subscription`
-  ADD PRIMARY KEY (`subscription_id`),
-  ADD KEY `last_log_by` (`last_log_by`),
-  ADD KEY `subscription_index_subscription_id` (`subscription_id`),
-  ADD KEY `subscription_index_subscriber_id` (`subscriber_id`);
-
---
--- Indexes for table `subscription_code`
---
-ALTER TABLE `subscription_code`
-  ADD PRIMARY KEY (`subscription_code_id`),
-  ADD KEY `last_log_by` (`last_log_by`),
-  ADD KEY `subscription_code_index_subscription_code_id` (`subscription_code_id`),
-  ADD KEY `subscription_code_index_subscription_code` (`subscription_code`(768)),
-  ADD KEY `subscription_code_index_subscription_tier` (`subscription_tier`),
-  ADD KEY `subscription_code_index_subscription_status` (`subscription_status`),
-  ADD KEY `subscription_code_index_subscription_validity` (`subscription_validity`),
-  ADD KEY `subscription_code_index_no_users` (`no_users`);
-
---
--- Indexes for table `subscription_tier`
---
-ALTER TABLE `subscription_tier`
-  ADD PRIMARY KEY (`subscription_tier_id`),
-  ADD KEY `last_log_by` (`last_log_by`),
-  ADD KEY `subscription_tier_index_subscription_tier_id` (`subscription_tier_id`);
-
---
 -- Indexes for table `system_action`
 --
 ALTER TABLE `system_action`
@@ -2924,31 +2555,13 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
-
---
--- AUTO_INCREMENT for table `billing_cycle`
---
-ALTER TABLE `billing_cycle`
-  MODIFY `billing_cycle_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
 --
 ALTER TABLE `email_setting`
   MODIFY `email_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `internal_notes`
---
-ALTER TABLE `internal_notes`
-  MODIFY `internal_notes_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
-
---
--- AUTO_INCREMENT for table `internal_notes_attachment`
---
-ALTER TABLE `internal_notes_attachment`
-  MODIFY `internal_notes_attachment_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -2960,7 +2573,7 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`
@@ -2996,19 +2609,19 @@ ALTER TABLE `password_history`
 -- AUTO_INCREMENT for table `role`
 --
 ALTER TABLE `role`
-  MODIFY `role_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `role_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`
 --
 ALTER TABLE `role_system_action_permission`
-  MODIFY `role_system_action_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `role_system_action_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `role_user_account`
@@ -3021,30 +2634,6 @@ ALTER TABLE `role_user_account`
 --
 ALTER TABLE `security_setting`
   MODIFY `security_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT for table `subscriber`
---
-ALTER TABLE `subscriber`
-  MODIFY `subscriber_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `subscription`
---
-ALTER TABLE `subscription`
-  MODIFY `subscription_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `subscription_code`
---
-ALTER TABLE `subscription_code`
-  MODIFY `subscription_code_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `subscription_tier`
---
-ALTER TABLE `subscription_tier`
-  MODIFY `subscription_tier_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `system_action`
@@ -3093,28 +2682,10 @@ ALTER TABLE `audit_log`
   ADD CONSTRAINT `audit_log_ibfk_1` FOREIGN KEY (`changed_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
--- Constraints for table `billing_cycle`
---
-ALTER TABLE `billing_cycle`
-  ADD CONSTRAINT `billing_cycle_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
 -- Constraints for table `email_setting`
 --
 ALTER TABLE `email_setting`
   ADD CONSTRAINT `email_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `internal_notes`
---
-ALTER TABLE `internal_notes`
-  ADD CONSTRAINT `internal_notes_ibfk_1` FOREIGN KEY (`internal_note_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `internal_notes_attachment`
---
-ALTER TABLE `internal_notes_attachment`
-  ADD CONSTRAINT `internal_notes_attachment_ibfk_1` FOREIGN KEY (`internal_notes_id`) REFERENCES `internal_notes` (`internal_notes_id`);
 
 --
 -- Constraints for table `menu_group`
@@ -3179,6 +2750,14 @@ ALTER TABLE `role_permission`
   ADD CONSTRAINT `role_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
+-- Constraints for table `role_system_action_permission`
+--
+ALTER TABLE `role_system_action_permission`
+  ADD CONSTRAINT `role_system_action_permission_ibfk_1` FOREIGN KEY (`system_action_id`) REFERENCES `system_action` (`system_action_id`),
+  ADD CONSTRAINT `role_system_action_permission_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
+  ADD CONSTRAINT `role_system_action_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
 -- Constraints for table `role_user_account`
 --
 ALTER TABLE `role_user_account`
@@ -3187,11 +2766,10 @@ ALTER TABLE `role_user_account`
   ADD CONSTRAINT `role_user_account_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
--- Constraints for table `subscription`
+-- Constraints for table `user_account`
 --
-ALTER TABLE `subscription`
-  ADD CONSTRAINT `subscription_ibfk_1` FOREIGN KEY (`subscriber_id`) REFERENCES `subscriber` (`subscriber_id`),
-  ADD CONSTRAINT `subscription_ibfk_2` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+ALTER TABLE `user_account`
+  ADD CONSTRAINT `user_account_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

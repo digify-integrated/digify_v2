@@ -7,31 +7,19 @@
     </div>
     <div class="card-body">
         <form id="role-form" method="post" action="#">
-            <div class="row mb-6">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="role_name">
+            <div class="fv-row mb-4">
+                <label class="fs-6 fw-semibold form-label mt-3" for="role_name">
                     <span class="required">Display Name</span>
                 </label>
 
-                <div class="col-lg-8">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <input type="text" class="form-control form-control-solid maxlength" id="role_name" name="role_name" maxlength="100" autocomplete="off">
-                        </div>
-                    </div>
-                </div>
+                <input type="text" class="form-control" id="role_name" name="role_name" maxlength="100" autocomplete="off">
             </div>
-            <div class="row mb-0">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="role_description">
+            <div class="fv-row mb-4">
+                <label class="fs-6 fw-semibold form-label mt-3" for="role_description">
                     <span class="required">Description</span>
                 </label>
 
-                <div class="col-lg-8">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <textarea class="form-control form-control-solid maxlength" id="role_description" name="role_description" maxlength="200" rows="3"></textarea>
-                        </div>
-                    </div>
-                </div>
+                <textarea class="form-control" id="role_description" name="role_description" maxlength="200" rows="3"></textarea>
             </div>
         </form>
     </div>

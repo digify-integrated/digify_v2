@@ -18,12 +18,11 @@ END //
 
 DROP PROCEDURE IF EXISTS saveUserAccount//
 CREATE PROCEDURE saveUserAccount(
-    IN p_user_account_id INT, 
-    IN p_user_account_name VARCHAR(100), 
-    IN p_user_account_description VARCHAR(500), 
-    IN p_menu_item_id INT, 
-    IN p_menu_item_name VARCHAR(100), 
-    IN p_order_sequence TINYINT(10), 
+    IN p_file_as VARCHAR(300), 
+    IN p_email VARCHAR(255), 
+    IN p_username VARCHAR(100), 
+    IN p_password VARCHAR(255),
+    IN p_phone VARCHAR(50), 
     IN p_last_log_by INT, 
     OUT p_new_user_account_id INT
 )
@@ -35,33 +34,10 @@ BEGIN
 
     START TRANSACTION;
 
-    IF p_user_account_id IS NULL OR NOT EXISTS (SELECT 1 FROM user_account WHERE user_account_id = p_user_account_id) THEN
-        INSERT INTO user_account (user_account_name, user_account_description, menu_item_id, menu_item_name, order_sequence, last_log_by) 
-        VALUES(p_user_account_name, p_user_account_description, p_menu_item_id, p_menu_item_name, p_order_sequence, p_last_log_by);
+    INSERT INTO user_account (file_as, email, username, password, phone, last_log_by) 
+    VALUES(p_file_as, p_email, p_username, p_password, p_phone, p_last_log_by);
         
-        SET p_new_user_account_id = LAST_INSERT_ID();
-    ELSE
-        UPDATE user_account
-        SET user_account_name = p_user_account_name,
-            user_account_description = p_user_account_description,
-            menu_item_id = p_menu_item_id,
-            menu_item_name = p_menu_item_name,
-            order_sequence = p_order_sequence,
-            last_log_by = p_last_log_by
-        WHERE user_account_id = p_user_account_id;
-        
-        UPDATE menu_group
-        SET user_account_name = p_user_account_name,
-            last_log_by = p_last_log_by
-        WHERE user_account_id = p_user_account_id;
-
-        UPDATE menu_item
-        SET user_account_name = p_user_account_name,
-            last_log_by = p_last_log_by
-        WHERE user_account_id = p_user_account_id;
-
-        SET p_new_user_account_id = p_user_account_id;
-    END IF;
+    SET p_new_user_account_id = LAST_INSERT_ID();
 
     COMMIT;
 END //

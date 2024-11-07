@@ -22,7 +22,7 @@
                         if ($activateUserAccount['total'] > 0) {
                             $action .= '<div class="menu-item px-3">
                                             <a href="javascript:void(0);" class="menu-link px-3" id="activate-user-account">
-                                                Activate User
+                                                Activate
                                             </a>
                                         </div>';
                         }
@@ -82,7 +82,7 @@
                         <div class="px-7 py-5" data-kt-user-table-filter="form">
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="user_account_status_filter">Status:</label>
-                                <select id="user_account_status_filter" class="form-select form-select-solid" data-control="select2" data-allow-clear="false">
+                                <select id="user_account_status_filter" class="form-select" data-control="select2" data-allow-clear="false">
                                     <option value="">--</option>
                                     <option value="Yes">Active</option>
                                     <option value="No">Inactive</option>
@@ -90,7 +90,7 @@
                             </div>
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="user_account_lock_status_filter">Locked:</label>
-                                <select id="user_account_lock_status_filter" class="form-select form-select-solid" data-control="select2" data-allow-clear="false">
+                                <select id="user_account_lock_status_filter" class="form-select" data-control="select2" data-allow-clear="false">
                                     <option value="">--</option>
                                     <option value="Yes">Yes</option>
                                     <option value="No">No</option>

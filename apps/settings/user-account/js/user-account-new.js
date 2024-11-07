@@ -2,8 +2,6 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('menu item options');
-
         if($('#user-account-form').length){
             userAccountForm();
         }
@@ -13,32 +11,36 @@
 function userAccountForm(){
     $('#user-account-form').validate({
         rules: {
-            user_account_name: {
+            file_as: {
                 required: true
             },
-            user_account_description: {
+            username: {
                 required: true
             },
-            menu_item_id: {
+            email: {
                 required: true
             },
-            order_sequence: {
+            phone: {
                 required: true
+            },
+            password: {
+                required: true,
+                password_strength: true
             }
         },
         messages: {
-            user_account_name: {
-                required: 'Enter the display name'
+            file_as: {
+                required: 'Enter the full name'
             },
-            user_account_description: {
-                required: 'Enter the description'
+            username: {
+                required: 'Enter the username'
             },
-            menu_item_id: {
-                required: 'Select the default page'
+            email: {
+                required: 'Enter the email'
             },
-            order_sequence: {
-                required: 'Enter the order sequence'
-            }
+            password: {
+                required: 'Enter the password'
+            }    
         },
         errorPlacement: function(error, element) {
             showNotification('Action Needed: Issue Detected', error, 'error', 2500);
@@ -91,30 +93,4 @@ function userAccountForm(){
             return false;
         }
     });
-}
-
-function generateDropdownOptions(type){
-    switch (type) {
-        case 'menu item options':
-            
-            $.ajax({
-                url: 'apps/settings/menu-item/view/_menu_item_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type
-                },
-                success: function(response) {
-                    $('#menu_item_id').select2({
-                        data: response
-                    }).on('change', function (e) {
-                        $(this).valid()
-                    });
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                }
-            });
-            break;
-    }
 }

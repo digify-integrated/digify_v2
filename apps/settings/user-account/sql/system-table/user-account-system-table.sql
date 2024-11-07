@@ -8,8 +8,6 @@ CREATE TABLE user_account (
     username VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
     profile_picture VARCHAR(500) NULL,
-    company_id INT UNSIGNED,
-    company_name INT UNSIGNED,
     phone VARCHAR(50),
     locked VARCHAR(255) NOT NULL DEFAULT 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0%3D',
     active VARCHAR(255) NOT NULL DEFAULT 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0%3D',
@@ -29,7 +27,6 @@ CREATE TABLE user_account (
     last_password_reset DATETIME,
     multiple_session VARCHAR(255) DEFAULT 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D',
     session_token VARCHAR(255),
-    linked_id INT UNSIGNED,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_log_by INT UNSIGNED DEFAULT 1,
     FOREIGN KEY (last_log_by) REFERENCES user_account(user_account_id)

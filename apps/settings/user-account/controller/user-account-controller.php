@@ -8,28 +8,25 @@ require_once '../../../../components/model/system-model.php';
 require_once '../../authentication/model/authentication-model.php';
 require_once '../../user-account/model/user-account-model.php';
 require_once '../../security-setting/model/security-setting-model.php';
-require_once '../../menu-item/model/menu-item-model.php';
 require_once '../../upload-setting/model/upload-setting-model.php';
 
 require_once '../../../../assets/libs/PhpSpreadsheet/autoload.php';
 
-$controller = new UserAccountController(new UserAccountModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new MenuItemModel(new DatabaseModel), new UploadSettingModel(new DatabaseModel), new SecurityModel(), new SystemModel());
+$controller = new UserAccountController(new UserAccountModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new UploadSettingModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
 class UserAccountController {
     private $userAccountModel;
     private $authenticationModel;
-    private $menuItemModel;
     private $uploadSettingModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(UserAccountModel $userAccountModel, AuthenticationModel $authenticationModel, MenuItemModel $menuItemModel, UploadSettingModel $uploadSettingModel, SecurityModel $securityModel, SystemModel $systemModel) {
+    public function __construct(UserAccountModel $userAccountModel, AuthenticationModel $authenticationModel, UploadSettingModel $uploadSettingModel, SecurityModel $securityModel, SystemModel $systemModel) {
         $this->userAccountModel = $userAccountModel;
         $this->authenticationModel = $authenticationModel;
-        $this->menuItemModel = $menuItemModel;
         $this->uploadSettingModel = $uploadSettingModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
@@ -153,20 +150,18 @@ class UserAccountController {
         }
 
         $userID = $_SESSION['user_account_id'];
-        $userAccountName = filter_input(INPUT_POST, 'user_account_name', FILTER_SANITIZE_STRING);
-        $userAccountDescription = filter_input(INPUT_POST, 'user_account_description', FILTER_SANITIZE_STRING);
-        $menuItemID = filter_input(INPUT_POST, 'menu_item_id', FILTER_VALIDATE_INT);
-        $orderSequence = filter_input(INPUT_POST, 'order_sequence', FILTER_VALIDATE_INT);
-
-        $menuItemDetails = $this->menuItemModel->getMenuItem($menuItemID);
-        $menuItemName = $menuItemDetails['menu_item_name'];
+        $fileAs = filter_input(INPUT_POST, 'file_as', FILTER_SANITIZE_STRING);
+        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
+        $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
+        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
         
         $userAccountID = $this->userAccountModel->saveUserAccount(null, $userAccountName, $userAccountDescription, $menuItemID, $menuItemName, $orderSequence, $userID);
     
         $response = [
             'success' => true,
             'userAccountID' => $this->securityModel->encryptData($userAccountID),
-            'title' => 'Save App Module',
+            'title' => 'Save User Account',
             'message' => 'The user account has been saved successfully.',
             'messageType' => 'success'
         ];
@@ -200,7 +195,7 @@ class UserAccountController {
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Save App Module',
+                'title' => 'Save User Account',
                 'message' => 'The user account does not exist.',
                 'messageType' => 'error'
             ];
@@ -216,7 +211,7 @@ class UserAccountController {
             
         $response = [
             'success' => true,
-            'title' => 'Save App Module',
+            'title' => 'Save User Account',
             'message' => 'The user account has been saved successfully.',
             'messageType' => 'success'
         ];
@@ -403,7 +398,7 @@ class UserAccountController {
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Delete App Module',
+                'title' => 'Delete User Account',
                 'message' => 'The user account does not exist.',
                 'messageType' => 'error'
             ];
@@ -419,7 +414,7 @@ class UserAccountController {
             if (!unlink($appLogoPath)) {
                 $response = [
                     'success' => false,
-                    'title' => 'Delete App Module',
+                    'title' => 'Delete User Account',
                     'message' => 'The app logo cannot be deleted due to an error.',
                     'messageType' => 'error'
                 ];
@@ -433,7 +428,7 @@ class UserAccountController {
                 
         $response = [
             'success' => true,
-            'title' => 'Delete App Module',
+            'title' => 'Delete User Account',
             'message' => 'The user account has been deleted successfully.',
             'messageType' => 'success'
         ];
@@ -464,7 +459,7 @@ class UserAccountController {
                         if (!unlink($appLogoPath)) {
                             $response = [
                                 'success' => false,
-                                'title' => 'Delete Multiple App Module',
+                                'title' => 'Delete Multiple User Account',
                                 'message' => 'The app logo cannot be deleted due to an error.',
                                 'messageType' => 'error'
                             ];
@@ -480,7 +475,7 @@ class UserAccountController {
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple App Module',
+                'title' => 'Delete Multiple User Account',
                 'message' => 'The selected user accounts have been deleted successfully.',
                 'messageType' => 'success'
             ];
@@ -612,7 +607,7 @@ class UserAccountController {
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Get App Module Details',
+                'title' => 'Get User Account Details',
                 'message' => 'The user account does not exist.',
                 'messageType' => 'error'
             ];

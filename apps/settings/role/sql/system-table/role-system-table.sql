@@ -53,11 +53,7 @@ INSERT INTO role_permission (role_permission_id, role_id, role_name, menu_item_i
 (6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, 1),
 (7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, 1),
 (8, 1, 'Administrator', 8, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, 1),
-(9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, 1),
-(10, 1, 'Administrator', 10, 'Subscriber', 1, 1, 1, 1, 1, 1, 1, 1),
-(11, 1, 'Administrator', 11, 'Subscription Settings', 1, 0, 0, 0, 0, 0, 0, 1),
-(12, 1, 'Administrator', 12, 'Subscription Tier', 1, 1, 1, 1, 1, 1, 1, 1),
-(13, 1, 'Administrator', 13, 'Billing Cycle', 1, 1, 1, 1, 1, 1, 1, 1);
+(9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, 1);
 
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
@@ -98,10 +94,7 @@ INSERT INTO `role_system_action_permission` (`role_system_action_permission_id`,
 (11, 1, 'Administrator', 11, 'Delete Role Access', 1),
 (12, 1, 'Administrator', 12, 'Add Role System Action Access', 1),
 (13, 1, 'Administrator', 13, 'Update Role System Action Access', 1),
-(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1),
-(15, 1, 'Administrator', 15, 'Add Subscription', 1),
-(16, 1, 'Administrator', 16, 'Delete Subscription', 1),
-(17, 1, 'Administrator', 17, 'Generate Subscription Code', 1);
+(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 

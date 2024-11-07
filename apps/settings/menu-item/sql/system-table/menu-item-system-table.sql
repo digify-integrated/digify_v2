@@ -31,10 +31,6 @@ INSERT INTO menu_item (menu_item_id, menu_item_name, menu_item_url, menu_item_ic
 (6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, 2),
 (7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, 2),
 (8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, 2),
-(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, 2),
-(10, 'Subscriber', 'subscriber.php', 'ki-outline ki-people', 2, 'Subscription', '', '', 'subscriber', 1, 2),
-(11, 'Subscription Settings', '', '', 2, 'Subscription', 0, '', '', 100, 2),
-(12, 'Subscription Tier', 'subscription-tier.php', 'ki-outline ki-abstract-19', 2, 'Subscription', 11, 'Subscription Settings', 'subscription_tier', 1, 2),
-(13, 'Billing Cycle', 'billing-cycle.php', 'ki-outline ki-cheque', 2, 'Subscription', 11, 'Subscription Settings', 'billing_cycle', 1, 2);
+(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, 2);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

@@ -31,31 +31,19 @@
     </div>
     <div class="card-body">
         <form id="role-form" method="post" action="#">
-            <div class="row mb-6">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="role_name">
+            <div class="fv-row mb-4">
+                <label class="fs-6 fw-semibold form-label mt-3" for="role_name">
                     <span class="required">Display Name</span>
                 </label>
 
-                <div class="col-lg-8">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <input type="text" class="form-control form-control-solid maxlength" id="role_name" name="role_name" maxlength="100" autocomplete="off">
-                        </div>
-                    </div>
-                </div>
+                <input type="text" class="form-control" id="role_name" name="role_name" maxlength="100" autocomplete="off">
             </div>
-            <div class="row mb-0">
-                <label class="col-lg-4 col-form-label fw-semibold fs-6" for="role_description">
+            <div class="fv-row mb-4">
+                <label class="fs-6 fw-semibold form-label mt-3" for="role_description">
                     <span class="required">Description</span>
                 </label>
 
-                <div class="col-lg-8">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <textarea class="form-control form-control-solid maxlength" id="role_description" name="role_description" maxlength="200" rows="3"></textarea>
-                        </div>
-                    </div>
-                </div>
+                <textarea class="form-control" id="role_description" name="role_description" maxlength="200" rows="3"></textarea>
             </div>
         </form>
     </div>
@@ -72,9 +60,9 @@
     <div class="card-header border-0 pt-6">
         <div class="card-title">
             <div class="d-flex align-items-center position-relative my-1 me-3">
-                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i> <input type="text" class="form-control form-control-solid w-250px ps-12" id="menu-item-permission-datatable-search" placeholder="Search..." autocomplete="off" />
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i> <input type="text" class="form-control w-250px ps-12" id="menu-item-permission-datatable-search" placeholder="Search..." autocomplete="off" />
             </div>
-            <select id="menu-item-permission-datatable-length" class="form-select form-select-solid w-auto">
+            <select id="menu-item-permission-datatable-length" class="form-select w-auto">
                 <option value="-1">All</option>
                 <option value="5">5</option>
                 <option value="10" selected>10</option>
@@ -116,9 +104,9 @@
     <div class="card-header border-0 pt-6">
         <div class="card-title">
             <div class="d-flex align-items-center position-relative my-1 me-3">
-                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i> <input type="text" class="form-control form-control-solid w-250px ps-12" id="system-action-permission-datatable-search" placeholder="Search..." autocomplete="off" />
+                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i> <input type="text" class="form-control w-250px ps-12" id="system-action-permission-datatable-search" placeholder="Search..." autocomplete="off" />
             </div>
-            <select id="system-action-permission-datatable-length" class="form-select form-select-solid w-auto">
+            <select id="system-action-permission-datatable-length" class="form-select w-auto">
                 <option value="-1">All</option>
                 <option value="5">5</option>
                 <option value="10" selected>10</option>
