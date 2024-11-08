@@ -1,5 +1,5 @@
 (function($) {
-    'use strict';
+    'use strict';    
 
     $(function() {
         generateDropdownOptions('menu item options');
@@ -73,10 +73,42 @@
             });
         });
 
+        $(document).on('click', '#change_full_name_button', function() {
+            toggleFullNameSections();
+        });
+        
+        $(document).on('click', '#update_full_name_cancel', function() {
+            toggleFullNameSections();
+        });
+    
+        $(document).on('click', '#change_username_button', function() {
+            toggleUsernameSections();
+        });
+        
+        $(document).on('click', '#update_username_cancel', function() {
+            toggleUsernameSections();
+        });
+    
+        $(document).on('click', '#change_email_button', function() {
+            toggleEmailSections();
+        });
+        
+        $(document).on('click', '#update_email_cancel', function() {
+            toggleEmailSections();
+        });
+        
+        $(document).on('click', '#change_password_button', function() {
+            togglePasswordSections();
+        });
+        
+        $(document).on('click', '#update_password_cancel', function() {
+            togglePasswordSections();
+        });
+
         if($('#log-notes-main').length){
             const user_account_id = $('#details-id').text();
 
-            logNotesMain('user_account', user_account_id);
+            logNotes('user_account', user_account_id);
         }
 
         if($('#internal-notes').length){
@@ -269,23 +301,22 @@ function displayDetails(transaction){
                     user_account_id : user_account_id, 
                     transaction : transaction
                 },
-                beforeSend: function(){
-                    resetModalForm('user-account-form');
-                },
                 success: function(response) {
                     if (response.success) {
-                        $('#user_account_name').val(response.userAccountName);
-                        $('#user_account_description').val(response.userAccountDescription);
-                        $('#order_sequence').val(response.orderSequence);
+                        $('#full_name').val(response.fileAs);
+                        $('#username').val(response.username);
+                        $('#email').val(response.email);
                         
-                        $('#menu_item_id').val(response.menuItemID).trigger('change');
-
-                        document.getElementById('user_account_logo').src = response.appLogo;
-                        
-                        $('#user_account_name_summary').text(response.userAccountName);
-                        $('#user_account_description_summary').text(response.userAccountDescription);
-                        $('#menu_item_summary').text(response.menuItemName);
-                        $('#order_sequence_summary').text(response.orderSequence);
+                        $('#full_name_side_summary').text(response.fileAs);
+                        $('#email_side_summary').text(response.email);
+                        $('#username_side_summary').text(response.username);
+                        $('#phone_side_summary').text(response.phoneSummary);
+                        $('#password_expiry_date_side_summary').text(response.passwordExpiryDate);
+                        $('#last_password_date_side_summary').text(response.lastPasswordChange);
+                        $('#last_connection_date_side_summary').text(response.lastConnectionDate);
+                        $('#full_name_summary').text(response.fileAs);
+                        $('#username_summary').text(response.username);
+                        $('#email_summary').text(response.email);
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -334,4 +365,28 @@ function generateDropdownOptions(type){
             });
             break;
     }
+}
+
+function toggleFullNameSections() {
+    $('#change_full_name_button').toggleClass('d-none');
+    $('#change_full_name').toggleClass('d-none');
+    $('#change_full_name_edit').toggleClass('d-none');
+}
+
+function toggleUsernameSections() {
+    $('#change_username_button').toggleClass('d-none');
+    $('#change_username').toggleClass('d-none');
+    $('#change_username_edit').toggleClass('d-none');
+}
+
+function toggleEmailSections() {
+    $('#change_email_button').toggleClass('d-none');
+    $('#change_email').toggleClass('d-none');
+    $('#change_email_edit').toggleClass('d-none');
+}
+    
+function togglePasswordSections() {
+    $('#change_password_button').toggleClass('d-none');
+    $('#change_password').toggleClass('d-none');
+    $('#change_password_edit').toggleClass('d-none');
 }

@@ -14,15 +14,16 @@ END //
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 
-/* Save Stored Procedure */
+/* Add Stored Procedure */
 
-DROP PROCEDURE IF EXISTS saveUserAccount//
-CREATE PROCEDURE saveUserAccount(
+DROP PROCEDURE IF EXISTS addUserAccount//
+CREATE PROCEDURE addUserAccount(
     IN p_file_as VARCHAR(300), 
     IN p_email VARCHAR(255), 
     IN p_username VARCHAR(100), 
     IN p_password VARCHAR(255),
     IN p_phone VARCHAR(50), 
+    IN p_password_expiry_date VARCHAR(255), 
     IN p_last_log_by INT, 
     OUT p_new_user_account_id INT
 )
@@ -34,8 +35,8 @@ BEGIN
 
     START TRANSACTION;
 
-    INSERT INTO user_account (file_as, email, username, password, phone, last_log_by) 
-    VALUES(p_file_as, p_email, p_username, p_password, p_phone, p_last_log_by);
+    INSERT INTO user_account (file_as, email, username, password, phone, password_expiry_date, last_log_by) 
+    VALUES(p_file_as, p_email, p_username, p_password, p_phone, p_password_expiry_date, p_last_log_by);
         
     SET p_new_user_account_id = LAST_INSERT_ID();
 

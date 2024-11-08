@@ -111,7 +111,6 @@ class AuthenticationController {
         $passwordExpiryDate = $this->securityModel->decryptData($loginCredentialsDetails['password_expiry_date']);
         $accountLockDuration = $this->securityModel->decryptData($loginCredentialsDetails['account_lock_duration']);
         $lastFailedLoginAttempt = $loginCredentialsDetails['last_failed_login_attempt'];
-        $linkedID = $loginCredentialsDetails['linked_id'];
         $twoFactorAuth = $this->securityModel->decryptData($loginCredentialsDetails['two_factor_auth']);
         $encryptedUserID = $this->securityModel->encryptData($userAccountID);
     
@@ -153,7 +152,6 @@ class AuthenticationController {
         
         $_SESSION['user_account_id'] = $userAccountID;
         $_SESSION['session_token'] = $sessionToken;
-        $_SESSION['linked_id'] = $linkedID;
 
         $response = [
             'success' => true,
@@ -288,7 +286,6 @@ class AuthenticationController {
         $otpExpiryDate = $this->securityModel->decryptData($loginCredentialsDetails['otp_expiry_date']);
         $active = $this->securityModel->decryptData($loginCredentialsDetails['active']);
         $locked = $this->securityModel->decryptData($loginCredentialsDetails['locked']);
-        $linkedID = $loginCredentialsDetails['linked_id'];
     
         if ($active === 'No') {
             $response = [
@@ -370,7 +367,6 @@ class AuthenticationController {
         
         $_SESSION['user_account_id'] = $userAccountID;
         $_SESSION['session_token'] = $sessionToken;
-        $_SESSION['linked_id'] = $linkedID;
 
         $response = [
             'success' => true,

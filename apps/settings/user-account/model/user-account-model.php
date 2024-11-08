@@ -23,18 +23,18 @@ class UserAccountModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    #   Save methods
+    #   Add methods
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function saveUserAccount($p_user_account_id, $p_user_account_name, $p_user_account_description, $p_menu_item_id, $p_menu_item_name, $p_order_sequence, $p_last_log_by) {
-        $stmt = $this->db->getConnection()->prepare('CALL saveUserAccount(:p_user_account_id, :p_user_account_name, :p_user_account_description, :p_menu_item_id, :p_menu_item_name, :p_order_sequence, :p_last_log_by, @p_new_user_account_id)');
-        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
-        $stmt->bindValue(':p_user_account_name', $p_user_account_name, PDO::PARAM_STR);
-        $stmt->bindValue(':p_user_account_description', $p_user_account_description, PDO::PARAM_STR);
-        $stmt->bindValue(':p_menu_item_id', $p_menu_item_id, PDO::PARAM_INT);
-        $stmt->bindValue(':p_menu_item_name', $p_menu_item_name, PDO::PARAM_STR);
-        $stmt->bindValue(':p_order_sequence', $p_order_sequence, PDO::PARAM_INT);
+    public function addUserAccount($p_file_as, $p_email, $p_username, $p_password, $p_phone, $p_password_expiry_date, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL addUserAccount(:p_file_as, :p_email, :p_username, :p_password, :p_phone, :p_password_expiry_date, :p_last_log_by, @p_new_user_account_id)');
+        $stmt->bindValue(':p_file_as', $p_file_as, PDO::PARAM_STR);
+        $stmt->bindValue(':p_email', $p_email, PDO::PARAM_STR);
+        $stmt->bindValue(':p_username', $p_username, PDO::PARAM_STR);
+        $stmt->bindValue(':p_password', $p_password, PDO::PARAM_STR);
+        $stmt->bindValue(':p_phone', $p_phone, PDO::PARAM_STR);
+        $stmt->bindValue(':p_password_expiry_date', $p_password_expiry_date, PDO::PARAM_STR);
         $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
         $stmt->execute();
 

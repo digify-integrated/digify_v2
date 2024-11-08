@@ -10,9 +10,9 @@ require_once '../../user-account/model/user-account-model.php';
 require_once '../../security-setting/model/security-setting-model.php';
 require_once '../../upload-setting/model/upload-setting-model.php';
 
-require_once '../../../../assets/libs/PhpSpreadsheet/autoload.php';
+require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new UserAccountController(new UserAccountModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new UploadSettingModel(new DatabaseModel), new SecurityModel(), new SystemModel());
+$controller = new UserAccountController(new UserAccountModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new UploadSettingModel(new DatabaseModel), new SecuritySettingModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
@@ -20,14 +20,16 @@ class UserAccountController {
     private $userAccountModel;
     private $authenticationModel;
     private $uploadSettingModel;
+    private $securitySettingModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(UserAccountModel $userAccountModel, AuthenticationModel $authenticationModel, UploadSettingModel $uploadSettingModel, SecurityModel $securityModel, SystemModel $systemModel) {
+    public function __construct(UserAccountModel $userAccountModel, AuthenticationModel $authenticationModel, UploadSettingModel $uploadSettingModel, SecuritySettingModel $securitySettingModel, SecurityModel $securityModel, SystemModel $systemModel) {
         $this->userAccountModel = $userAccountModel;
         $this->authenticationModel = $authenticationModel;
         $this->uploadSettingModel = $uploadSettingModel;
+        $this->securitySettingModel = $securitySettingModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
     }
@@ -155,8 +157,15 @@ class UserAccountController {
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
         $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
         $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+
+        $securitySettingDetails = $this->securitySettingModel->getSecuritySetting(4);
+        $defaultPasswordDuration = $securitySettingDetails['value'] ?? DEFAULT_PASSWORD_DURATION;
+    
+        $passwordExpiryDate = $this->securityModel->encryptData(date('Y-m-d', strtotime('+'. $defaultPasswordDuration .' days')));
         
-        $userAccountID = $this->userAccountModel->saveUserAccount(null, $userAccountName, $userAccountDescription, $menuItemID, $menuItemName, $orderSequence, $userID);
+        $encryptedPassword = $this->securityModel->encryptData($password);
+        
+        $userAccountID = $this->userAccountModel->addUserAccount($fileAs, $email, $username, $encryptedPassword, $phone, $passwordExpiryDate, $userID);
     
         $response = [
             'success' => true,
@@ -617,16 +626,20 @@ class UserAccountController {
         }
 
         $userAccountDetails = $this->userAccountModel->getUserAccount($userAccountID);
-        $appLogo = $this->systemModel->checkImage(str_replace('../', './apps/', $userAccountDetails['app_logo'])  ?? null, 'user account logo');
+        $lastConnectionDate = (!empty($userAccountDetails['last_connection_date'])) ? date('d M Y h:i a', strtotime($userAccountDetails['last_connection_date'])) : 'Never Connected';
+        $lastPasswordChange = (!empty($userAccountDetails['last_password_change'])) ? date('d M Y h:i a', strtotime($userAccountDetails['last_password_change'])) : 'Never Changed';
+        $passwordExpiryDate = (!empty($userAccountDetails['password_expiry_date'])) ? date('d M Y h:i a', strtotime($this->securityModel->decryptData($userAccountDetails['password_expiry_date']))) : 'Never Connected';
 
         $response = [
             'success' => true,
-            'userAccountName' => $userAccountDetails['user_account_name'] ?? null,
-            'userAccountDescription' => $userAccountDetails['user_account_description'] ?? null,
-            'menuItemID' => $userAccountDetails['menu_item_id'] ?? null,
-            'menuItemName' => $userAccountDetails['menu_item_name'] ?? null,
-            'orderSequence' => $userAccountDetails['order_sequence'] ?? null,
-            'appLogo' => $appLogo
+            'fileAs' => $userAccountDetails['file_as'] ?? null,
+            'email' => $userAccountDetails['email'] ?? null,
+            'username' => $userAccountDetails['username'] ?? null,
+            'phone' => $userAccountDetails['phone'] ?? null,
+            'phoneSummary' => $userAccountDetails['phone'] ?? '-',
+            'lastConnectionDate' => $lastConnectionDate,
+            'lastPasswordChange' => $lastPasswordChange,
+            'passwordExpiryDate' => $passwordExpiryDate
         ];
 
         echo json_encode($response);
