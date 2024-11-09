@@ -40,7 +40,7 @@
                             <span class="required">Order Sequence</span>
                         </label>
 
-                        <input type="number" class="form-control form-control-solid" id="order_sequence" name="order_sequence" min="0">
+                        <input type="number" class="form-control" id="order_sequence" name="order_sequence" min="0">
                     </div>
                 </div>
             </div>

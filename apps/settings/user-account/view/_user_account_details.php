@@ -13,7 +13,7 @@
                                                                 </label>' : '';
                         ?>
                     </div>
-                    <div class="fs-3 text-gray-800 fw-bold mb-3" id="full_name_side_summary">Emma Smith</div>
+                    <div class="fs-3 text-gray-800 fw-bold mb-3" id="full_name_side_summary"></div>
                     <div class="mb-2">
                         <div class="text-gray-600" id="email_side_summary"></div>
                     </div>
@@ -99,7 +99,7 @@
         <div class="card mb-5 mb-xl-10">
             <div class="card-header border-0" role="button">
                 <div class="card-title m-0">
-                    <h3 class="fw-bold m-0">Profile Details</h3>
+                    <h3 class="fw-bold m-0">User Account Details</h3>
                 </div>
             </div>
                     
@@ -112,7 +112,7 @@
                         </div>
                                 
                         <div id="change_full_name_edit" class="flex-row-fluid d-none">
-                            <form id="full_name_form">
+                            <form id="update-full-name-form">
                                 <div class="row mb-6">
                                     <div class="col-lg-12 mb-4 mb-lg-0">
                                         <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -122,7 +122,7 @@
                                     </div>
                                 </div>
                                 <div class="d-flex">
-                                    <button id="update_full_name_submit" form="full_name_form" type="submit" class="btn btn-primary me-2 px-6">Update Full Name</button>
+                                    <button id="update_full_name_submit" form="update-full-name-form" type="submit" class="btn btn-primary me-2 px-6">Update Full Name</button>
                                     <button id="update_full_name_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary  px-6">Cancel</button>
                                 </div>
                             </form>
@@ -142,7 +142,7 @@
                         </div>
                                 
                         <div id="change_username_edit" class="flex-row-fluid d-none">
-                            <form id="username_form">
+                            <form id="update-username-form">
                                 <div class="row mb-6">
                                     <div class="col-lg-12 mb-4 mb-lg-0">
                                         <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -152,7 +152,7 @@
                                     </div>
                                 </div>
                                 <div class="d-flex">
-                                    <button id="update_username_submit" form="username_form" type="submit" class="btn btn-primary me-2 px-6">Update Username</button>
+                                    <button id="update_username_submit" form="update-username-form" type="submit" class="btn btn-primary me-2 px-6">Update Username</button>
                                     <button id="update_username_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
                                 </div>
                             </form>
@@ -172,7 +172,7 @@
                         </div>
                                 
                         <div id="change_email_edit" class="flex-row-fluid d-none">
-                            <form id="update_email_form">
+                            <form id="update-email-form">
                                 <div class="row mb-6">
                                     <div class="col-lg-12 mb-4 mb-lg-0">
                                         <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -182,13 +182,43 @@
                                     </div>
                                 </div>
                                 <div class="d-flex">
-                                    <button id="update_email_submit" form="update_email_form" type="submit" class="btn btn-primary me-2 px-6">Update Email</button>
+                                    <button id="update_email_submit" form="update-email-form" type="submit" class="btn btn-primary me-2 px-6">Update Email</button>
                                     <button id="update_email_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
                                 </div>
                             </form>
                         </div>
                                 
                         <div id="change_email_button" class="ms-auto">
+                            <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed my-6"></div>
+
+                    <div class="d-flex flex-wrap align-items-center">
+                        <div id="change_phone">
+                            <div class="fs-6 fw-bold mb-1">Phone</div>
+                            <div class="fw-semibold text-gray-600" id="phone_summary"></div>
+                        </div>
+                                
+                        <div id="change_phone_edit" class="flex-row-fluid d-none">
+                            <form id="update-phone-form">
+                                <div class="row mb-6">
+                                    <div class="col-lg-12 mb-4 mb-lg-0">
+                                        <div class="fv-row mb-0 fv-plugins-icon-container">
+                                            <label for="phone" class="form-label fs-6 fw-bold mb-3">Enter New Phone</label>
+                                            <input type="text" class="form-control form-control-lg" id="phone" name="phone">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <button id="update_phone_submit" form="update-phone-form" type="submit" class="btn btn-primary me-2 px-6">Update Phone</button>
+                                    <button id="update_phone_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                                
+                        <div id="change_phone_button" class="ms-auto">
                             <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
                         </div>
                     </div>
@@ -202,25 +232,13 @@
                         </div>
                                 
                         <div id="change_password_edit" class="flex-row-fluid d-none">
-                            <form id="password_form">
+                            <form id="update-password-form">
                                 <div class="row mb-1">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-12">
                                         <div class="fv-row mb-0 fv-plugins-icon-container">
-                                            <label for="new_pasword" class="form-label fs-6 fw-bold mb-3">New Password</label>
+                                            <label for="new_password" class="form-label fs-6 fw-bold mb-3">New Password</label>
                                             <div class="input-group">
-                                                <input type="password" class="form-control" name="new_pasword" id="new_pasword">
-                                                <button class="btn btn-light bg-transparent password-addon" type="button">
-                                                    <i class="ki-outline ki-eye-slash fs-2 p-0"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-6">
-                                        <div class="fv-row mb-0 fv-plugins-icon-container">
-                                            <label for="confirm_password" class="form-label fs-6 fw-bold mb-3">Confirm New Password</label>
-                                            <div class="input-group">
-                                                <input type="password" class="form-control" name="confirm_password" id="confirm_password">
+                                                <input type="password" class="form-control" name="new_password" id="new_password">
                                                 <button class="btn btn-light bg-transparent password-addon" type="button">
                                                     <i class="ki-outline ki-eye-slash fs-2 p-0"></i>
                                                 </button>
@@ -230,7 +248,7 @@
                                 </div>
 
                                 <div class="d-flex mt-5">
-                                    <button id="update_password_submit" form="password_form" type="submit" class="btn btn-primary me-2 px-6">Update Password</button>
+                                    <button id="update_password_submit" form="update-password-form" type="submit" class="btn btn-primary me-2 px-6">Update Password</button>
                                     <button id="update_password_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
                                 </div>
                             </form>

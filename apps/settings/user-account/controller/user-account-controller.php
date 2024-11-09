@@ -108,11 +108,35 @@ class UserAccountController {
                 case 'add user account':
                     $this->addUserAccount();
                     break;
-                case 'update user account':
-                    $this->updateUserAccount();
+                case 'update full name':
+                    $this->updateFullName();
                     break;
-                case 'update app logo':
-                    $this->updateAppLogo();
+                case 'update username':
+                    $this->updateUsername();
+                    break;
+                case 'update email':
+                    $this->updateEmail();
+                    break;
+                case 'update phone':
+                    $this->updatePhone();
+                    break;
+                case 'update password':
+                    $this->updatePassword();
+                    break;
+                case 'update profile picture':
+                    $this->updateProfilePicture();
+                    break;
+                case 'enable two factor authentication':
+                    $this->enableTwoFactorAuthentication();
+                    break;
+                case 'disable two factor authentication':
+                    $this->disableTwoFactorAuthentication();
+                    break;
+                case 'enable multiple login sessions':
+                    $this->enableMultipleLoginSessions();
+                    break;
+                case 'disable multiple login sessions':
+                    $this->disableMultipleLoginSessions();
                     break;
                 case 'get user account details':
                     $this->getUserAccountDetails();
@@ -185,17 +209,14 @@ class UserAccountController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function updateUserAccount() {
+    public function updateFullName() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
         
         $userID = $_SESSION['user_account_id'];
         $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
-        $userAccountName = filter_input(INPUT_POST, 'user_account_name', FILTER_SANITIZE_STRING);
-        $userAccountDescription = filter_input(INPUT_POST, 'user_account_description', FILTER_SANITIZE_STRING);
-        $menuItemID = filter_input(INPUT_POST, 'menu_item_id', FILTER_VALIDATE_INT);
-        $orderSequence = filter_input(INPUT_POST, 'order_sequence', FILTER_VALIDATE_INT);
+        $fullName = filter_input(INPUT_POST, 'full_name', FILTER_SANITIZE_STRING);
     
         $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
         $total = $checkUserAccountExist['total'] ?? 0;
@@ -204,7 +225,7 @@ class UserAccountController {
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Save User Account',
+                'title' => 'Update Full Name',
                 'message' => 'The user account does not exist.',
                 'messageType' => 'error'
             ];
@@ -213,15 +234,12 @@ class UserAccountController {
             exit;
         }
 
-        $menuItemDetails = $this->menuItemModel->getMenuItem($menuItemID);
-        $menuItemName = $menuItemDetails['menu_item_name'];
-
-        $this->userAccountModel->saveUserAccount($userAccountID, $userAccountName, $userAccountDescription, $menuItemID, $menuItemName, $orderSequence, $userID);
+        $this->userAccountModel->updateUserAccountFullName($userAccountID, $fullName, $userID);
             
         $response = [
             'success' => true,
-            'title' => 'Save User Account',
-            'message' => 'The user account has been saved successfully.',
+            'title' => 'Update Full Name',
+            'message' => 'The full name has been updated successfully.',
             'messageType' => 'success'
         ];
         
@@ -231,7 +249,219 @@ class UserAccountController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function updateAppLogo() {
+    public function updateUsername() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+        
+        $userID = $_SESSION['user_account_id'];
+        $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+    
+        $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+        $total = $checkUserAccountExist['total'] ?? 0;
+
+        if($total === 0){
+            $response = [
+                'success' => false,
+                'notExist' => true,
+                'title' => 'Update Username',
+                'message' => 'The user account does not exist.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    
+        $checkUserAccountUsernameExist = $this->userAccountModel->checkUserAccountUsernameExist($userAccountID, $username);
+        $total = $checkUserAccountUsernameExist['total'] ?? 0;
+
+        if($total > 0){
+            $response = [
+                'success' => false,
+                'title' => 'Update Username',
+                'message' => 'The username already exists.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+
+        $this->userAccountModel->updateUserAccountUsername($userAccountID, $username, $userID);
+            
+        $response = [
+            'success' => true,
+            'title' => 'Update Username',
+            'message' => 'The username has been updated successfully.',
+            'messageType' => 'success'
+        ];
+        
+        echo json_encode($response);
+        exit;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateEmail() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+        
+        $userID = $_SESSION['user_account_id'];
+        $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING);
+    
+        $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+        $total = $checkUserAccountExist['total'] ?? 0;
+
+        if($total === 0){
+            $response = [
+                'success' => false,
+                'notExist' => true,
+                'title' => 'Update Email',
+                'message' => 'The user account does not exist.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    
+        $checkUserAccountEmailExist = $this->userAccountModel->checkUserAccountEmailExist($userAccountID, $email);
+        $total = $checkUserAccountEmailExist['total'] ?? 0;
+
+        if($total > 0){
+            $response = [
+                'success' => false,
+                'title' => 'Update Email',
+                'message' => 'The email address already exists.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+
+        $this->userAccountModel->updateUserAccountEmailAddress($userAccountID, $email, $userID);
+            
+        $response = [
+            'success' => true,
+            'title' => 'Update Email',
+            'message' => 'The email address has been updated successfully.',
+            'messageType' => 'success'
+        ];
+        
+        echo json_encode($response);
+        exit;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updatePhone() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+        
+        $userID = $_SESSION['user_account_id'];
+        $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+        $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
+    
+        $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+        $total = $checkUserAccountExist['total'] ?? 0;
+
+        if($total === 0){
+            $response = [
+                'success' => false,
+                'notExist' => true,
+                'title' => 'Update Phone',
+                'message' => 'The user account does not exist.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    
+        $checkUserAccountPhoneExist = $this->userAccountModel->checkUserAccountPhoneExist($userAccountID, $phone);
+        $total = $checkUserAccountPhoneExist['total'] ?? 0;
+
+        if($total > 0){
+            $response = [
+                'success' => false,
+                'title' => 'Update Phone',
+                'message' => 'The phone already exists.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+
+        $this->userAccountModel->updateUserAccountPhone($userAccountID, $phone, $userID);
+            
+        $response = [
+            'success' => true,
+            'title' => 'Update Phone',
+            'message' => 'The phone has been updated successfully.',
+            'messageType' => 'success'
+        ];
+        
+        echo json_encode($response);
+        exit;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updatePassword() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+        
+        $userID = $_SESSION['user_account_id'];
+        $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+        $newPassword = filter_input(INPUT_POST, 'new_password', FILTER_SANITIZE_STRING);
+    
+        $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+        $total = $checkUserAccountExist['total'] ?? 0;
+
+        if($total === 0){
+            $response = [
+                'success' => false,
+                'notExist' => true,
+                'title' => 'Update Password',
+                'message' => 'The user account does not exist.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+
+        $securitySettingDetails = $this->securitySettingModel->getSecuritySetting(4);
+        $defaultPasswordDuration = $securitySettingDetails['value'] ?? DEFAULT_PASSWORD_DURATION;
+    
+        $passwordExpiryDate = $this->securityModel->encryptData(date('Y-m-d', strtotime('+'. $defaultPasswordDuration .' days')));
+        
+        $encryptedPassword = $this->securityModel->encryptData($newPassword);
+
+        $this->userAccountModel->updateUserAccountPassword($userAccountID, $encryptedPassword, $passwordExpiryDate, $userID);
+            
+        $response = [
+            'success' => true,
+            'title' => 'Update Password',
+            'message' => 'The password has been updated successfully.',
+            'messageType' => 'success'
+        ];
+        
+        echo json_encode($response);
+        exit;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateProfilePicture() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
@@ -247,8 +477,8 @@ class UserAccountController {
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Update App Logo',
-                'message' => 'The app logo does not exist.',
+                'title' => 'Update Profile Picture',
+                'message' => 'The user account does not exist.',
                 'messageType' => 'error'
             ];
                 
@@ -256,27 +486,27 @@ class UserAccountController {
             exit;
         }
 
-        $appLogoFileName = $_FILES['app_logo']['name'];
-        $appLogoFileSize = $_FILES['app_logo']['size'];
-        $appLogoFileError = $_FILES['app_logo']['error'];
-        $appLogoTempName = $_FILES['app_logo']['tmp_name'];
-        $appLogoFileExtension = explode('.', $appLogoFileName);
-        $appLogoActualFileExtension = strtolower(end($appLogoFileExtension));
+        $profilePictureFileName = $_FILES['profile_picture']['name'];
+        $profilePictureFileSize = $_FILES['profile_picture']['size'];
+        $profilePictureFileError = $_FILES['profile_picture']['error'];
+        $profilePictureTempName = $_FILES['profile_picture']['tmp_name'];
+        $profilePictureFileExtension = explode('.', $profilePictureFileName);
+        $profilePictureActualFileExtension = strtolower(end($profilePictureFileExtension));
 
-        $uploadSetting = $this->uploadSettingModel->getUploadSetting(1);
+        $uploadSetting = $this->uploadSettingModel->getUploadSetting(4);
         $maxFileSize = $uploadSetting['max_file_size'];
 
-        $uploadSettingFileExtension = $this->uploadSettingModel->getUploadSettingFileExtension(1);
+        $uploadSettingFileExtension = $this->uploadSettingModel->getUploadSettingFileExtension(4);
         $allowedFileExtensions = [];
 
         foreach ($uploadSettingFileExtension as $row) {
             $allowedFileExtensions[] = $row['file_extension'];
         }
 
-        if (!in_array($appLogoActualFileExtension, $allowedFileExtensions)) {
+        if (!in_array($profilePictureActualFileExtension, $allowedFileExtensions)) {
             $response = [
                 'success' => false,
-                'title' => 'Update App Logo',
+                'title' => 'Update Profile Picture',
                 'message' => 'The file uploaded is not supported.',
                 'messageType' => 'error'
             ];
@@ -285,11 +515,11 @@ class UserAccountController {
             exit;
         }
             
-        if(empty($appLogoTempName)){
+        if(empty($profilePictureTempName)){
             $response = [
                 'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'Please choose the app logo.',
+                'title' => 'Update Profile Picture',
+                'message' => 'Please choose the profile picture.',
                 'messageType' => 'error'
             ];
                 
@@ -297,10 +527,10 @@ class UserAccountController {
             exit;
         }
             
-        if($appLogoFileError){
+        if($profilePictureFileError){
             $response = [
                 'success' => false,
-                'title' => 'Update App Logo',
+                'title' => 'Update Profile Picture',
                 'message' => 'An error occurred while uploading the file.',
                 'messageType' => 'error'
             ];
@@ -309,11 +539,11 @@ class UserAccountController {
             exit;
         }
             
-        if($appLogoFileSize > ($maxFileSize * 1024)){
+        if($profilePictureFileSize > ($maxFileSize * 1024)){
             $response = [
                 'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'The app logo exceeds the maximum allowed size of ' . number_format($maxFileSize) . ' kb.',
+                'title' => 'Update Profile Picture',
+                'message' => 'The profile picture exceeds the maximum allowed size of ' . number_format($maxFileSize) . ' kb.',
                 'messageType' => 'error'
             ];
                 
@@ -322,21 +552,21 @@ class UserAccountController {
         }
 
         $fileName = $this->securityModel->generateFileName();
-        $fileNew = $fileName . '.' . $appLogoActualFileExtension;
+        $fileNew = $fileName . '.' . $profilePictureActualFileExtension;
             
         define('PROJECT_BASE_DIR', dirname(__DIR__));
-        define('APP_LOGO_DIR', 'image/logo/');
+        define('PROFILE_PICTURE_DIR', 'profile_picture/');
 
-        $directory = PROJECT_BASE_DIR . '/'. APP_LOGO_DIR. $userAccountID. '/';
+        $directory = PROJECT_BASE_DIR . '/'. PROFILE_PICTURE_DIR. $userAccountID. '/';
         $fileDestination = $directory. $fileNew;
-        $filePath = '../security/user-account/image/logo/'. $userAccountID . '/' . $fileNew;
+        $filePath = '../settings/user-account/profile_picture/'. $userAccountID . '/' . $fileNew;
 
         $directoryChecker = $this->securityModel->directoryChecker(str_replace('./', '../', $directory));
 
         if(!$directoryChecker){
             $response = [
                 'success' => false,
-                'title' => 'Update App Logo Error',
+                'title' => 'Update Profile Picture Error',
                 'message' => $directoryChecker,
                 'messageType' => 'error'
             ];
@@ -346,14 +576,14 @@ class UserAccountController {
         }
 
         $userAccountDetails = $this->userAccountModel->getUserAccount($userAccountID);
-        $appLogoPath = !empty($userAccountDetails['app_logo']) ? str_replace('../', '../../../../apps/', $userAccountDetails['app_logo']) : null;
+        $profilePicturePath = !empty($userAccountDetails['profile_picture']) ? str_replace('../', '../../../../apps/', $userAccountDetails['profile_picture']) : null;
 
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
+        if(file_exists($profilePicturePath)){
+            if (!unlink($profilePicturePath)) {
                 $response = [
                     'success' => false,
-                    'title' => 'Update App Logo',
-                    'message' => 'The app logo cannot be deleted due to an error.',
+                    'title' => 'Update Profile Picture',
+                    'message' => 'The profile picture cannot be deleted due to an error.',
                     'messageType' => 'error'
                 ];
                     
@@ -362,11 +592,11 @@ class UserAccountController {
             }
         }
 
-        if(!move_uploaded_file($appLogoTempName, $fileDestination)){
+        if(!move_uploaded_file($profilePictureTempName, $fileDestination)){
             $response = [
                 'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'The app logo cannot be uploaded due to an error.',
+                'title' => 'Update Profile Picture',
+                'message' => 'The profile picture cannot be uploaded due to an error.',
                 'messageType' => 'error'
             ];
                 
@@ -374,12 +604,12 @@ class UserAccountController {
             exit;
         }
 
-        $this->userAccountModel->updateAppLogo($userAccountID, $filePath, $userID);
+        $this->userAccountModel->updateProfilePicture($userAccountID, $filePath, $userID);
 
         $response = [
             'success' => true,
-            'title' => 'Update App Logo',
-            'message' => 'The app logo has been updated successfully.',
+            'title' => 'Update Profile Picture',
+            'message' => 'The profile picture has been updated successfully.',
             'messageType' => 'success'
         ];
 
@@ -417,14 +647,14 @@ class UserAccountController {
         }
 
         $userAccountDetails = $this->userAccountModel->getUserAccount($userAccountID);
-        $appLogoPath = !empty($userAccountDetails['app_logo']) ? str_replace('../', '../../../../apps/', $userAccountDetails['app_logo']) : null;
+        $profilePicturePath = !empty($userAccountDetails['profile_picture']) ? str_replace('../', '../../../../apps/', $userAccountDetails['profile_picture']) : null;
 
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
+        if(file_exists($profilePicturePath)){
+            if (!unlink($profilePicturePath)) {
                 $response = [
                     'success' => false,
                     'title' => 'Delete User Account',
-                    'message' => 'The app logo cannot be deleted due to an error.',
+                    'message' => 'The profile picture cannot be deleted due to an error.',
                     'messageType' => 'error'
                 ];
                     
@@ -462,14 +692,14 @@ class UserAccountController {
 
                 if($total > 0){
                     $userAccountDetails = $this->userAccountModel->getUserAccount($userAccountID);
-                    $appLogoPath = !empty($userAccountDetails['app_logo']) ? str_replace('../', '../../../../apps/', $userAccountDetails['app_logo']) : null;
+                    $profilePicturePath = !empty($userAccountDetails['profile_picture']) ? str_replace('../', '../../../../apps/', $userAccountDetails['profile_picture']) : null;
 
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
+                    if(file_exists($profilePicturePath)){
+                        if (!unlink($profilePicturePath)) {
                             $response = [
                                 'success' => false,
                                 'title' => 'Delete Multiple User Account',
-                                'message' => 'The app logo cannot be deleted due to an error.',
+                                'message' => 'The profile picture cannot be deleted due to an error.',
                                 'messageType' => 'error'
                             ];
                             
@@ -486,6 +716,222 @@ class UserAccountController {
                 'success' => true,
                 'title' => 'Delete Multiple User Account',
                 'message' => 'The selected user accounts have been deleted successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    #   Enable methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function enableTwoFactorAuthentication() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+        
+            $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+            $total = $checkUserAccountExist['total'] ?? 0;
+
+            if($total === 0){
+                $response = [
+                    'success' => false,
+                    'notExist' => true,
+                    'title' => 'Enable Two-Factor Authentication',
+                    'message' => 'The user account does not exist.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            $this->userAccountModel->updateTwoFactorAuthenticationStatus($userAccountID, $this->securityModel->encryptData('Yes'), $userID);
+                
+            $response = [
+                'success' => true,
+                'title' => 'Enable Two-Factor Authentication',
+                'message' => 'The two-factor authentication has been enabled successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function enableMultipleLoginSessions() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+        
+            $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+            $total = $checkUserAccountExist['total'] ?? 0;
+
+            if($total === 0){
+                $response = [
+                    'success' => false,
+                    'notExist' => true,
+                    'title' => 'Enable Multiple Login Sessions',
+                    'message' => 'The user account does not exist.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            $this->userAccountModel->updateMultipleLoginSessionsStatus($userAccountID, $this->securityModel->encryptData('Yes'), $userID);
+                
+            $response = [
+                'success' => true,
+                'title' => 'Enable Multiple Login Sessions',
+                'message' => 'The multiple login sessions has been enabled successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    #   Disable methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function disableTwoFactorAuthentication() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+        
+            $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+            $total = $checkUserAccountExist['total'] ?? 0;
+
+            if($total === 0){
+                $response = [
+                    'success' => false,
+                    'notExist' => true,
+                    'title' => 'Disable Two-Factor Authentication',
+                    'message' => 'The user account does not exist.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            $this->userAccountModel->updateTwoFactorAuthenticationStatus($userAccountID, $this->securityModel->encryptData('No'), $userID);
+                
+            $response = [
+                'success' => true,
+                'title' => 'Disable Two-Factor Authentication',
+                'message' => 'The two-factor authentication has been disabled successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function disableMultipleLoginSessions() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+        
+            $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+            $total = $checkUserAccountExist['total'] ?? 0;
+
+            if($total === 0){
+                $response = [
+                    'success' => false,
+                    'notExist' => true,
+                    'title' => 'Disable Multiple Login Sessions',
+                    'message' => 'The user account does not exist.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            $this->userAccountModel->updateMultipleLoginSessionsStatus($userAccountID, $this->securityModel->encryptData('No'), $userID);
+                
+            $response = [
+                'success' => true,
+                'title' => 'Disable Multiple Login Sessions',
+                'message' => 'The multiple login sessions has been disabled successfully.',
                 'messageType' => 'success'
             ];
             
@@ -626,9 +1072,10 @@ class UserAccountController {
         }
 
         $userAccountDetails = $this->userAccountModel->getUserAccount($userAccountID);
+        $profilePicture = $this->systemModel->checkImage(str_replace('../', './apps/', $userAccountDetails['profile_picture'])  ?? null, 'profile');
         $lastConnectionDate = (!empty($userAccountDetails['last_connection_date'])) ? date('d M Y h:i a', strtotime($userAccountDetails['last_connection_date'])) : 'Never Connected';
         $lastPasswordChange = (!empty($userAccountDetails['last_password_change'])) ? date('d M Y h:i a', strtotime($userAccountDetails['last_password_change'])) : 'Never Changed';
-        $passwordExpiryDate = (!empty($userAccountDetails['password_expiry_date'])) ? date('d M Y h:i a', strtotime($this->securityModel->decryptData($userAccountDetails['password_expiry_date']))) : 'Never Connected';
+        $passwordExpiryDate = (!empty($userAccountDetails['password_expiry_date'])) ? date('d M Y', strtotime($this->securityModel->decryptData($userAccountDetails['password_expiry_date']))) : 'Never Connected';
 
         $response = [
             'success' => true,
@@ -639,7 +1086,10 @@ class UserAccountController {
             'phoneSummary' => $userAccountDetails['phone'] ?? '-',
             'lastConnectionDate' => $lastConnectionDate,
             'lastPasswordChange' => $lastPasswordChange,
-            'passwordExpiryDate' => $passwordExpiryDate
+            'passwordExpiryDate' => $passwordExpiryDate,
+            'profilePicture' => $profilePicture,
+            'twoFactorAuthentication' => $this->securityModel->decryptData($userAccountDetails['two_factor_auth']),
+            'multipleSession' => $this->securityModel->decryptData($userAccountDetails['multiple_session'])
         ];
 
         echo json_encode($response);

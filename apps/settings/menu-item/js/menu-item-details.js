@@ -275,7 +275,7 @@ function menuItemForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('menu_item', menu_item_id);
+                    logNotes('menu_item', menu_item_id);
                 }
             });
         
@@ -429,7 +429,7 @@ function displayDetails(transaction){
                     transaction : transaction
                 },
                 beforeSend: function(){
-                    resetModalForm('menu-item-form');
+                    resetForm('menu-item-form');
                 },
                 success: function(response) {
                     if (response.success) {

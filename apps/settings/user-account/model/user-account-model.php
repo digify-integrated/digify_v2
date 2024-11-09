@@ -23,6 +23,42 @@ class UserAccountModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    public function checkUserAccountUsernameExist($p_user_account_id, $p_username) {
+        $stmt = $this->db->getConnection()->prepare('CALL checkUserAccountUsernameExist(:p_user_account_id, :p_username)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_username', $p_username, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $result;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function checkUserAccountEmailExist($p_user_account_id, $p_email) {
+        $stmt = $this->db->getConnection()->prepare('CALL checkUserAccountEmailExist(:p_user_account_id, :p_email)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_email', $p_email, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $result;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function checkUserAccountPhoneExist($p_user_account_id, $p_phone) {
+        $stmt = $this->db->getConnection()->prepare('CALL checkUserAccountPhoneExist(:p_user_account_id, :p_phone)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_phone', $p_phone, PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $result;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Add methods
     # -------------------------------------------------------------
 
@@ -52,10 +88,88 @@ class UserAccountModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function updateAppLogo($p_user_account_id, $p_app_logo, $p_last_log_by) {
-        $stmt = $this->db->getConnection()->prepare('CALL updateAppLogo(:p_user_account_id, :p_app_logo, :p_last_log_by)');
+    public function updateUserAccountFullName($p_user_account_id, $p_file_as, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateUserAccountFullName(:p_user_account_id, :p_file_as, :p_last_log_by)');
         $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
-        $stmt->bindValue(':p_app_logo', $p_app_logo, PDO::PARAM_STR);
+        $stmt->bindValue(':p_file_as', $p_file_as, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateUserAccountUsername($p_user_account_id, $p_username, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateUserAccountUsername(:p_user_account_id, :p_username, :p_last_log_by)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_username', $p_username, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateUserAccountEmailAddress($p_user_account_id, $p_email, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateUserAccountEmailAddress(:p_user_account_id, :p_email, :p_last_log_by)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_email', $p_email, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateUserAccountPhone($p_user_account_id, $p_phone, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateUserAccountPhone(:p_user_account_id, :p_phone, :p_last_log_by)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_phone', $p_phone, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateUserAccountPassword($p_user_account_id, $p_password, $p_password_expiry_date, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateUserAccountPassword(:p_user_account_id, :p_password, :p_password_expiry_date, :p_last_log_by)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_password', $p_password, PDO::PARAM_STR);
+        $stmt->bindValue(':p_password_expiry_date', $p_password_expiry_date, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateProfilePicture($p_user_account_id, $p_profile_picture, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateProfilePicture(:p_user_account_id, :p_profile_picture, :p_last_log_by)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_profile_picture', $p_profile_picture, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateTwoFactorAuthenticationStatus($p_user_account_id, $p_two_factor_auth, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateTwoFactorAuthenticationStatus(:p_user_account_id, :p_two_factor_auth, :p_last_log_by)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_two_factor_auth', $p_two_factor_auth, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateMultipleLoginSessionsStatus($p_user_account_id, $p_multiple_session, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateMultipleLoginSessionsStatus(:p_user_account_id, :p_multiple_session, :p_last_log_by)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_multiple_session', $p_multiple_session, PDO::PARAM_STR);
         $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
         $stmt->execute();
         $stmt->closeCursor();

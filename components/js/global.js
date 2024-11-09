@@ -171,7 +171,7 @@ function initializeDualListBoxIcon(){
     $('.remove').removeClass('btn-default').addClass('btn-primary');
 }
 
-function resetModalForm(form_id) {
+function resetForm(form_id) {
     var form = document.getElementById(form_id);
 
     $(form).find('.select2').each(function() {

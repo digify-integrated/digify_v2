@@ -10,10 +10,6 @@
             appModuleForm();
         }
 
-        if($('#app-logo-form').length){
-            updateAppLogoForm();
-        }
-
         $(document).on('click','#edit-details',function() {
             displayDetails('get app module details');
         });
@@ -215,78 +211,6 @@ function appModuleForm(){
     });
 }
 
-function updateAppLogoForm(){
-    $('#app-logo-form').validate({
-        rules: {
-            app_logo: {
-                required: true
-            }
-        },
-        messages: {
-            app_logo: {
-                required: 'Choose the app logo'
-            }
-        },
-        errorPlacement: function(error, element) {
-            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
-        },
-        highlight: function(element) {
-            const $element = $(element);
-            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
-            $target.addClass('is-invalid');
-        },
-        unhighlight: function(element) {
-            const $element = $(element);
-            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
-            $target.removeClass('is-invalid');
-        },
-        submitHandler: function(form) {
-            const app_module_id = $('#details-id').text();
-            const transaction = 'update app logo';
-
-            var formData = new FormData(form);
-            formData.append('app_module_id', encodeURIComponent(app_module_id));
-            formData.append('transaction', transaction);
-        
-            $.ajax({
-                type: 'POST',
-                url: 'apps/settings/app-module/controller/app-module-controller.php',
-                data: formData,
-                processData: false,
-                contentType: false,
-                dataType: 'json',
-                beforeSend: function() {
-                    disableFormSubmitButton('submit-app-logo');
-                },
-                success: function (response) {
-                    if (response.success) {
-                        showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get app module details');
-                        $('#app-logo-modal').modal('hide');
-                    }
-                    else {
-                        if (response.isInactive || response.notExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                            setNotification(response.title, response.message, response.messageType);
-                            window.location = 'logout.php?logout';
-                        }
-                        else {
-                            showNotification(response.title, response.message, response.messageType);
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                },
-                complete: function() {
-                    enableFormSubmitButton('submit-app-logo');
-                }
-            });
-        
-            return false;
-        }
-    });
-}
-
 function displayDetails(transaction){
     switch (transaction) {
         case 'get app module details':
@@ -302,7 +226,7 @@ function displayDetails(transaction){
                     transaction : transaction
                 },
                 beforeSend: function(){
-                    resetModalForm('app-module-form');
+                    resetForm('app-module-form');
                 },
                 success: function(response) {
                     if (response.success) {

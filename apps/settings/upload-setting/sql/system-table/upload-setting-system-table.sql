@@ -16,7 +16,8 @@ CREATE INDEX upload_setting_index_upload_setting_id ON upload_setting(upload_set
 INSERT INTO upload_setting (upload_setting_id, upload_setting_name, upload_setting_description, max_file_size, last_log_by) VALUES
 (1, 'App Logo', 'Sets the upload setting when uploading app logo.', 800, 1),
 (2, 'Internal Notes Attachment', 'Sets the upload setting when uploading internal notes attachement.', 800, 1),
-(3, 'Import File', 'Sets the upload setting when importing data.', 800, 2);
+(3, 'Import File', 'Sets the upload setting when importing data.', 800, 2),
+(4, 'User Account Profile Picture', 'Sets the upload setting when uploading user account profile picture.', 800, 2);
 
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
@@ -56,6 +57,9 @@ INSERT INTO upload_setting_file_extension (upload_setting_file_extension_id, upl
 (12, 2, 'Internal Notes Attachment', 94, 'XLSX', 'xlsx', 1),
 (13, 2, 'Internal Notes Attachment', 89, 'PPT', 'ppt', 1),
 (14, 2, 'Internal Notes Attachment', 90, 'PPTX', 'pptx', 1),
-(15, 3, 'Import File', 25, 'CSV', 'csv', 1);
+(15, 3, 'Import File', 25, 'CSV', 'csv', 1),
+(16, 4, 'User Account Profile Picture', 63, 'PNG', 'png', 1),
+(17, 4, 'User Account Profile Picture', 61, 'JPG', 'jpg', 1),
+(18, 4, 'User Account Profile Picture', 62, 'JPEG', 'jpeg', 1);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

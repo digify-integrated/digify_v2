@@ -325,7 +325,7 @@ class AppModuleController {
 
         $directory = PROJECT_BASE_DIR . '/'. APP_LOGO_DIR. $appModuleID. '/';
         $fileDestination = $directory. $fileNew;
-        $filePath = '../security/app-module/image/logo/'. $appModuleID . '/' . $fileNew;
+        $filePath = '../settings/app-module/image/logo/'. $appModuleID . '/' . $fileNew;
 
         $directoryChecker = $this->securityModel->directoryChecker(str_replace('./', '../', $directory));
 

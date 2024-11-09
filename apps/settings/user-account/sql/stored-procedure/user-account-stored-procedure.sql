@@ -12,6 +12,39 @@ BEGIN
     WHERE user_account_id = p_user_account_id;
 END //
 
+DROP PROCEDURE IF EXISTS checkUserAccountUsernameExist//
+CREATE PROCEDURE checkUserAccountUsernameExist(
+    IN p_user_account_id INT,
+    IN p_username VARCHAR(100)
+)
+BEGIN
+	SELECT COUNT(*) AS total
+    FROM user_account
+    WHERE user_account_id != p_user_account_id AND username = p_username;
+END //
+
+DROP PROCEDURE IF EXISTS checkUserAccountEmailExist//
+CREATE PROCEDURE checkUserAccountEmailExist(
+    IN p_user_account_id INT,
+    IN p_email VARCHAR(255)
+)
+BEGIN
+	SELECT COUNT(*) AS total
+    FROM user_account
+    WHERE user_account_id != p_user_account_id AND email = p_email;
+END //
+
+DROP PROCEDURE IF EXISTS checkUserAccountPhoneExist//
+CREATE PROCEDURE checkUserAccountPhoneExist(
+    IN p_user_account_id INT,
+    IN p_phone VARCHAR(50)
+)
+BEGIN
+	SELECT COUNT(*) AS total
+    FROM user_account
+    WHERE user_account_id != p_user_account_id AND phone = p_phone;
+END //
+
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 
 /* Add Stored Procedure */
@@ -47,10 +80,10 @@ END //
 
 /* Update Procedure */
 
-DROP PROCEDURE IF EXISTS updateAppLogo//
-CREATE PROCEDURE updateAppLogo(
+DROP PROCEDURE IF EXISTS updateUserAccountFullName//
+CREATE PROCEDURE updateUserAccountFullName(
 	IN p_user_account_id INT, 
-	IN p_app_logo VARCHAR(500), 
+	IN p_file_as VARCHAR(300), 
 	IN p_last_log_by INT
 )
 BEGIN
@@ -62,11 +95,148 @@ BEGIN
     START TRANSACTION;
 
     UPDATE user_account
-    SET app_logo = p_app_logo,
+    SET file_as = p_file_as,
         last_log_by = p_last_log_by
     WHERE user_account_id = p_user_account_id;
 
     COMMIT;
+END //
+
+DROP PROCEDURE IF EXISTS updateUserAccountUsername//
+CREATE PROCEDURE updateUserAccountUsername(
+	IN p_user_account_id INT, 
+	IN p_username VARCHAR(100), 
+	IN p_last_log_by INT
+)
+BEGIN
+ 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE user_account
+    SET username = p_username,
+        last_log_by = p_last_log_by
+    WHERE user_account_id = p_user_account_id;
+
+    COMMIT;
+END //
+
+DROP PROCEDURE IF EXISTS updateUserAccountEmailAddress//
+CREATE PROCEDURE updateUserAccountEmailAddress(
+	IN p_user_account_id INT, 
+	IN p_email VARCHAR(255),
+	IN p_last_log_by INT
+)
+BEGIN
+ 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE user_account
+    SET email = p_email,
+        last_log_by = p_last_log_by
+    WHERE user_account_id = p_user_account_id;
+
+    COMMIT;
+END //
+
+DROP PROCEDURE IF EXISTS updateUserAccountPhone//
+CREATE PROCEDURE updateUserAccountPhone(
+	IN p_user_account_id INT, 
+	IN p_phone VARCHAR(50),
+	IN p_last_log_by INT
+)
+BEGIN
+ 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE user_account
+    SET phone = p_phone,
+        last_log_by = p_last_log_by
+    WHERE user_account_id = p_user_account_id;
+
+    COMMIT;
+END //
+
+DROP PROCEDURE IF EXISTS updateUserAccountPassword//
+CREATE PROCEDURE updateUserAccountPassword(
+	IN p_user_account_id INT, 
+	IN p_password VARCHAR(255),
+    IN p_password_expiry_date VARCHAR(255), 
+	IN p_last_log_by INT
+)
+BEGIN
+ 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE user_account
+    SET password = p_password,
+        password_expiry_date = p_password_expiry_date,
+        last_log_by = p_last_log_by
+    WHERE user_account_id = p_user_account_id;
+
+    COMMIT;
+END //
+
+DROP PROCEDURE IF EXISTS updateProfilePicture//
+CREATE PROCEDURE updateProfilePicture(
+	IN p_user_account_id INT, 
+	IN p_profile_picture VARCHAR(500), 
+	IN p_last_log_by INT
+)
+BEGIN
+ 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE user_account
+    SET profile_picture = p_profile_picture,
+        last_log_by = p_last_log_by
+    WHERE user_account_id = p_user_account_id;
+
+    COMMIT;
+END //
+
+DROP PROCEDURE IF EXISTS updateTwoFactorAuthenticationStatus//
+CREATE PROCEDURE updateTwoFactorAuthenticationStatus(
+    IN p_user_account_id INT,
+    IN p_two_factor_auth VARCHAR(255),
+    IN p_last_log_by INT
+)
+BEGIN
+    UPDATE user_account
+    SET two_factor_auth = p_two_factor_auth,
+        last_log_by = p_last_log_by
+    WHERE user_account_id = p_user_account_id;
+END //
+
+DROP PROCEDURE IF EXISTS updateMultipleLoginSessionsStatus//
+CREATE PROCEDURE updateMultipleLoginSessionsStatus(IN p_user_account_id INT,
+    IN p_multiple_session VARCHAR(255),
+    IN p_last_log_by INT
+)
+BEGIN
+    UPDATE user_account
+    SET multiple_session = p_multiple_session,
+        last_log_by = p_last_log_by
+    WHERE user_account_id = p_user_account_id;
 END //
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

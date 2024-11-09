@@ -388,7 +388,7 @@ function roleForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('role', role_id);
+                    logNotes('role', role_id);
                 }
             });
         
@@ -658,7 +658,7 @@ function displayDetails(transaction){
                     transaction : transaction
                 },
                 beforeSend: function(){
-                    resetModalForm('role-form');
+                    resetForm('role-form');
                 },
                 success: function(response) {
                     if (response.success) {

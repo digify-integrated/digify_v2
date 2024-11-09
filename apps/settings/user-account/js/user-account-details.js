@@ -2,21 +2,27 @@
     'use strict';    
 
     $(function() {
-        generateDropdownOptions('menu item options');
-
         displayDetails('get user account details');
 
-        if($('#user-account-form').length){
-            userAccountForm();
+        if($('#update-full-name-form').length){
+            updateFullNameForm();
         }
 
-        if($('#app-logo-form').length){
-            updateAppLogoForm();
+        if($('#update-username-form').length){
+            updateUsernameForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get user account details');
-        });
+        if($('#update-email-form').length){
+            updateEmailForm();
+        }
+
+        if($('#update-phone-form').length){
+            updatePhoneForm();
+        }
+
+        if($('#update-password-form').length){
+            updatePasswordForm();
+        }
 
         $(document).on('click','#delete-user-account',function() {
             const user_account_id = $('#details-id').text();
@@ -24,7 +30,7 @@
             const transaction = 'delete user account';
     
             Swal.fire({
-                title: 'Confirm App Module Deletion',
+                title: 'Confirm user account Deletion',
                 text: 'Are you sure you want to delete this user account?',
                 icon: 'warning',
                 showCancelButton: !0,
@@ -73,6 +79,124 @@
             });
         });
 
+        $(document).on('change','#profile_picture',function() {
+            if ($(this).val() !== '' && $(this)[0].files.length > 0) {
+                const transaction = 'update profile picture';
+                const user_account_id = $('#details-id').text();
+                var formData = new FormData();
+                formData.append('profile_picture', $(this)[0].files[0]);
+                formData.append('transaction', transaction);
+                formData.append('user_account_id', user_account_id);
+        
+                $.ajax({
+                    type: 'POST',
+                    url: 'apps/settings/user-account/controller/user-account-controller.php',
+                    dataType: 'json',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification(response.title, response.message, response.messageType);
+                            displayDetails('get user account details');
+                        }
+                        else {
+                            if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                                setNotification(response.title, response.message, response.messageType);
+                                window.location = 'logout.php?logout';
+                            }
+                            else if (response.notExist) {
+                                setNotification(response.title, response.message, response.messageType);
+                                window.location = page_link;
+                            }
+                            else {
+                                showNotification(response.title, response.message, response.messageType);
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        handleSystemError(xhr, status, error);
+                    }
+                });
+            }
+        });
+
+        $(document).on('change','#two-factor-authentication',function() {
+            const user_account_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href');
+            var checkbox = document.getElementById('two-factor-authentication');
+            var transaction = (checkbox).checked ? 'enable two factor authentication' : 'disable two factor authentication';
+
+            $.ajax({
+                type: 'POST',
+                url: 'apps/settings/user-account/controller/user-account-controller.php',
+                data: {
+                    user_account_id : user_account_id,
+                    transaction : transaction
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = page_link;
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+        });
+
+        $(document).on('change','#multiple-login-sessions',function() {
+            const user_account_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href');
+            var checkbox = document.getElementById('multiple-login-sessions');
+            var transaction = (checkbox).checked ? 'enable multiple login sessions' : 'disable multiple login sessions';
+
+            $.ajax({
+                type: 'POST',
+                url: 'apps/settings/user-account/controller/user-account-controller.php',
+                data: {
+                    user_account_id : user_account_id,
+                    transaction : transaction
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = page_link;
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+        });
+
         $(document).on('click', '#change_full_name_button', function() {
             toggleFullNameSections();
         });
@@ -95,6 +219,14 @@
         
         $(document).on('click', '#update_email_cancel', function() {
             toggleEmailSections();
+        });
+    
+        $(document).on('click', '#change_phone_button', function() {
+            togglePhoneSections();
+        });
+        
+        $(document).on('click', '#update_phone_cancel', function() {
+            togglePhoneSections();
         });
         
         $(document).on('click', '#change_password_button', function() {
@@ -125,34 +257,16 @@
     });
 })(jQuery);
 
-function userAccountForm(){
-    $('#user-account-form').validate({
+function updateFullNameForm(){
+    $('#update-full-name-form').validate({
         rules: {
-            user_account_name: {
-                required: true
-            },
-            user_account_description: {
-                required: true
-            },
-            menu_item_id: {
-                required: true
-            },
-            order_sequence: {
+            full_name: {
                 required: true
             }
         },
         messages: {
-            user_account_name: {
-                required: 'Enter the display name'
-            },
-            user_account_description: {
-                required: 'Enter the description'
-            },
-            menu_item_id: {
-                required: 'Select the default page'
-            },
-            order_sequence: {
-                required: 'Enter the order sequence'
+            full_name: {
+                required: 'Enter the new full name'
             }
         },
         errorPlacement: function(error, element) {
@@ -171,7 +285,7 @@ function userAccountForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update user account';
+            const transaction = 'update full name';
           
             $.ajax({
                 type: 'POST',
@@ -179,13 +293,13 @@ function userAccountForm(){
                 data: $(form).serialize() + '&transaction=' + transaction + '&user_account_id=' + encodeURIComponent(user_account_id),
                 dataType: 'json',
                 beforeSend: function() {
-                    disableFormSubmitButton('submit-data');
+                    disableFormSubmitButton('update_full_name_submit');
                 },
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
                         displayDetails('get user account details');
-                        $('#user-account-modal').modal('hide');
+                        toggleFullNameSections();
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -205,8 +319,8 @@ function userAccountForm(){
                     handleSystemError(xhr, status, error);
                 },
                 complete: function() {
-                    enableFormSubmitButton('submit-data');
-                    logNotesMain('user_account', user_account_id);
+                    enableFormSubmitButton('update_full_name_submit');
+                    logNotes('user_account', user_account_id);
                 }
             });
         
@@ -215,16 +329,16 @@ function userAccountForm(){
     });
 }
 
-function updateAppLogoForm(){
-    $('#app-logo-form').validate({
+function updateUsernameForm(){
+    $('#update-username-form').validate({
         rules: {
-            app_logo: {
+            username: {
                 required: true
             }
         },
         messages: {
-            app_logo: {
-                required: 'Choose the app logo'
+            username: {
+                required: 'Enter the new username'
             }
         },
         errorPlacement: function(error, element) {
@@ -242,32 +356,31 @@ function updateAppLogoForm(){
         },
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
-            const transaction = 'update app logo';
-
-            var formData = new FormData(form);
-            formData.append('user_account_id', encodeURIComponent(user_account_id));
-            formData.append('transaction', transaction);
-        
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'update username';
+          
             $.ajax({
                 type: 'POST',
                 url: 'apps/settings/user-account/controller/user-account-controller.php',
-                data: formData,
-                processData: false,
-                contentType: false,
+                data: $(form).serialize() + '&transaction=' + transaction + '&user_account_id=' + encodeURIComponent(user_account_id),
                 dataType: 'json',
                 beforeSend: function() {
-                    disableFormSubmitButton('submit-app-logo');
+                    disableFormSubmitButton('update_username_submit');
                 },
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
                         displayDetails('get user account details');
-                        $('#app-logo-modal').modal('hide');
+                        toggleUsernameSections();
                     }
                     else {
-                        if (response.isInactive || response.notExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
                             setNotification(response.title, response.message, response.messageType);
                             window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = page_link;
                         }
                         else {
                             showNotification(response.title, response.message, response.messageType);
@@ -278,7 +391,224 @@ function updateAppLogoForm(){
                     handleSystemError(xhr, status, error);
                 },
                 complete: function() {
-                    enableFormSubmitButton('submit-app-logo');
+                    enableFormSubmitButton('update_username_submit');
+                    logNotes('user_account', user_account_id);
+                }
+            });
+        
+            return false;
+        }
+    });
+}
+
+function updateEmailForm(){
+    $('#update-email-form').validate({
+        rules: {
+            email: {
+                required: true
+            }
+        },
+        messages: {
+            email: {
+                required: 'Enter the new email address'
+            }
+        },
+        errorPlacement: function(error, element) {
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
+        },
+        highlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
+        },
+        unhighlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
+        },
+        submitHandler: function(form) {
+            const user_account_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'update email';
+          
+            $.ajax({
+                type: 'POST',
+                url: 'apps/settings/user-account/controller/user-account-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&user_account_id=' + encodeURIComponent(user_account_id),
+                dataType: 'json',
+                beforeSend: function() {
+                    disableFormSubmitButton('update_email_submit');
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+                        displayDetails('get user account details');
+                        toggleEmailSections();
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = page_link;
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                },
+                complete: function() {
+                    enableFormSubmitButton('update_email_submit');
+                    logNotes('user_account', user_account_id);
+                }
+            });
+        
+            return false;
+        }
+    });
+}
+
+function updatePhoneForm(){
+    $('#update-phone-form').validate({
+        rules: {
+            phone: {
+                required: true
+            }
+        },
+        messages: {
+            phone: {
+                required: 'Enter the new phone'
+            }
+        },
+        errorPlacement: function(error, element) {
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
+        },
+        highlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
+        },
+        unhighlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
+        },
+        submitHandler: function(form) {
+            const user_account_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'update phone';
+          
+            $.ajax({
+                type: 'POST',
+                url: 'apps/settings/user-account/controller/user-account-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&user_account_id=' + encodeURIComponent(user_account_id),
+                dataType: 'json',
+                beforeSend: function() {
+                    disableFormSubmitButton('update_phone_submit');
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+                        displayDetails('get user account details');
+                        togglePhoneSections();
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = page_link;
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                },
+                complete: function() {
+                    enableFormSubmitButton('update_phone_submit');
+                    logNotes('user_account', user_account_id);
+                }
+            });
+        
+            return false;
+        }
+    });
+}
+
+function updatePasswordForm(){
+    $('#update-password-form').validate({
+        rules: {
+            new_password: {
+                required: true,
+                password_strength: true
+            }
+          },
+        messages: {
+            new_password: {
+                required: 'Enter the new password'
+            }
+        },
+        errorPlacement: function(error, element) {
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
+        },
+        highlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
+        },
+        unhighlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
+        },
+        submitHandler: function(form) {
+            const user_account_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'update password';
+          
+            $.ajax({
+                type: 'POST',
+                url: 'apps/settings/user-account/controller/user-account-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&user_account_id=' + encodeURIComponent(user_account_id),
+                dataType: 'json',
+                beforeSend: function() {
+                    disableFormSubmitButton('update_password_submit');
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+                        displayDetails('get user account details');
+                        togglePasswordSections();
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = page_link;
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                },
+                complete: function() {
+                    enableFormSubmitButton('update_password_submit');
                 }
             });
         
@@ -302,11 +632,7 @@ function displayDetails(transaction){
                     transaction : transaction
                 },
                 success: function(response) {
-                    if (response.success) {
-                        $('#full_name').val(response.fileAs);
-                        $('#username').val(response.username);
-                        $('#email').val(response.email);
-                        
+                    if (response.success) {                        
                         $('#full_name_side_summary').text(response.fileAs);
                         $('#email_side_summary').text(response.email);
                         $('#username_side_summary').text(response.username);
@@ -317,6 +643,12 @@ function displayDetails(transaction){
                         $('#full_name_summary').text(response.fileAs);
                         $('#username_summary').text(response.username);
                         $('#email_summary').text(response.email);
+                        $('#phone_summary').text(response.phoneSummary);
+
+                        document.getElementById('two-factor-authentication').checked = response.twoFactorAuthentication === 'Yes';
+                        document.getElementById('multiple-login-sessions').checked = response.multipleSession === 'Yes';
+
+                        document.getElementById('profile_picture_image').style.backgroundImage = `url(${response.profilePicture})`;
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -340,53 +672,42 @@ function displayDetails(transaction){
     }
 }
 
-function generateDropdownOptions(type){
-    switch (type) {
-        case 'menu item options':
-            
-            $.ajax({
-                url: 'apps/settings/menu-item/view/_menu_item_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type
-                },
-                success: function(response) {
-                    $('#menu_item_id').select2({
-                        data: response,
-                        dropdownParent: $('#menu_item_id').closest('.modal')
-                    }).on('change', function (e) {
-                        $(e.target).valid()
-                    });
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                }
-            });
-            break;
-    }
-}
-
 function toggleFullNameSections() {
     $('#change_full_name_button').toggleClass('d-none');
     $('#change_full_name').toggleClass('d-none');
     $('#change_full_name_edit').toggleClass('d-none');
+
+    resetForm('update-full-name-form');
 }
 
 function toggleUsernameSections() {
     $('#change_username_button').toggleClass('d-none');
     $('#change_username').toggleClass('d-none');
     $('#change_username_edit').toggleClass('d-none');
+    
+    resetForm('update-username-form');
 }
 
 function toggleEmailSections() {
     $('#change_email_button').toggleClass('d-none');
     $('#change_email').toggleClass('d-none');
     $('#change_email_edit').toggleClass('d-none');
+
+    resetForm('update-email-form');
+}
+
+function togglePhoneSections() {
+    $('#change_phone_button').toggleClass('d-none');
+    $('#change_phone').toggleClass('d-none');
+    $('#change_phone_edit').toggleClass('d-none');
+
+    resetForm('update-phone-form');
 }
     
 function togglePasswordSections() {
     $('#change_password_button').toggleClass('d-none');
     $('#change_password').toggleClass('d-none');
     $('#change_password_edit').toggleClass('d-none');
+
+    resetForm('update-password-form');
 }

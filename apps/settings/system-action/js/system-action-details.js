@@ -265,7 +265,7 @@ function systemActionForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('system_action', system_action_id);
+                    logNotes('system_action', system_action_id);
                 }
             });
         
@@ -405,7 +405,7 @@ function displayDetails(transaction){
                     transaction : transaction
                 },
                 beforeSend: function(){
-                    resetModalForm('system-action-form');
+                    resetForm('system-action-form');
                 },
                 success: function(response) {
                     if (response.success) {
