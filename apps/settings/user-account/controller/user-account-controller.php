@@ -748,7 +748,7 @@ class UserAccountController {
 
         if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
             $userID = $_SESSION['user_account_id'];
-            $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
         
             $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
             $total = $checkUserAccountExist['total'] ?? 0;
@@ -800,7 +800,7 @@ class UserAccountController {
 
         if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
             $userID = $_SESSION['user_account_id'];
-            $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
         
             $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
             $total = $checkUserAccountExist['total'] ?? 0;
@@ -856,7 +856,7 @@ class UserAccountController {
 
         if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
             $userID = $_SESSION['user_account_id'];
-            $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
         
             $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
             $total = $checkUserAccountExist['total'] ?? 0;
@@ -908,7 +908,7 @@ class UserAccountController {
 
         if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
             $userID = $_SESSION['user_account_id'];
-            $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
         
             $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
             $total = $checkUserAccountExist['total'] ?? 0;

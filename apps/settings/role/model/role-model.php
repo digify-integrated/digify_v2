@@ -45,6 +45,17 @@ class RoleModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    public function checkRoleUserAccountExist($p_role_user_account_id) {
+        $stmt = $this->db->getConnection()->prepare('CALL checkRoleUserAccountExist(:p_role_user_account_id)');
+        $stmt->bindValue(':p_role_user_account_id', $p_role_user_account_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $result;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Save methods
     # -------------------------------------------------------------
 
@@ -149,6 +160,15 @@ class RoleModel {
     public function deleteRoleSystemActionPermission($p_role_system_action_permission_id) {
         $stmt = $this->db->getConnection()->prepare('CALL deleteRoleSystemActionPermission(:p_role_system_action_permission_id)');
         $stmt->bindValue(':p_role_system_action_permission_id', $p_role_system_action_permission_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function deleteRoleUserAccount($p_role_user_account_id) {
+        $stmt = $this->db->getConnection()->prepare('CALL deleteRoleUserAccount(:p_role_user_account_id)');
+        $stmt->bindValue(':p_role_user_account_id', $p_role_user_account_id, PDO::PARAM_INT);
         $stmt->execute();
         $stmt->closeCursor();
     }

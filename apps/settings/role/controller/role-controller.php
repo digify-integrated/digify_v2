@@ -157,6 +157,9 @@ class RoleController {
                 case 'delete system action permission':
                     $this->deleteRoleSystemActionPermission();
                     break;
+                case 'delete user account role':
+                    $this->deleteUserAccountRole();
+                    break;
                 case 'export data':
                     $this->exportData();
                     break;
@@ -798,6 +801,44 @@ class RoleController {
             'messageType' => 'success'
         ];
             
+        echo json_encode($response);
+        exit;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function deleteUserAccountRole() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        $roleUserAccountID = filter_input(INPUT_POST, 'role_user_account_id', FILTER_VALIDATE_INT);
+        
+        $checkRoleUserAccountExist = $this->roleModel->checkRoleUserAccountExist($roleUserAccountID);
+        $total = $checkRoleUserAccountExist['total'] ?? 0;
+
+        if($total === 0){
+            $response = [
+                'success' => false,
+                'notExist' => true,
+                'title' => 'Delete Role',
+                'message' => 'The role permission does not exist.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+
+        $this->roleModel->deleteRoleUserAccount($roleUserAccountID);
+            
+        $response = [
+            'success' => true,
+            'title' => 'Delete Role',
+            'message' => 'The role has been deleted successfully.',
+            'messageType' => 'success'
+        ];
+        
         echo json_encode($response);
         exit;
     }
