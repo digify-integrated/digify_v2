@@ -200,6 +200,61 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
         # -------------------------------------------------------------
 
         # -------------------------------------------------------------
+        case 'assigned role user account list':
+            if(isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])){
+                $table = '';
+                $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+
+                $sql = $databaseModel->getConnection()->prepare('CALL generateUserAccountRoleList(:userAccountID)');
+                $sql->bindValue(':userAccountID', $userAccountID, PDO::PARAM_INT);
+                $sql->execute();
+                $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+                $sql->closeCursor();
+
+                $deleteRoleUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 6);
+
+                foreach ($options as $row) {
+                    $roleUserAccountID = $row['role_user_account_id'];
+                    $roleName = $row['role_name'];
+                    $assignmentDate = $systemModel->checkDate('empty', $row['date_assigned'], '', 'M d Y h:i a', '');
+
+                    $deleteButton = '';
+                    if($deleteRoleUserAccount['total'] > 0){
+                        $deleteButton = '<button class="btn btn-sm btn-light btn-active-light-primary me-3 delete-role-user-account" data-role-user-account-id="' . $roleUserAccountID . '">Delete</button>';
+                    }
+
+                    $table .= '<div class="d-flex flex-stack">
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                        <div class="flex-grow-1 me-2">
+                                            <div class="text-gray-800 fs-4 fw-bold">'. $roleName .'</div>
+                                                    
+                                            <span class="text-gray-500 fw-semibold d-block fs-7">Date Assigned : '. $assignmentDate .'</span>
+                                        </div>
+                                        '. $deleteButton .'
+                                    </div>
+                                </div>';
+                }
+
+                if(empty($table)){
+                    $table = '<div class="d-flex flex-stack">
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                        <div class="flex-grow-1 me-2">
+                                            <div class="text-gray-800 fs-4 fw-bold">No role found</div>
+                                        </div>
+                                    </div>
+                                </div>';
+                }
+
+                $response[] = [
+                    'ROLE_USER_ACCOUNT' => $table
+                ];
+
+                echo json_encode($response);
+            }
+        break;
+        # -------------------------------------------------------------
+
+        # -------------------------------------------------------------
         case 'menu item role dual listbox options':
             $menuItemID = filter_input(INPUT_POST, 'menu_item_id', FILTER_VALIDATE_INT);
             $sql = $databaseModel->getConnection()->prepare('CALL generateMenuItemRoleDualListBoxOptions(:menuItemID)');

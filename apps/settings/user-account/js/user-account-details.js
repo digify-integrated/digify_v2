@@ -24,6 +24,10 @@
             updatePasswordForm();
         }
 
+        if($('#role-list').length){
+            roleList();
+        }
+
         $(document).on('click','#delete-user-account',function() {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
@@ -64,6 +68,60 @@
                                 else if (response.notExist) {
                                     setNotification(response.title, response.message, response.messageType);
                                     window.location = page_link;
+                                }
+                                else {
+                                    showNotification(response.title, response.message, response.messageType);
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            handleSystemError(xhr, status, error);
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+
+        $(document).on('click','.delete-role-user-account',function() {
+            const role_user_account_id = $(this).data('role-user-account-id');
+            const transaction = 'delete user account role';
+    
+            Swal.fire({
+                title: 'Confirm Role Deletion',
+                text: 'Are you sure you want to delete this role?',
+                icon: 'warning',
+                showCancelButton: !0,
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-danger mt-2',
+                    cancelButton: 'btn btn-secondary ms-2 mt-2'
+                },
+                buttonsStyling: !1
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'apps/settings/role/controller/role-controller.php',
+                        dataType: 'json',
+                        data: {
+                            role_user_account_id : role_user_account_id, 
+                            transaction : transaction
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                showNotification(response.title, response.message, response.messageType);
+                                roleList();
+                            }
+                            else {
+                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = 'logout.php?logout';
+                                }
+                                else if (response.notExist) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    roleList();
                                 }
                                 else {
                                     showNotification(response.title, response.message, response.messageType);
@@ -613,6 +671,21 @@ function updatePasswordForm(){
             });
         
             return false;
+        }
+    });
+}
+
+function roleList(){
+    const user_account_id = $('#details-id').text();
+    const type = 'assigned role user account list';
+
+    $.ajax({
+        type: 'POST',
+        url: 'apps/settings/role/view/_role_generation.php',
+        dataType: 'json',
+        data: { type: type, 'user_account_id': user_account_id },
+        success: function (result) {
+            document.getElementById('role-list').innerHTML = result[0].ROLE_USER_ACCOUNT;
         }
     });
 }

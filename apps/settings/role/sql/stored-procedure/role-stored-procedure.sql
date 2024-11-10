@@ -411,6 +411,17 @@ BEGIN
     WHERE role_id = p_role_id;
 END //
 
+DROP PROCEDURE IF EXISTS generateUserAccountRoleList//
+CREATE PROCEDURE generateUserAccountRoleList(
+    IN p_user_account_id INT
+)
+BEGIN
+	SELECT role_user_account_id, role_name, date_assigned
+    FROM role_user_account
+    WHERE user_account_id = p_user_account_id
+    ORDER BY role_name;
+END //
+
 DROP PROCEDURE IF EXISTS generateUserAccountRoleDualListBoxOptions//
 CREATE PROCEDURE generateUserAccountRoleDualListBoxOptions(
     IN p_user_account_id INT

@@ -269,20 +269,7 @@
                 </div>
             </div>
             
-            <div class="card-body">
-                <div class="d-flex flex-stack">
-                    <div class="d-flex align-items-center flex-row-fluid flex-wrap">
-                        <div class="flex-grow-1 me-2">
-                            <div class="text-gray-800 fs-4 fw-bold">Administrator</div>
-                                    
-                            <span class="text-gray-500 fw-semibold d-block fs-7">Date Assigned : 11/08/2024 04:11:30 am</span>
-                        </div>
-                        <button class="btn btn-sm btn-light btn-active-light-primary me-3" data-kt-billing-action="address-delete">
-                            Delete       
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <div class="card-body" id="role-list"></div>
         </div>
 
         <div class="card mb-5 mb-lg-10">
