@@ -21,6 +21,9 @@
     ?>
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+            <?php 
+                require_once('components/view/_app_header.php');
+            ?>
             <div class="app-wrapper flex-column flex-row-fluid mt-0" id="kt_app_wrapper">
                 <div id="kt_app_toolbar" class="app-toolbar py-6">
                     <div id="kt_app_toolbar_container" class="app-container container-xxl d-flex align-items-start">

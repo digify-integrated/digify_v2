@@ -1,3 +1,18 @@
+<?php
+    require('apps/settings/user-account/model/user-account-model.php');
+
+    $userAccountModel = new UserAccountModel($databaseModel);
+
+    $activateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 3);
+    $deactivateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 4);
+    $lockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 5);
+    $unlockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 6);
+    $addRoleUserAccount  = $authenticationModel->checkSystemActionAccessRights($userID, 7);
+
+    $userAccountDetails = $userAccountModel->getUserAccount($detailID);
+    $userAccountActive = $securityModel->decryptData($userAccountDetails['active']);
+    $userAccountLocked = $securityModel->decryptData($userAccountDetails['locked']);
+?>
 <div class="d-flex flex-column flex-lg-row">
     <div class="flex-column flex-lg-row-auto w-lg-250px w-xl-350px mb-10">
         <div class="card mb-5 mb-xl-8">
@@ -34,6 +49,12 @@
 
                         <div class="fw-bold mt-5">Phone</div>
                         <div class="text-gray-600" id="phone_side_summary"></div>
+
+                        <div class="fw-bold mt-5">Status</div>
+                        <div class="text-gray-600" id="status_side_summary"></div>
+
+                        <div class="fw-bold mt-5">Locked Status</div>
+                        <div class="text-gray-600" id="locked_status_side_summary"></div>
 
                         <div class="fw-bold mt-5">Password Expiry Date</div>
                         <div class="text-gray-600" id="password_expiry_date_side_summary"></div>
@@ -101,6 +122,57 @@
                 <div class="card-title m-0">
                     <h3 class="fw-bold m-0">User Account Details</h3>
                 </div>
+                <?php
+                    if ($deleteAccess['total'] > 0 || $activateUserAccount['total'] > 0 || $deactivateUserAccount['total'] > 0 || $lockUserAccount['total'] > 0 || $unlockUserAccount['total'] > 0) {
+                        $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown align-self-center" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                                Actions
+                                                <i class="ki-outline ki-down fs-5 ms-1"></i>
+                                            </a>
+                                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-60px, 539px);" data-popper-placement="bottom-end">';
+                            
+                        if ($deleteAccess['total'] > 0) {
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="delete-user-account">
+                                                Delete
+                                            </a>
+                                        </div>';
+                        }
+
+                        if($userAccountActive == 'Yes' && $deactivateUserAccount['total'] > 0){
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="deactivate-user-account">
+                                                Deactivate
+                                            </a>
+                                        </div>';
+                        }
+                        else if($userAccountActive == 'No' && $activateUserAccount['total'] > 0){
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="activate-user-account">
+                                                Activate
+                                            </a>
+                                        </div>';
+                        }
+        
+                        if($userAccountLocked == 'Yes' && $unlockUserAccount['total'] > 0){
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="unlock-user-account">
+                                                Unlock
+                                            </a>
+                                        </div>';
+                        }
+                        else if($userAccountLocked == 'No' && $lockUserAccount['total'] > 0){
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="lock-user-account">
+                                                Lock
+                                            </a>
+                                        </div>';
+                        }
+                                
+                        $action .= '</div>';
+                                
+                        echo $action;
+                    }
+                ?>
             </div>
                     
             <div>
@@ -267,6 +339,13 @@
                 <div class="card-title">
                     <h3>Role</h3>
                 </div>
+                <div class="card-toolbar">
+                    <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                        <?php
+                            echo $addRoleUserAccount['total'] > 0 ? '<button type="button" class="btn btn-light-primary" data-bs-toggle="modal" data-bs-target="#role-assignment-modal" id="assign-role"><i class="ki-outline ki-plus fs-2"></i> Assign</button>' : '';
+                        ?>
+                    </div>
+                </div>
             </div>
             
             <div class="card-body" id="role-list"></div>
@@ -277,12 +356,25 @@
                 <div class="card-title">
                     <h3>Login Sessions</h3>
                 </div>
+                <div class="card-toolbar">
+                    <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                        <select id="login-session-datatable-length" class="form-select w-auto">
+                            <option value="-1">All</option>
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table align-middle table-row-bordered table-row-solid gy-4 gs-9">
-                        <thead class="border-gray-200 fs-5 fw-semibold bg-lighten">
-                            <tr>
+                    <table class="table align-middle table-row-dashed fs-6 gy-5 text-nowrap" id="login-session-table">
+                        <thead>
+                            <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
                                 <th class="min-w-250px">Location</th>
                                 <th class="min-w-100px">Status</th>
                                 <th class="min-w-150px">Device</th>
@@ -294,6 +386,34 @@
                         <tbody class="fw-6 fw-semibold text-gray-600"></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="role-assignment-modal" class="modal fade" tabindex="-1" aria-labelledby="role-assignment-modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Assign Role</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form id="role-assignment-form" method="post" action="#">
+                    <div class="row">
+                        <div class="col-12">
+                            <select multiple="multiple" size="20" id="role_id" name="role_id[]"></select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="role-assignment-form" class="btn btn-primary" id="submit-assignment">Assign</button>
             </div>
         </div>
     </div>

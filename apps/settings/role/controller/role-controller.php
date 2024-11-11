@@ -10,10 +10,11 @@ require_once '../../security-setting/model/security-setting-model.php';
 require_once '../../role/model/role-model.php';
 require_once '../../menu-item/model/menu-item-model.php';
 require_once '../../system-action/model/system-action-model.php';
+require_once '../../user-account/model/user-account-model.php';
 
 require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new RoleController(new RoleModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new MenuItemModel(new DatabaseModel), new SystemActionModel(new DatabaseModel), new SecurityModel(), new SystemModel());
+$controller = new RoleController(new RoleModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new MenuItemModel(new DatabaseModel), new SystemActionModel(new DatabaseModel), new UserAccountModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
@@ -21,15 +22,17 @@ class RoleController {
     private $roleModel;
     private $menuItemModel;
     private $systemActionModel;
+    private $userAccountModel;
     private $authenticationModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(RoleModel $roleModel, AuthenticationModel $authenticationModel, MenuItemModel $menuItemModel, SystemActionModel $systemActionModel, SecurityModel $securityModel, SystemModel $systemModel) {
+    public function __construct(RoleModel $roleModel, AuthenticationModel $authenticationModel, MenuItemModel $menuItemModel, SystemActionModel $systemActionModel, UserAccountModel $userAccountModel, SecurityModel $securityModel, SystemModel $systemModel) {
         $this->roleModel = $roleModel;
         $this->menuItemModel = $menuItemModel;
         $this->systemActionModel = $systemActionModel;
+        $this->userAccountModel = $userAccountModel;
         $this->authenticationModel = $authenticationModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
@@ -62,7 +65,7 @@ class RoleController {
             $active = $this->securityModel->decryptData($loginCredentialsDetails['active']);
             $locked = $this->securityModel->decryptData($loginCredentialsDetails['locked']);
             $multipleSession = $this->securityModel->decryptData($loginCredentialsDetails['multiple_session']);
-            $sessionToken = $this->securityModel->decryptData($loginCredentialsDetails['session_token']);
+            $currentSessionToken = $this->securityModel->decryptData($loginCredentialsDetails['session_token']);
 
             if ($active === 'No') {
                 $response = [
@@ -90,7 +93,7 @@ class RoleController {
                 exit;
             }
             
-            if ($sessionToken != $sessionToken && $multipleSession == 'No') {
+            if ($sessionToken != $currentSessionToken && $multipleSession == 'No') {
                 $response = [
                     'success' => false,
                     'sessionExpired' => true,
@@ -135,6 +138,9 @@ class RoleController {
                     break;
                 case 'assign role system action permission':
                     $this->assignRoleSystemActionPermission();
+                    break;
+                case 'assign user account role':
+                    $this->assignUserAccountRole();
                     break;
                 case 'get role details':
                     $this->getRoleDetails();
@@ -620,6 +626,65 @@ class RoleController {
                 $systemActionName = $systemActionDetails['system_action_name'] ?? null;
 
                 $this->roleModel->insertRoleSystemActionPermission($roleID, $roleName, $systemActionID, $systemActionName, $userID);
+            }
+    
+            $response = [
+                'success' => true,
+                'title' => 'Assign Role Success',
+                'message' => 'The role has been assigned successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function assignUserAccountRole() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            if(!isset($_POST['role_id']) || empty($_POST['role_id'])){ 
+                $response = [
+                    'success' => false,
+                    'title' => 'Role Selection Required',
+                    'message' => 'Please select the role(s) you wish to assign to the user account.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            $userID = $_SESSION['user_account_id'];
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+            $roleIDs = $_POST['role_id'];
+
+            $userAccountDetails = $this->userAccountModel->getUserAccount($userAccountID);
+            $fileAs = $userAccountDetails['file_as'] ?? null;
+
+            foreach ($roleIDs as $roleID) {
+                if(strpos($roleID, '_helper2') === false) {
+                    $roleDetails = $this->roleModel->getRole($roleID);
+                    $roleName = $roleDetails['role_name'] ?? null;
+    
+                    $this->roleModel->insertRoleUserAccount($roleID, $roleName, $userAccountID, $fileAs, $userID);
+                }
             }
     
             $response = [

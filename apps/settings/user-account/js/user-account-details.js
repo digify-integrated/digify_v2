@@ -24,6 +24,14 @@
             updatePasswordForm();
         }
 
+        if($('#role-assignment-form').length){
+            roleAssignmentForm();
+        }
+
+        if($('#login-session-table').length){
+            loginSessionTable('#login-session-table');
+        }
+
         if($('#role-list').length){
             roleList();
         }
@@ -34,7 +42,7 @@
             const transaction = 'delete user account';
     
             Swal.fire({
-                title: 'Confirm user account Deletion',
+                title: 'Confirm User Account Deletion',
                 text: 'Are you sure you want to delete this user account?',
                 icon: 'warning',
                 showCancelButton: !0,
@@ -122,6 +130,270 @@
                                 else if (response.notExist) {
                                     setNotification(response.title, response.message, response.messageType);
                                     roleList();
+                                }
+                                else {
+                                    showNotification(response.title, response.message, response.messageType);
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            handleSystemError(xhr, status, error);
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+
+        $(document).on('click','#assign-role',function() {
+            generateDropdownOptions('user account role dual listbox options');
+        });
+
+        $(document).on('click', '#change_full_name_button', function() {
+            toggleFullNameSections();
+        });
+        
+        $(document).on('click', '#update_full_name_cancel', function() {
+            toggleFullNameSections();
+        });
+    
+        $(document).on('click', '#change_username_button', function() {
+            toggleUsernameSections();
+        });
+        
+        $(document).on('click', '#update_username_cancel', function() {
+            toggleUsernameSections();
+        });
+    
+        $(document).on('click', '#change_email_button', function() {
+            toggleEmailSections();
+        });
+        
+        $(document).on('click', '#update_email_cancel', function() {
+            toggleEmailSections();
+        });
+    
+        $(document).on('click', '#change_phone_button', function() {
+            togglePhoneSections();
+        });
+        
+        $(document).on('click', '#update_phone_cancel', function() {
+            togglePhoneSections();
+        });
+        
+        $(document).on('click', '#change_password_button', function() {
+            togglePasswordSections();
+        });
+        
+        $(document).on('click', '#update_password_cancel', function() {
+            togglePasswordSections();
+        });
+
+        $(document).on('click','#activate-user-account',function() {
+            const user_account_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'activate user account';
+    
+            Swal.fire({
+                title: 'Confirm User Account Activation',
+                text: 'Are you sure you want to activate this user account?',
+                icon: 'info',
+                showCancelButton: !0,
+                confirmButtonText: 'Activate',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-success mt-2',
+                    cancelButton: 'btn btn-secondary ms-2 mt-2'
+                },
+                buttonsStyling: !1
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'apps/settings/user-account/controller/user-account-controller.php',
+                        dataType: 'json',
+                        data: {
+                            user_account_id : user_account_id, 
+                            transaction : transaction
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                setNotification(response.title, response.message, response.messageType);
+                                window.location.reload();
+                            }
+                            else {
+                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = 'logout.php?logout';
+                                }
+                                else if (response.notExist) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = page_link;
+                                }
+                                else {
+                                    showNotification(response.title, response.message, response.messageType);
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            handleSystemError(xhr, status, error);
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+
+        $(document).on('click','#deactivate-user-account',function() {
+            const user_account_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'deactivate user account';
+    
+            Swal.fire({
+                title: 'Confirm User Account Deactivation',
+                text: 'Are you sure you want to deactivate this user account?',
+                icon: 'warning',
+                showCancelButton: !0,
+                confirmButtonText: 'Deactivate',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-danger mt-2',
+                    cancelButton: 'btn btn-secondary ms-2 mt-2'
+                },
+                buttonsStyling: !1
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'apps/settings/user-account/controller/user-account-controller.php',
+                        dataType: 'json',
+                        data: {
+                            user_account_id : user_account_id, 
+                            transaction : transaction
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                setNotification(response.title, response.message, response.messageType);
+                                window.location.reload();
+                            }
+                            else {
+                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = 'logout.php?logout';
+                                }
+                                else if (response.notExist) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = page_link;
+                                }
+                                else {
+                                    showNotification(response.title, response.message, response.messageType);
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            handleSystemError(xhr, status, error);
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+
+        $(document).on('click','#lock-user-account',function() {
+            const user_account_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'lock user account';
+    
+            Swal.fire({
+                title: 'Confirm User Account Lock',
+                text: 'Are you sure you want to lock this user account?',
+                icon: 'warning',
+                showCancelButton: !0,
+                confirmButtonText: 'Lock',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-danger mt-2',
+                    cancelButton: 'btn btn-secondary ms-2 mt-2'
+                },
+                buttonsStyling: !1
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'apps/settings/user-account/controller/user-account-controller.php',
+                        dataType: 'json',
+                        data: {
+                            user_account_id : user_account_id, 
+                            transaction : transaction
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                setNotification(response.title, response.message, response.messageType);
+                                window.location.reload();
+                            }
+                            else {
+                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = 'logout.php?logout';
+                                }
+                                else if (response.notExist) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = page_link;
+                                }
+                                else {
+                                    showNotification(response.title, response.message, response.messageType);
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            handleSystemError(xhr, status, error);
+                        }
+                    });
+                    return false;
+                }
+            });
+        });
+
+        $(document).on('click','#unlock-user-account',function() {
+            const user_account_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'unlock user account';
+    
+            Swal.fire({
+                title: 'Confirm User Account Unlock',
+                text: 'Are you sure you want to unlock this user account?',
+                icon: 'info',
+                showCancelButton: !0,
+                confirmButtonText: 'Unlock',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn btn-success mt-2',
+                    cancelButton: 'btn btn-secondary ms-2 mt-2'
+                },
+                buttonsStyling: !1
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'apps/settings/user-account/controller/user-account-controller.php',
+                        dataType: 'json',
+                        data: {
+                            user_account_id : user_account_id, 
+                            transaction : transaction
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                setNotification(response.title, response.message, response.messageType);
+                                window.location.reload();
+                            }
+                            else {
+                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = 'logout.php?logout';
+                                }
+                                else if (response.notExist) {
+                                    setNotification(response.title, response.message, response.messageType);
+                                    window.location = page_link;
                                 }
                                 else {
                                     showNotification(response.title, response.message, response.messageType);
@@ -255,44 +527,10 @@
             });
         });
 
-        $(document).on('click', '#change_full_name_button', function() {
-            toggleFullNameSections();
-        });
-        
-        $(document).on('click', '#update_full_name_cancel', function() {
-            toggleFullNameSections();
-        });
-    
-        $(document).on('click', '#change_username_button', function() {
-            toggleUsernameSections();
-        });
-        
-        $(document).on('click', '#update_username_cancel', function() {
-            toggleUsernameSections();
-        });
-    
-        $(document).on('click', '#change_email_button', function() {
-            toggleEmailSections();
-        });
-        
-        $(document).on('click', '#update_email_cancel', function() {
-            toggleEmailSections();
-        });
-    
-        $(document).on('click', '#change_phone_button', function() {
-            togglePhoneSections();
-        });
-        
-        $(document).on('click', '#update_phone_cancel', function() {
-            togglePhoneSections();
-        });
-        
-        $(document).on('click', '#change_password_button', function() {
-            togglePasswordSections();
-        });
-        
-        $(document).on('click', '#update_password_cancel', function() {
-            togglePasswordSections();
+        $('#login-session-datatable-length').on('change', function() {
+            var table = $('#login-session-table').DataTable();
+            var length = $(this).val(); 
+            table.page.len(length).draw();
         });
 
         if($('#log-notes-main').length){
@@ -675,6 +913,127 @@ function updatePasswordForm(){
     });
 }
 
+function roleAssignmentForm(){
+    $('#role-assignment-form').validate({
+        errorPlacement: function(error, element) {
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
+        },
+        highlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
+        },
+        unhighlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
+        },
+        submitHandler: function(form) {
+            const user_account_id = $('#details-id').text();
+            const transaction = 'assign user account role';
+          
+            $.ajax({
+                type: 'POST',
+                url: 'apps/settings/role/controller/role-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&user_account_id=' + user_account_id,
+                dataType: 'json',
+                beforeSend: function() {
+                    disableFormSubmitButton('submit-assignment');
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+                        roleList();
+                        $('#role-assignment-modal').modal('hide');
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'role.php';
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                },
+                complete: function() {
+                    enableFormSubmitButton('submit-assignment');
+                }
+            });
+        
+            return false;
+        }
+    });
+}
+
+function loginSessionTable(datatable_name) {
+    const type = 'login session table';
+    const page_id = $('#page-id').val();
+    const page_link = document.getElementById('page-link').getAttribute('href');
+    const user_account_id = $('#details-id').text();
+
+    const columns = [ 
+        { data: 'LOCATION' },
+        { data: 'LOGIN_STATUS' },
+        { data: 'DEVICE' },
+        { data: 'IP_ADDRESS' },
+        { data: 'LOGIN_DATE' }
+    ];
+
+    const columnDefs = [
+        { width: 'auto', targets: 0, responsivePriority: 1 },
+        { width: 'auto', targets: 1, responsivePriority: 2 },
+        { width: 'auto', targets: 2, responsivePriority: 3 },
+        { width: 'auto', targets: 3, responsivePriority: 4 },
+        { width: 'auto', targets: 4, type: 'date', responsivePriority: 5 },
+    ];
+
+    const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
+
+    const settings = {
+        ajax: { 
+            url: 'apps/settings/user-account/view/_user_account_generation.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                type: type,
+                page_id: page_id,
+                page_link: page_link,
+                user_account_id: user_account_id
+            },
+            dataSrc: '',
+            error: function(xhr, status, error) {
+                handleSystemError(xhr, status, error);
+            }
+        },
+        lengthChange: false,
+        order: [[4, 'desc']],
+        columns: columns,
+        columnDefs: columnDefs,
+        lengthMenu: lengthMenu,
+        autoWidth: false,
+        language: {
+            emptyTable: 'No data found',
+            sLengthMenu: '_MENU_',
+            info: '_START_ - _END_ of _TOTAL_ items',
+            loadingRecords: 'Just a moment while we fetch your data...'
+        },
+        fnDrawCallback: function(oSettings) {
+            readjustDatatableColumn();
+        }
+    };
+
+    destroyDatatable(datatable_name);
+    $(datatable_name).dataTable(settings);
+}
+
 function roleList(){
     const user_account_id = $('#details-id').text();
     const type = 'assigned role user account list';
@@ -722,6 +1081,9 @@ function displayDetails(transaction){
                         document.getElementById('multiple-login-sessions').checked = response.multipleSession === 'Yes';
 
                         document.getElementById('profile_picture_image').style.backgroundImage = `url(${response.profilePicture})`;
+
+                        document.getElementById('status_side_summary').innerHTML = response.activeBadge;
+                        document.getElementById('locked_status_side_summary').innerHTML = response.lockedBadge;
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -783,4 +1145,50 @@ function togglePasswordSections() {
     $('#change_password_edit').toggleClass('d-none');
 
     resetForm('update-password-form');
+}
+
+function generateDropdownOptions(type){
+    switch (type) {
+        case 'user account role dual listbox options':
+            var user_account_id = $('#details-id').text();
+        
+            $.ajax({
+                url: 'apps/settings/role/view/_role_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type,
+                    user_account_id : user_account_id
+                },
+                success: function(response) {
+                    var select = document.getElementById('role_id');
+        
+                    select.options.length = 0;
+        
+                    response.forEach(function(opt) {
+                        var option = new Option(opt.text, opt.id);
+                        select.appendChild(option);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                },
+                complete: function(){
+                    if($('#role_id').length){
+                        $('#role_id').bootstrapDualListbox({
+                            nonSelectedListLabel: 'Non-selected',
+                            selectedListLabel: 'Selected',
+                            preserveSelectionOnMove: 'moved',
+                            moveOnSelect: false,
+                            helperSelectNamePostfix: false
+                        });
+        
+                        $('#role_id').bootstrapDualListbox('refresh', true);
+        
+                        initializeDualListBoxIcon();
+                    }
+                }
+            });
+            break;
+    }
 }

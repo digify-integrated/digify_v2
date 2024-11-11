@@ -110,6 +110,23 @@ class AuthenticationModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    #   Insert methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function insertLoginSession($p_user_account_id, $p_location, $p_login_status, $p_device, $p_ip_address) {
+        $stmt = $this->db->getConnection()->prepare('CALL insertLoginSession(:p_user_account_id, :p_location, :p_login_status, :p_device, :p_ip_address)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_location', $p_location, PDO::PARAM_STR);
+        $stmt->bindValue(':p_login_status', $p_login_status, PDO::PARAM_STR);
+        $stmt->bindValue(':p_device', $p_device, PDO::PARAM_STR);
+        $stmt->bindValue(':p_ip_address', $p_ip_address, PDO::PARAM_STR);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Update methods
     # -------------------------------------------------------------
 

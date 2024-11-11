@@ -12,7 +12,7 @@ $securityModel = new SecurityModel();
 $authenticationModel = new AuthenticationModel($databaseModel, $securityModel);
 
 if(isset($_POST['type']) && !empty($_POST['type'])){
-    $type = htmlspecialchars($_POST['type'], ENT_QUOTES, 'UTF-8');
+    $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
     $pageID = isset($_POST['page_id']) ? $_POST['page_id'] : null;
     $pageLink = isset($_POST['page_link']) ? $_POST['page_link'] : null;
     $response = [];

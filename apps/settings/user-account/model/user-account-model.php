@@ -177,6 +177,29 @@ class UserAccountModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    public function updateUserAccountStatus($p_user_account_id, $p_active, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateUserAccountStatus(:p_user_account_id, :p_active, :p_last_log_by)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_active', $p_active, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateUserAccountLock($p_user_account_id, $p_locked, $p_account_lock_duration, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateUserAccountLock(:p_user_account_id, :p_locked, :p_account_lock_duration, :p_last_log_by)');
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_locked', $p_locked, PDO::PARAM_STR);
+        $stmt->bindValue(':p_account_lock_duration', $p_account_lock_duration, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Delete methods
     # -------------------------------------------------------------
 

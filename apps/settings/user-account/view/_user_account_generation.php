@@ -12,7 +12,7 @@ $securityModel = new SecurityModel();
 $authenticationModel = new AuthenticationModel($databaseModel, $securityModel);
 
 if(isset($_POST['type']) && !empty($_POST['type'])){
-    $type = htmlspecialchars($_POST['type'], ENT_QUOTES, 'UTF-8');
+    $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
     $pageID = isset($_POST['page_id']) ? $_POST['page_id'] : null;
     $pageLink = isset($_POST['page_link']) ? $_POST['page_link'] : null;
     $response = [];
@@ -35,7 +35,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 $username = $row['username'];
                 $locked = $securityModel->decryptData($row['locked']);
                 $active = $securityModel->decryptData($row['active']);
-                $lastConnectionDate = empty($row['last_connection_date']) ? 'Never Connected' : $systemModel->checkDate('empty', $row['last_connection_date'], '', 'M d, Y h:i:s a', '');
+                $lastConnectionDate = empty($row['last_connection_date']) ? 'Never Connected' : $systemModel->checkDate('empty', $row['last_connection_date'], '', 'd M Y h:i:s a', '');
                 $passwordExpiryDate = $systemModel->checkDate('empty', $securityModel->decryptData($row['password_expiry_date']), '', 'M d,Y', '');
                 $profilePicture = $systemModel->checkImage(str_replace('../', './apps/', $row['profile_picture'])  ?? null, 'profile');
 
@@ -76,6 +76,38 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                         'LINK' => $pageLink .'&id='. $userAccountIDEncrypted
                     ];
                 }
+            }
+
+            echo json_encode($response);
+        break;
+        # -------------------------------------------------------------
+
+        # -------------------------------------------------------------
+        case 'login session table':
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+           
+            $sql = $databaseModel->getConnection()->prepare('CALL generateUserAccountLoginSession(:userAccountID)');
+            $sql->bindValue(':userAccountID', $userAccountID, PDO::PARAM_INT);
+            $sql->execute();
+            $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+            $sql->closeCursor();
+
+            foreach ($options as $row) {
+                $location = $row['location'];
+                $device = $row['device'];
+                $loginStatus = $row['login_status'];
+                $ipAddress = $row['ip_address'];
+                $loginDate = $systemModel->checkDate('empty', $row['login_date'], '', 'd M Y h:i:s a', '');
+
+                $loginStatusBadge = $loginStatus == 'Ok' ? '<span class="badge badge-light-success">Ok</span>' : '<span class="badge badge-light-danger">'. $loginStatus .'</span>';
+
+                $response[] = [
+                    'LOCATION' => $location,
+                    'LOGIN_STATUS' => $loginStatusBadge,
+                    'DEVICE' => $device,
+                    'IP_ADDRESS' => $ipAddress,
+                    'LOGIN_DATE' => $loginDate
+                ];
             }
 
             echo json_encode($response);

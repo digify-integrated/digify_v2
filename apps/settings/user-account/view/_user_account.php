@@ -122,7 +122,7 @@
                         <th>Last Login</th>
                     </tr>
                 </thead>
-                <tbody class="fw-semibold text-gray-800"></tbody>
+                <tbody class="fw-6 fw-semibold text-gray-600"></tbody>
             </table>
         </div>
     </div>

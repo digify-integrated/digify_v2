@@ -40,25 +40,6 @@ INSERT INTO user_account (file_as, username, email, password, locked, active, pa
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 
-/* Login Sessions Table */
-
-DROP TABLE IF EXISTS login_sessions;
-
-CREATE TABLE login_sessions (
-    login_sessions_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_account_id INT UNSIGNED NOT NULL,
-    location VARCHAR(500),
-    device VARCHAR(200),
-    ip_address VARCHAR(100),
-    login_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_account_id) REFERENCES user_account(user_account_id)
-);
-
-CREATE INDEX login_sessions_index_login_sessions_id ON login_sessions(login_sessions_id);
-CREATE INDEX login_sessions_index_user_account_id ON login_sessions(user_account_id);
-
-/* ----------------------------------------------------------------------------------------------------------------------------- */
-
 /* Password History Table */
 
 DROP TABLE IF EXISTS password_history;

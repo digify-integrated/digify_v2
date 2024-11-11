@@ -135,6 +135,18 @@ class RoleModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    public function insertRoleUserAccount($p_role_id, $p_role_name, $p_user_account_id, $p_file_as, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL insertRoleUserAccount(:p_role_id, :p_role_name, :p_user_account_id, :p_file_as, :p_last_log_by)');
+        $stmt->bindValue(':p_role_id', $p_role_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_role_name', $p_role_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_user_account_id', $p_user_account_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_file_as', $p_file_as, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Delete methods
     # -------------------------------------------------------------
 

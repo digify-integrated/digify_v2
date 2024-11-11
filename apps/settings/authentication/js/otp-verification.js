@@ -92,11 +92,12 @@ function otpForm(){
         },
         submitHandler: function(form) {
             const transaction = 'otp verification';
+            const device_info = getDeviceInfo();
     
             $.ajax({
                 type: 'POST',
                 url: 'apps/settings/authentication/controller/authentication-controller.php',
-                data: $(form).serialize() + '&transaction=' + transaction,
+                data: $(form).serialize() + '&transaction=' + transaction + '&device_info=' + device_info,
                 dataType: 'json',
                 beforeSend: function() {
                     disableFormSubmitButton('verify');

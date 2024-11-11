@@ -61,7 +61,7 @@ class UserAccountController {
             $active = $this->securityModel->decryptData($loginCredentialsDetails['active']);
             $locked = $this->securityModel->decryptData($loginCredentialsDetails['locked']);
             $multipleSession = $this->securityModel->decryptData($loginCredentialsDetails['multiple_session']);
-            $sessionToken = $this->securityModel->decryptData($loginCredentialsDetails['session_token']);
+            $currentSessionToken = $this->securityModel->decryptData($loginCredentialsDetails['session_token']);
 
             if ($active === 'No') {
                 $response = [
@@ -89,7 +89,7 @@ class UserAccountController {
                 exit;
             }
             
-            if ($sessionToken != $sessionToken && $multipleSession == 'No') {
+            if ($sessionToken != $currentSessionToken && $multipleSession == 'No') {
                 $response = [
                     'success' => false,
                     'sessionExpired' => true,
@@ -138,6 +138,30 @@ class UserAccountController {
                 case 'disable multiple login sessions':
                     $this->disableMultipleLoginSessions();
                     break;
+                case 'activate user account':
+                    $this->activateUserAccount();
+                    break;
+                case 'activate multiple user account':
+                    $this->activateMultipleUserAccount();
+                    break;
+                case 'deactivate user account':
+                    $this->deactivateUserAccount();
+                    break;
+                case 'deactivate multiple user account':
+                    $this->deactivateMultipleUserAccount();
+                    break;
+                case 'lock user account':
+                    $this->lockUserAccount();
+                    break;
+                case 'lock multiple user account':
+                    $this->lockMultipleUserAccount();
+                    break;
+                case 'unlock user account':
+                    $this->unlockUserAccount();
+                    break;
+                case 'unlock multiple user account':
+                    $this->unlockMultipleUserAccount();
+                     break;
                 case 'get user account details':
                     $this->getUserAccountDetails();
                     break;
@@ -953,6 +977,430 @@ class UserAccountController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    #   Activate methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function activateUserAccount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+        
+            $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+            $total = $checkUserAccountExist['total'] ?? 0;
+
+            if($total === 0){
+                $response = [
+                    'success' => false,
+                    'notExist' => true,
+                    'title' => 'Activate User Account',
+                    'message' => 'The user account does not exist.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            $this->userAccountModel->updateUserAccountStatus($userAccountID, $this->securityModel->encryptData('Yes'), $userID);
+                
+            $response = [
+                'success' => true,
+                'title' => 'Activate User Account',
+                'message' => 'The user account has been activated successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function activateMultipleUserAccount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountIDs = $_POST['user_account_id'];
+    
+            foreach($userAccountIDs as $userAccountID){
+                $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+                $total = $checkUserAccountExist['total'] ?? 0;
+
+                if($total > 0){
+                    $this->userAccountModel->updateUserAccountStatus($userAccountID, $this->securityModel->encryptData('Yes'), $userID);
+                }
+            }
+                
+            $response = [
+                'success' => true,
+                'title' => 'Activate Multiple User Account',
+                'message' => 'The selected user accounts have been activated successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    #   Deactivate methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function deactivateUserAccount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+        
+            $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+            $total = $checkUserAccountExist['total'] ?? 0;
+
+            if($total === 0){
+                $response = [
+                    'success' => false,
+                    'notExist' => true,
+                    'title' => 'Deactivate User Account',
+                    'message' => 'The user account does not exist.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            if($userAccountID == $userID){
+                $response = [
+                    'success' => false,
+                    'title' => 'Deactivate User Account',
+                    'message' => 'You cannot deactivate the user account you are currently logged in as.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            $this->userAccountModel->updateUserAccountStatus($userAccountID, $this->securityModel->encryptData('No'), $userID);
+                
+            $response = [
+                'success' => true,
+                'title' => 'Deactivate User Account',
+                'message' => 'The user account has been deactivated successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function deactivateMultipleUserAccount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountIDs = $_POST['user_account_id'];
+    
+            foreach($userAccountIDs as $userAccountID){
+                $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+                $total = $checkUserAccountExist['total'] ?? 0;
+
+                if($total > 0){
+                    if($userAccountID != $userID){
+                        $this->userAccountModel->updateUserAccountStatus($userAccountID, $this->securityModel->encryptData('No'), $userID);
+                    }
+                }
+            }
+                
+            $response = [
+                'success' => true,
+                'title' => 'Deactivate Multiple User Account',
+                'message' => 'The selected user accounts have been deactivated successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    #   Lock methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function lockUserAccount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+        
+            $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+            $total = $checkUserAccountExist['total'] ?? 0;
+
+            if($total === 0){
+                $response = [
+                    'success' => false,
+                    'notExist' => true,
+                    'title' => 'Lock User Account',
+                    'message' => 'The user account does not exist.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            if($userAccountID == $userID){
+                $response = [
+                    'success' => false,
+                    'title' => 'Lock User Account',
+                    'message' => 'You cannot lock the user account you are currently logged in as.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            $this->userAccountModel->updateUserAccountLock($userAccountID, $this->securityModel->encryptData('Yes'), $this->securityModel->encryptData('9999999'), $userID);
+                
+            $response = [
+                'success' => true,
+                'title' => 'Lock User Account',
+                'message' => 'The user account has been locked successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function lockMultipleUserAccount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountIDs = $_POST['user_account_id'];
+    
+            foreach($userAccountIDs as $userAccountID){
+                $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+                $total = $checkUserAccountExist['total'] ?? 0;
+
+                if($total > 0){
+                    if($userAccountID != $userID){
+                        $this->userAccountModel->updateUserAccountLock($userAccountID, $this->securityModel->encryptData('Yes'), $this->securityModel->encryptData('9999999'), $userID);
+                    }
+                }
+            }
+                
+            $response = [
+                'success' => true,
+                'title' => 'Lock Multiple User Account',
+                'message' => 'The selected user accounts have been locked successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    #   Unlock methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function unlockUserAccount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+        
+            $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+            $total = $checkUserAccountExist['total'] ?? 0;
+
+            if($total === 0){
+                $response = [
+                    'success' => false,
+                    'notExist' => true,
+                    'title' => 'Unlock User Account',
+                    'message' => 'The user account does not exist.',
+                    'messageType' => 'error'
+                ];
+                
+                echo json_encode($response);
+                exit;
+            }
+
+            $this->userAccountModel->updateUserAccountLock($userAccountID, $this->securityModel->encryptData('No'), $this->securityModel->encryptData('0'), $userID);
+                
+            $response = [
+                'success' => true,
+                'title' => 'Unlock User Account',
+                'message' => 'The user account has been unlocked successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function unlockMultipleUserAccount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+
+        if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
+            $userAccountIDs = $_POST['user_account_id'];
+    
+            foreach($userAccountIDs as $userAccountID){
+                $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
+                $total = $checkUserAccountExist['total'] ?? 0;
+
+                if($total > 0){
+                    $this->userAccountModel->updateUserAccountLock($userAccountID, $this->securityModel->encryptData('No'), $this->securityModel->encryptData('0'), $userID);
+                }
+            }
+                
+            $response = [
+                'success' => true,
+                'title' => 'Unlock Multiple User Account',
+                'message' => 'The selected user accounts have been unlocked successfully.',
+                'messageType' => 'success'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+        else{
+            $response = [
+                'success' => false,
+                'title' => 'Error: Transaction Failed',
+                'message' => 'An error occurred while processing your transaction. Please try again or contact our support team for assistance.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Export methods
     # -------------------------------------------------------------
 
@@ -1076,6 +1524,11 @@ class UserAccountController {
         $lastConnectionDate = (!empty($userAccountDetails['last_connection_date'])) ? date('d M Y h:i a', strtotime($userAccountDetails['last_connection_date'])) : 'Never Connected';
         $lastPasswordChange = (!empty($userAccountDetails['last_password_change'])) ? date('d M Y h:i a', strtotime($userAccountDetails['last_password_change'])) : 'Never Changed';
         $passwordExpiryDate = (!empty($userAccountDetails['password_expiry_date'])) ? date('d M Y', strtotime($this->securityModel->decryptData($userAccountDetails['password_expiry_date']))) : 'Never Connected';
+        $locked = $this->securityModel->decryptData($userAccountDetails['locked']);
+        $active = $this->securityModel->decryptData($userAccountDetails['active']);
+
+        $activeBadge = $active == 'Yes' ? '<span class="badge badge-light-success">Active</span>' : '<span class="badge badge-light-danger">Inactive</span>';
+        $lockedBadge = $locked == 'Yes' ? '<span class="badge badge-light-danger">Yes</span>' : '<span class=" badge badge-light-success">No</span>';
 
         $response = [
             'success' => true,
@@ -1088,6 +1541,8 @@ class UserAccountController {
             'lastPasswordChange' => $lastPasswordChange,
             'passwordExpiryDate' => $passwordExpiryDate,
             'profilePicture' => $profilePicture,
+            'activeBadge' => $activeBadge,
+            'lockedBadge' => $lockedBadge,
             'twoFactorAuthentication' => $this->securityModel->decryptData($userAccountDetails['two_factor_auth']),
             'multipleSession' => $this->securityModel->decryptData($userAccountDetails['multiple_session'])
         ];

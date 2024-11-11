@@ -239,6 +239,32 @@ BEGIN
     WHERE user_account_id = p_user_account_id;
 END //
 
+DROP PROCEDURE IF EXISTS updateUserAccountStatus//
+CREATE PROCEDURE updateUserAccountStatus(
+    IN p_user_account_id INT,
+    IN p_active VARCHAR(255),
+    IN p_last_log_by INT
+)
+BEGIN
+    UPDATE user_account
+    SET active = p_active,
+        last_log_by = p_last_log_by
+    WHERE user_account_id = p_user_account_id;
+END //
+
+DROP PROCEDURE IF EXISTS updateUserAccountLock//
+CREATE PROCEDURE updateUserAccountLock(
+    IN p_user_account_id INT,
+    IN p_locked VARCHAR(255),
+    IN p_account_lock_duration VARCHAR(255),
+    IN p_last_log_by INT
+    )
+BEGIN
+	UPDATE user_account 
+    SET locked = p_locked, account_lock_duration = p_account_lock_duration 
+    WHERE user_account_id = p_user_account_id;
+END //
+
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 
 /* Delete Stored Procedure */
@@ -255,6 +281,7 @@ BEGIN
 
     START TRANSACTION;
 
+    DELETE FROM role_user_account WHERE user_account_id = p_user_account_id;
     DELETE FROM user_account WHERE user_account_id = p_user_account_id;
 
     COMMIT;
@@ -281,7 +308,8 @@ DROP PROCEDURE IF EXISTS generateUserAccountTable//
 CREATE PROCEDURE generateUserAccountTable()
 BEGIN
 	SELECT user_account_id, file_as, username, email, profile_picture, locked, active, password_expiry_date, last_connection_date 
-    FROM user_account 
+    FROM user_account
+    WHERE user_account_id NOT IN (1, 2)
     ORDER BY user_account_id;
 END //
 
@@ -291,6 +319,17 @@ BEGIN
 	SELECT user_account_id, user_account_name 
     FROM user_account 
     ORDER BY user_account_name;
+END //
+
+DROP PROCEDURE IF EXISTS generateUserAccountLoginSession//
+CREATE PROCEDURE generateUserAccountLoginSession(
+    IN p_user_account_id INT
+)
+BEGIN
+	SELECT location, login_status, device, ip_address, login_date 
+    FROM login_session
+    WHERE user_account_id = p_user_account_id
+    ORDER BY login_date DESC;
 END //
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

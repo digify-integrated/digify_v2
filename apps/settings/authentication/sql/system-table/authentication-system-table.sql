@@ -41,3 +41,23 @@ CREATE INDEX system_subscription_index_subscription_validity ON system_subscript
 CREATE INDEX system_subscription_index_no_users ON system_subscription(no_users);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
+
+/* System Subscription Table */
+
+DROP TABLE IF EXISTS login_session;
+
+CREATE TABLE login_session (
+    login_session_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_account_id INT UNSIGNED NOT NULL,
+    location VARCHAR(500) NOT NULL,
+    login_status VARCHAR(50) NOT NULL,
+    device VARCHAR(200) NOT NULL,
+    ip_address VARCHAR(50) NOT NULL,
+    login_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_account_id) REFERENCES user_account(user_account_id)
+);
+
+CREATE INDEX login_session_index_login_session_id ON login_session(login_session_id);
+CREATE INDEX login_session_index_user_account_id ON login_session(user_account_id);
+
+/* ----------------------------------------------------------------------------------------------------------------------------- */

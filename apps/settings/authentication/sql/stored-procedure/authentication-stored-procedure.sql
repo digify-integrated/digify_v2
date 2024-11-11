@@ -100,6 +100,32 @@ END //
 
 /* Update Stored Procedure */
 
+DROP PROCEDURE IF EXISTS insertLoginSession//
+CREATE PROCEDURE insertLoginSession(
+    IN p_user_account_id INT, 
+    IN p_location VARCHAR(500), 
+    IN p_login_status VARCHAR(50), 
+    IN p_device VARCHAR(200),
+    IN p_ip_address VARCHAR(50)
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO login_session (user_account_id, location, login_status, device, ip_address) 
+    VALUES(p_user_account_id, p_location, p_login_status, p_device, p_ip_address);
+    
+    COMMIT;
+END //
+
+/* ----------------------------------------------------------------------------------------------------------------------------- */
+
+/* Update Stored Procedure */
+
 DROP PROCEDURE IF EXISTS updateLoginAttempt//
 CREATE PROCEDURE updateLoginAttempt(
     IN p_user_account_id INT, 

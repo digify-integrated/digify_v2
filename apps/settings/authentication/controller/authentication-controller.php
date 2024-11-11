@@ -85,6 +85,7 @@ class AuthenticationController {
     
         $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
         $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+        $deviceInfo = filter_input(INPUT_POST, 'device_info', FILTER_SANITIZE_STRING);
         
         $checkLoginCredentialsExist = $this->authenticationModel->checkLoginCredentialsExist(null, $username);
         $total = $checkLoginCredentialsExist['total'] ?? 0;
@@ -98,8 +99,11 @@ class AuthenticationController {
             ];
         
             echo json_encode($response);
-            exit; 
+            exit;
         }
+        
+        $ipAddress = $this->getPublicIPAddress();
+        $location = $this->getLocation($ipAddress);       
 
         $loginCredentialsDetails = $this->authenticationModel->getLoginCredentials(null, $username);
         $userAccountID = $loginCredentialsDetails['user_account_id'];
@@ -116,6 +120,8 @@ class AuthenticationController {
     
         if ($password !== $userPassword) {
             $this->handleInvalidCredentials($userAccountID, $failedLoginAttempts);
+
+            $this->authenticationModel->insertLoginSession($userAccountID, $location, 'Invalid Credentials', $deviceInfo, $ipAddress);
             return;
         }
      
@@ -126,6 +132,9 @@ class AuthenticationController {
                 'message' => 'Your account is inactive. Please contact the administrator for assistance.',
                 'messageType' => 'error'
             ];
+
+            echo json_encode($response);
+            exit;
         }
     
        if ($this->checkPasswordHasExpired($passwordExpiryDate)) {
@@ -150,6 +159,8 @@ class AuthenticationController {
 
         $this->authenticationModel->updateLastConnection($userAccountID, $encryptedSessionToken);
         
+        $this->authenticationModel->insertLoginSession($userAccountID, $location, 'Ok', $deviceInfo, $ipAddress);
+
         $_SESSION['user_account_id'] = $userAccountID;
         $_SESSION['session_token'] = $sessionToken;
 
@@ -262,6 +273,7 @@ class AuthenticationController {
         $otpCode4 = filter_input(INPUT_POST, 'otp_code_4', FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 9]]);
         $otpCode5 = filter_input(INPUT_POST, 'otp_code_5', FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 9]]);
         $otpCode6 = filter_input(INPUT_POST, 'otp_code_6', FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 9]]);
+        $deviceInfo = filter_input(INPUT_POST, 'device_info', FILTER_SANITIZE_STRING);
         $otpVerificationCode = $otpCode1 . $otpCode2 . $otpCode3 . $otpCode4 . $otpCode5 . $otpCode6;
 
         $checkLoginCredentialsExist = $this->authenticationModel->checkLoginCredentialsExist($userAccountID, null);
@@ -313,6 +325,9 @@ class AuthenticationController {
             exit;
         }
 
+        $ipAddress = $this->getPublicIPAddress();
+        $location = $this->getLocation($ipAddress);
+
         if ($otpVerificationCode !== $otp) {
             $securitySettingDetails = $this->securitySettingModel->getSecuritySetting(2);
             $maxFailedOTPAttempts = $securitySettingDetails['value'] ?? MAX_FAILED_OTP_ATTEMPTS;
@@ -320,6 +335,8 @@ class AuthenticationController {
             if ($failedOTPAttempts >= $maxFailedOTPAttempts) {
                 $otpExpiryDate = $this->securityModel->encryptData(date('Y-m-d H:i:s', strtotime('-1 year')));
                 $this->authenticationModel->updateOTPAsExpired($userAccountID, $otpExpiryDate);
+
+                $this->authenticationModel->insertLoginSession($userAccountID, $location, 'Invalid OTP Code', $deviceInfo, $ipAddress);
 
                 $response = [
                     'success' => false,
@@ -364,6 +381,8 @@ class AuthenticationController {
         $encryptedSessionToken = $this->securityModel->encryptData($sessionToken);
 
         $this->authenticationModel->updateLastConnection($userAccountID, $encryptedSessionToken);
+
+        $this->authenticationModel->insertLoginSession($userAccountID, $location, 'Ok', $deviceInfo, $ipAddress);
         
         $_SESSION['user_account_id'] = $userAccountID;
         $_SESSION['session_token'] = $sessionToken;
@@ -500,7 +519,7 @@ class AuthenticationController {
             return;
         }
     
-        $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+        $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
 
         $loginCredentialsDetails = $this->authenticationModel->getLoginCredentials($userAccountID, null);
         $email = $loginCredentialsDetails['email'];
@@ -735,6 +754,20 @@ class AuthenticationController {
         }
     }
     # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    #   Get methods
+    # -------------------------------------------------------------
+
+    private function getPublicIPAddress() {
+        $publicIP = file_get_contents('https://api.ipify.org');
+        return $publicIP ? $publicIP : 'IP Not Available';
+    }
+
+    private function getLocation($ipAddress) {
+        $locationData = json_decode(file_get_contents("http://ipinfo.io/{$ipAddress}/json"), true);
+        return isset($locationData['city'], $locationData['country']) ? "{$locationData['city']}, {$locationData['country']}" : 'Unknown';
+    }
 
     # -------------------------------------------------------------
     #   Check methods

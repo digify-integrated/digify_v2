@@ -13,7 +13,7 @@ $authenticationModel = new AuthenticationModel($databaseModel, $securityModel);
 
 if(isset($_POST['type']) && !empty($_POST['type'])){
     $userID = $_SESSION['user_account_id'];
-    $type = htmlspecialchars($_POST['type'], ENT_QUOTES, 'UTF-8');
+    $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
     $pageID = isset($_POST['page_id']) ? $_POST['page_id'] : null;
     $pageLink = isset($_POST['page_link']) ? $_POST['page_link'] : null;
     $logNotesAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'log notes');
@@ -40,7 +40,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                                     </div>',
                     'ROLE_NAME' => '<div class="d-flex flex-column">
                                                 <a href="#" class="fs-5 text-gray-900 fw-bold">'. $roleName .'</a>
-                                                <div class="fs-6 fw-semibold text-gray-500">'. $roleDescription .'</div>
+                                                <div class="fs-7 text-gray-500">'. $roleDescription .'</div>
                                             </div>',
                     'LINK' => $pageLink .'&id='. $roleIDEncrypted
                 ];
@@ -203,7 +203,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
         case 'assigned role user account list':
             if(isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])){
                 $table = '';
-                $userAccountID = htmlspecialchars($_POST['user_account_id'], ENT_QUOTES, 'UTF-8');
+                $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
 
                 $sql = $databaseModel->getConnection()->prepare('CALL generateUserAccountRoleList(:userAccountID)');
                 $sql->bindValue(':userAccountID', $userAccountID, PDO::PARAM_INT);
@@ -211,12 +211,12 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                 $options = $sql->fetchAll(PDO::FETCH_ASSOC);
                 $sql->closeCursor();
 
-                $deleteRoleUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 6);
+                $deleteRoleUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 8);
 
                 foreach ($options as $row) {
                     $roleUserAccountID = $row['role_user_account_id'];
                     $roleName = $row['role_name'];
-                    $assignmentDate = $systemModel->checkDate('empty', $row['date_assigned'], '', 'M d Y h:i a', '');
+                    $assignmentDate = $systemModel->checkDate('empty', $row['date_assigned'], '', 'd M Y h:i a', '');
 
                     $deleteButton = '';
                     if($deleteRoleUserAccount['total'] > 0){
@@ -331,6 +331,28 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             }
 
             echo json_encode($response);
+        break;
+        # -------------------------------------------------------------
+
+        # -------------------------------------------------------------
+        case 'user account role dual listbox options':
+            if(isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])){
+                $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
+                $sql = $databaseModel->getConnection()->prepare('CALL generateUserAccountRoleDualListBoxOptions(:userAccountID)');
+                $sql->bindValue(':userAccountID', $userAccountID, PDO::PARAM_INT);
+                $sql->execute();
+                $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+                $sql->closeCursor();
+
+                foreach ($options as $row) {
+                    $response[] = [
+                        'id' => $row['role_id'],
+                        'text' => $row['role_name']
+                    ];
+                }
+
+                echo json_encode($response);
+            }
         break;
         # -------------------------------------------------------------
 

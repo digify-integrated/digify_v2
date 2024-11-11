@@ -496,21 +496,31 @@ function generateExportColumns(table_name) {
 function getDeviceInfo() {
     const userAgent = navigator.userAgent;
     let device = 'Unknown Device';
+    let browser = 'Unknown Browser';
 
-    if (userAgent.indexOf('Windows NT') !== -1) device = 'Windows';
-    else if (userAgent.indexOf('Mac OS') !== -1) device = 'Mac OS';
-    else if (userAgent.indexOf('Linux') !== -1) device = 'Linux';
-    else if (userAgent.indexOf('Android') !== -1) device = 'Android';
-    else if (userAgent.indexOf('like Mac') !== -1) device = 'iOS';
+    if (/Android/i.test(userAgent)) {
+        device = 'Android';
+    } else if (/iPhone|iPad|iPod/i.test(userAgent)) {
+        device = 'iOS';
+    } else if (/Windows NT/i.test(userAgent)) {
+        device = 'Windows';
+    } else if (/Mac OS/i.test(userAgent)) {
+        device = 'Mac OS';
+    } else if (/Linux/i.test(userAgent)) {
+        device = 'Linux';
+    }
 
-    const browser = (() => {
-        if (userAgent.indexOf('Firefox') !== -1) return 'Firefox';
-        else if (userAgent.indexOf('Opera') !== -1 || userAgent.indexOf('OPR') !== -1) return 'Opera';
-        else if (userAgent.indexOf('Chrome') !== -1) return 'Chrome';
-        else if (userAgent.indexOf('Safari') !== -1) return 'Safari';
-        else if (userAgent.indexOf('MSIE') !== -1 || userAgent.indexOf('Trident/') !== -1) return 'Internet Explorer';
-        return 'Unknown Browser';
-    })();
+    if (/Firefox/i.test(userAgent)) {
+        browser = 'Firefox';
+    } else if (/OPR|Opera/i.test(userAgent)) {
+        browser = 'Opera';
+    } else if (/Chrome/i.test(userAgent)) {
+        browser = 'Chrome';
+    } else if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) {
+        browser = 'Safari';
+    } else if (/MSIE|Trident/i.test(userAgent)) {
+        browser = 'Internet Explorer';
+    }
 
     return `${browser} - ${device}`;
 }

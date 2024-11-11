@@ -59,7 +59,7 @@ class MenuItemController {
             $active = $this->securityModel->decryptData($loginCredentialsDetails['active']);
             $locked = $this->securityModel->decryptData($loginCredentialsDetails['locked']);
             $multipleSession = $this->securityModel->decryptData($loginCredentialsDetails['multiple_session']);
-            $sessionToken = $this->securityModel->decryptData($loginCredentialsDetails['session_token']);
+            $currentSessionToken = $this->securityModel->decryptData($loginCredentialsDetails['session_token']);
 
             if ($active === 'No') {
                 $response = [
@@ -87,7 +87,7 @@ class MenuItemController {
                 exit;
             }
             
-            if ($sessionToken != $sessionToken && $multipleSession == 'No') {
+            if ($sessionToken != $currentSessionToken && $multipleSession == 'No') {
                 $response = [
                     'success' => false,
                     'sessionExpired' => true,

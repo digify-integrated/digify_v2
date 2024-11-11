@@ -13,7 +13,7 @@ $authenticationModel = new AuthenticationModel($databaseModel, $securityModel);
 
 if(isset($_POST['type']) && !empty($_POST['type'])){
     $userID = $_SESSION['user_account_id'];
-    $type = htmlspecialchars($_POST['type'], ENT_QUOTES, 'UTF-8');
+    $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
     $pageID = isset($_POST['page_id']) ? $_POST['page_id'] : null;
     $pageLink = isset($_POST['page_link']) ? $_POST['page_link'] : null;
     $logNotesAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'log notes');
