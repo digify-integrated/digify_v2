@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 10, 2024 at 01:28 PM
+-- Generation Time: Nov 11, 2024 at 01:49 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -409,6 +409,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteSystemAction` (IN `p_system_a
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteUserAccount`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteUserAccount` (IN `p_user_account_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM role_user_account WHERE user_account_id = p_user_account_id;
+    DELETE FROM user_account WHERE user_account_id = p_user_account_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `exportData`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `exportData` (IN `p_table_name` VARCHAR(255), IN `p_columns` TEXT, IN `p_ids` TEXT)   BEGIN
     SET @sql = CONCAT('SELECT ', p_columns, ' FROM ', p_table_name, ' WHERE ', p_table_name, '_id IN (', p_ids, ')');
@@ -700,6 +715,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateTables` (IN `p_database_nam
 	SELECT table_name FROM information_schema.tables WHERE table_schema = p_database_name;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateUserAccountLoginSession`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateUserAccountLoginSession` (IN `p_user_account_id` INT)   BEGIN
+	SELECT location, login_status, device, ip_address, login_date 
+    FROM login_session
+    WHERE user_account_id = p_user_account_id
+    ORDER BY login_date DESC;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateUserAccountRoleDualListBoxOptions`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateUserAccountRoleDualListBoxOptions` (IN `p_user_account_id` INT)   BEGIN
 	SELECT role_id, role_name 
@@ -719,7 +742,8 @@ END$$
 DROP PROCEDURE IF EXISTS `generateUserAccountTable`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateUserAccountTable` ()   BEGIN
 	SELECT user_account_id, file_as, username, email, profile_picture, locked, active, password_expiry_date, last_connection_date 
-    FROM user_account 
+    FROM user_account
+    WHERE user_account_id NOT IN (1, 2)
     ORDER BY user_account_id;
 END$$
 
@@ -833,6 +857,21 @@ DROP PROCEDURE IF EXISTS `getUserAccount`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getUserAccount` (IN `p_user_account_id` INT)   BEGIN
 	SELECT * FROM user_account
 	WHERE user_account_id = p_user_account_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `insertLoginSession`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertLoginSession` (IN `p_user_account_id` INT, IN `p_location` VARCHAR(500), IN `p_login_status` VARCHAR(50), IN `p_device` VARCHAR(200), IN `p_ip_address` VARCHAR(50))   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO login_session (user_account_id, location, login_status, device, ip_address) 
+    VALUES(p_user_account_id, p_location, p_login_status, p_device, p_ip_address);
+    
+    COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `insertRolePermission`$$
@@ -1466,6 +1505,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateUserAccountFullName` (IN `p_u
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `updateUserAccountLock`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateUserAccountLock` (IN `p_user_account_id` INT, IN `p_locked` VARCHAR(255), IN `p_account_lock_duration` VARCHAR(255), IN `p_last_log_by` INT)   BEGIN
+	UPDATE user_account 
+    SET locked = p_locked, account_lock_duration = p_account_lock_duration 
+    WHERE user_account_id = p_user_account_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `updateUserAccountPassword`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateUserAccountPassword` (IN `p_user_account_id` INT, IN `p_password` VARCHAR(255), IN `p_password_expiry_date` VARCHAR(255), IN `p_last_log_by` INT)   BEGIN
  	DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -1499,6 +1545,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateUserAccountPhone` (IN `p_user
     WHERE user_account_id = p_user_account_id;
 
     COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateUserAccountStatus`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateUserAccountStatus` (IN `p_user_account_id` INT, IN `p_active` VARCHAR(255), IN `p_last_log_by` INT)   BEGIN
+    UPDATE user_account
+    SET active = p_active,
+        last_log_by = p_last_log_by
+    WHERE user_account_id = p_user_account_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `updateUserAccountUsername`$$
@@ -1624,7 +1678,21 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (29, 'user_account', 2, 'User account changed.<br/><br/>Username: ldagultos -> ldagulto<br/>', 2, '2024-11-09 20:06:38', '2024-11-09 20:06:38'),
 (30, 'user_account', 2, 'User account changed.<br/><br/>Email: lawrenceagulto.317s@gmail.com -> lawrenceagulto.317@gmail.com<br/>', 2, '2024-11-09 20:08:05', '2024-11-09 20:08:05'),
 (31, 'user_account', 2, 'User account changed.<br/><br/>Phone: 09399108659 -> 093991086599<br/>', 2, '2024-11-09 20:16:25', '2024-11-09 20:16:25'),
-(32, 'user_account', 2, 'User account changed.<br/><br/>Phone: 093991086599 -> 09399108659<br/>', 2, '2024-11-09 20:16:31', '2024-11-09 20:16:31');
+(32, 'user_account', 2, 'User account changed.<br/><br/>Phone: 093991086599 -> 09399108659<br/>', 2, '2024-11-09 20:16:31', '2024-11-09 20:16:31'),
+(33, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-09 17:09:11 -> 2024-11-11 17:57:48<br/>', 2, '2024-11-11 17:57:48', '2024-11-11 17:57:48'),
+(34, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 17:57:48 -> 2024-11-11 17:58:14<br/>', 2, '2024-11-11 17:58:14', '2024-11-11 17:58:14'),
+(35, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 17:58:14 -> 2024-11-11 18:01:52<br/>', 2, '2024-11-11 18:01:52', '2024-11-11 18:01:52'),
+(36, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:01:52 -> 2024-11-11 18:08:01<br/>', 2, '2024-11-11 18:08:01', '2024-11-11 18:08:01'),
+(37, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:08:01 -> 2024-11-11 18:10:47<br/>', 2, '2024-11-11 18:10:47', '2024-11-11 18:10:47'),
+(38, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:10:47 -> 2024-11-11 18:13:44<br/>', 2, '2024-11-11 18:13:44', '2024-11-11 18:13:44'),
+(39, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:13:44 -> 2024-11-11 18:14:42<br/>', 2, '2024-11-11 18:14:42', '2024-11-11 18:14:42'),
+(40, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:14:42 -> 2024-11-11 18:16:07<br/>', 2, '2024-11-11 18:16:07', '2024-11-11 18:16:07'),
+(41, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:16:07 -> 2024-11-11 18:19:47<br/>', 2, '2024-11-11 18:19:47', '2024-11-11 18:19:47'),
+(42, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:19:47 -> 2024-11-11 18:20:47<br/>', 2, '2024-11-11 18:20:47', '2024-11-11 18:20:47'),
+(43, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:20:47 -> 2024-11-11 18:21:55<br/>', 2, '2024-11-11 18:21:55', '2024-11-11 18:21:55'),
+(44, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:21:55 -> 2024-11-11 18:34:39<br/>', 2, '2024-11-11 18:34:39', '2024-11-11 18:34:39'),
+(45, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:34:39 -> 2024-11-11 20:07:41<br/>', 2, '2024-11-11 20:07:41', '2024-11-11 20:07:41'),
+(46, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 20:07:41 -> 2024-11-11 20:11:39<br/>', 2, '2024-11-11 20:11:39', '2024-11-11 20:11:39');
 
 -- --------------------------------------------------------
 
@@ -1722,6 +1790,42 @@ CREATE TRIGGER `email_setting_trigger_update` AFTER UPDATE ON `email_setting` FO
 END
 $$
 DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `login_session`
+--
+
+DROP TABLE IF EXISTS `login_session`;
+CREATE TABLE `login_session` (
+  `login_session_id` int(11) NOT NULL,
+  `user_account_id` int(10) UNSIGNED NOT NULL,
+  `location` varchar(500) NOT NULL,
+  `login_status` varchar(50) NOT NULL,
+  `device` varchar(200) NOT NULL,
+  `ip_address` varchar(50) NOT NULL,
+  `login_date` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `login_session`
+--
+
+INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, `login_status`, `device`, `ip_address`, `login_date`) VALUES
+(1, 2, 'Unknown', 'Ok', 'Chrome - Windows PC', '::1', '2024-11-11 17:58:14'),
+(2, 2, 'Makati City, PH', 'Ok', 'Chrome - Windows PC', '112.207.178.12', '2024-11-11 18:01:53'),
+(3, 2, 'Makati City, PH', 'Ok', 'Chrome - K - Android', '112.207.178.12', '2024-11-11 18:08:02'),
+(4, 2, 'Makati City, PH', 'Ok', 'K - Android', '112.207.178.12', '2024-11-11 18:10:48'),
+(5, 2, 'Makati City, PH', 'Ok', 'K) - Android', '112.207.178.12', '2024-11-11 18:13:44'),
+(6, 2, 'Makati City, PH', 'Ok', 'K - Android', '112.207.178.12', '2024-11-11 18:14:42'),
+(7, 2, 'Makati City, PH', 'Ok', 'Opera - Linux', '112.207.178.12', '2024-11-11 18:16:08'),
+(8, 2, 'Makati City, PH', 'Ok', 'Opera - Linux', '112.207.178.12', '2024-11-11 18:19:48'),
+(9, 2, 'Makati City, PH', 'Ok', 'Opera - Android', '112.207.178.12', '2024-11-11 18:20:48'),
+(10, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 18:21:56'),
+(11, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 18:34:39'),
+(12, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 20:07:41'),
+(13, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 20:11:39');
 
 -- --------------------------------------------------------
 
@@ -2124,7 +2228,7 @@ CREATE TABLE `role_permission` (
 --
 
 INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `menu_item_id`, `menu_item_name`, `read_access`, `write_access`, `create_access`, `delete_access`, `import_access`, `export_access`, `log_notes_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
 (2, 1, 'Administrator', 2, 'General Settings', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (3, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
@@ -2196,7 +2300,7 @@ CREATE TABLE `role_user_account` (
 --
 
 INSERT INTO `role_user_account` (`role_user_account_id`, `role_id`, `role_name`, `user_account_id`, `file_as`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 2, 'Administrator', '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1);
+(2, 1, 'Administrator', 2, 'Administrator', '2024-11-11 10:34:23', '2024-11-11 10:34:23', 1);
 
 -- --------------------------------------------------------
 
@@ -2426,9 +2530,8 @@ CREATE TABLE `user_account` (
 --
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
-(1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 1),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-09 17:09:11', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'Qj1%2BzRTtTh1gDSWxHAAh2%2FEd%2FY%2B2WZwY%2Fdqzpl3zVcg%3D', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'E%2BvPx6iq0949YyJ8V9TxsxGIEsyfuvZzhSVW%2BQtc7jU%3D', '2024-11-07 14:09:59', 2),
-(3, 'asda', 'dasd@gmail.com', 'asdas', 'Tg5MNrZJwPoZ%2FJm2my7iZqZTLdQdTDHLJF%2F5O3FiowA%3D', NULL, 'asdasdasd', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0%3D', NULL, NULL, NULL, 'Ikgv%2BGvzGq8fix2UGUdLjQEe31JMKHCnrQxp5gjTKZI%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'wBxV1NxvRHXyLmCvfEB9NFMxFqCx8vQSs2aVXNR%2FGMA%3D', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-08 10:06:59', 2);
+(1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-11 20:11:39', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'TjpRyWbubfOEzD%2Bf%2FxEnOYc4PkvMYs1pxR9fx4zjSlA%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'vgq1ZHqT59jEvZSnz1kfCyzZiFtc6wqDmfDINAri8vo%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -2518,6 +2621,14 @@ ALTER TABLE `email_setting`
   ADD PRIMARY KEY (`email_setting_id`),
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `email_setting_index_email_setting_id` (`email_setting_id`);
+
+--
+-- Indexes for table `login_session`
+--
+ALTER TABLE `login_session`
+  ADD PRIMARY KEY (`login_session_id`),
+  ADD KEY `login_session_index_login_session_id` (`login_session_id`),
+  ADD KEY `login_session_index_user_account_id` (`user_account_id`);
 
 --
 -- Indexes for table `menu_group`
@@ -2689,13 +2800,19 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
 --
 ALTER TABLE `email_setting`
   MODIFY `email_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `login_session`
+--
+ALTER TABLE `login_session`
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -2761,7 +2878,7 @@ ALTER TABLE `role_system_action_permission`
 -- AUTO_INCREMENT for table `role_user_account`
 --
 ALTER TABLE `role_user_account`
-  MODIFY `role_user_account_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `role_user_account_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `security_setting`
@@ -2820,6 +2937,12 @@ ALTER TABLE `audit_log`
 --
 ALTER TABLE `email_setting`
   ADD CONSTRAINT `email_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `login_session`
+--
+ALTER TABLE `login_session`
+  ADD CONSTRAINT `login_session_ibfk_1` FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `menu_group`
