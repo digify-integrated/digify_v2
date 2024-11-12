@@ -26,25 +26,14 @@
             ?>
             <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
                 <?php 
-                    require_once('components/view/_breadcrumbs.php');
+                    require_once('components/view/_breadcrumbs_generic.php');
                 ?>
                 <div class="app-container container-xxl">
                     <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                         <div class="d-flex flex-column flex-column-fluid">
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
-                                    if($newRecord){
-                                        require_once('apps/settings/app-module/view/_app_module_new.php');
-                                    }
-                                    else if(!empty($detailID)){
-                                        require_once('apps/settings/app-module/view/_app_module_details.php');
-                                    }
-                                    else if(isset($_GET['import']) && !empty($_GET['import'])){
-                                        require_once('components/view/_import.php');
-                                    }
-                                    else{
-                                        require_once('apps/settings/app-module/view/_app_module.php');
-                                    }
+                                    require_once('apps/settings/account-settings/view/_account_settings.php');
                                 ?>
                             </div>
                         </div>
@@ -59,27 +48,7 @@
         
     ?>
     <script src="./assets/plugins/datatables/datatables.bundle.js"></script>
-    
-    <?php
-        $version = rand();
-
-        if ($newRecord) {
-            $scriptFile = './apps/settings/app-module/js/app-module-new.js';
-        } 
-        elseif (!empty($detailID)) {
-            $scriptFile = './apps/settings/app-module/js/app-module-details.js';
-        } 
-        elseif (isset($_GET['import']) && !empty($_GET['import'])) {
-            $scriptFile = './components/js/import.js'; 
-        } 
-        else {
-            $scriptFile = './apps/settings/app-module/js/app-module.js';
-        }
-
-        $scriptLink = '<script src="' . $scriptFile . '?v=' . $version . '"></script>';
-
-        echo $scriptLink;
-    ?>
+    <script src="./apps/settings/account-settings/js/account-settings.js?v=<?php echo rand(); ?>"></script>
 </body>
 
 </html>

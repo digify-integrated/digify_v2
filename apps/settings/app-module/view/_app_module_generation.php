@@ -43,7 +43,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                                             <div class="ms-3">
                                                 <div class="user-meta-info">
                                                     <h6 class="mb-0">'. $appModuleName .'</h6>
-                                                    <small class="text-wrap">'. $appModuleDescription .'</small>
+                                                    <small class="text-wrap fs-7 text-gray-500">'. $appModuleDescription .'</small>
                                                 </div>
                                             </div>
                                         </div>',

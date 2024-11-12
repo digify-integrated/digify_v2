@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 11, 2024 at 01:49 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Nov 12, 2024 at 10:30 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -743,7 +743,7 @@ DROP PROCEDURE IF EXISTS `generateUserAccountTable`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateUserAccountTable` ()   BEGIN
 	SELECT user_account_id, file_as, username, email, profile_picture, locked, active, password_expiry_date, last_connection_date 
     FROM user_account
-    WHERE user_account_id NOT IN (1, 2)
+    /*WHERE user_account_id NOT IN (1, 2)*/
     ORDER BY user_account_id;
 END$$
 
@@ -1692,7 +1692,8 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (43, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:20:47 -> 2024-11-11 18:21:55<br/>', 2, '2024-11-11 18:21:55', '2024-11-11 18:21:55'),
 (44, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:21:55 -> 2024-11-11 18:34:39<br/>', 2, '2024-11-11 18:34:39', '2024-11-11 18:34:39'),
 (45, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:34:39 -> 2024-11-11 20:07:41<br/>', 2, '2024-11-11 20:07:41', '2024-11-11 20:07:41'),
-(46, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 20:07:41 -> 2024-11-11 20:11:39<br/>', 2, '2024-11-11 20:11:39', '2024-11-11 20:11:39');
+(46, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 20:07:41 -> 2024-11-11 20:11:39<br/>', 2, '2024-11-11 20:11:39', '2024-11-11 20:11:39'),
+(47, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 20:11:39 -> 2024-11-12 14:17:42<br/>', 2, '2024-11-12 14:17:42', '2024-11-12 14:17:42');
 
 -- --------------------------------------------------------
 
@@ -1825,7 +1826,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (10, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 18:21:56'),
 (11, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 18:34:39'),
 (12, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 20:07:41'),
-(13, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 20:11:39');
+(13, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 20:11:39'),
+(14, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-12 14:17:42');
 
 -- --------------------------------------------------------
 
@@ -1925,7 +1927,8 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-07 10:43:23', 2),
 (7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-07 10:43:23', 2),
 (8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-07 10:43:23', 2),
-(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-07 10:43:23', 2);
+(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-07 10:43:23', 2),
+(10, 'Account Settings', 'account-settings.php', '', 1, 'Settings', 0, '', '', 1, '2024-11-12 15:33:29', 2);
 
 -- --------------------------------------------------------
 
@@ -2236,7 +2239,8 @@ INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `me
 (6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (8, 1, 'Administrator', 8, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1);
+(9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(19, 1, 'Administrator', 10, 'Account Settings', 1, 1, 0, 0, 0, 0, 0, '2024-11-12 15:33:52', '2024-11-12 15:33:52', 2);
 
 -- --------------------------------------------------------
 
@@ -2531,7 +2535,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-11 20:11:39', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'TjpRyWbubfOEzD%2Bf%2FxEnOYc4PkvMYs1pxR9fx4zjSlA%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'vgq1ZHqT59jEvZSnz1kfCyzZiFtc6wqDmfDINAri8vo%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-12 14:17:42', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'TjpRyWbubfOEzD%2Bf%2FxEnOYc4PkvMYs1pxR9fx4zjSlA%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'DUQATXSdEfWBhDi0JWEEN%2FCpbgFL0uiS2tmU73rtJgQ%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -2800,7 +2804,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -2812,7 +2816,7 @@ ALTER TABLE `email_setting`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -2824,7 +2828,7 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`
@@ -2866,7 +2870,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`

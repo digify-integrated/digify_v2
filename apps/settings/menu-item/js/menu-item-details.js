@@ -354,8 +354,8 @@ function rolePermissionTable(datatable_name) {
     const columns = [ 
         { data: 'ROLE_NAME' },
         { data: 'READ_ACCESS' },
-        { data: 'WRITE_ACCESS' },
         { data: 'CREATE_ACCESS' },
+        { data: 'WRITE_ACCESS' },
         { data: 'DELETE_ACCESS' },
         { data: 'IMPORT_ACCESS' },
         { data: 'EXPORT_ACCESS' },

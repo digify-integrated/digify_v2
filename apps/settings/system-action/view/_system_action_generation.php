@@ -40,7 +40,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                                     </div>',
                     'SYSTEM_ACTION_NAME' => '<div class="d-flex flex-column">
                                                 <a href="#" class="fs-5 text-gray-900 fw-bold">'. $systemActionName .'</a>
-                                                <div class="fs-6 fw-semibold text-gray-500">'. $systemActionDescription .'</div>
+                                                <div class="fs-7 text-gray-500">'. $systemActionDescription .'</div>
                                             </div>',
                     'LINK' => $pageLink .'&id='. $systemActionIDEncrypted
                 ];

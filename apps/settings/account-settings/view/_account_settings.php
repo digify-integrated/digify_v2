@@ -1,20 +1,3 @@
-<?php
-    require('apps/settings/user-account/model/user-account-model.php');
-
-    $userAccountModel = new UserAccountModel($databaseModel);
-
-    $activateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 3);
-    $deactivateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 4);
-    $lockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 5);
-    $unlockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 6);
-    $addRoleUserAccount  = $authenticationModel->checkSystemActionAccessRights($userID, 7);
-
-    $userAccountDetails = $userAccountModel->getUserAccount($detailID);
-    $userAccountActive = $securityModel->decryptData($userAccountDetails['active']);
-    $userAccountLocked = $securityModel->decryptData($userAccountDetails['locked']);
-
-    $disabled = $writeAccess['total'] > 0 ? '' : 'disabled';
-?>
 <div class="d-flex flex-column flex-lg-row">
     <div class="flex-column flex-lg-row-auto w-lg-250px w-xl-350px mb-10">
         <div class="card mb-5 mb-xl-8">
@@ -95,24 +78,6 @@
                             </label>
                         </div>
                     </div>
-
-                    <div class="separator separator-dashed my-5"></div>
-
-                    <div class="d-flex flex-stack">
-                        <div class="d-flex">
-                            <div class="d-flex flex-column">
-                                <div class="fs-5 text-gray-900 fw-bold">Multiple Login Sessions</div>
-                                <div class="fs-7 fw-semibold text-muted">Track logins with Multiple Sessions, get alerts for unfamiliar activity, boost security.</div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-end">
-                            <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" id="multiple-login-sessions" <?php echo $disabled; ?>>
-                                <span class="form-check-label fw-semibold text-muted" for="multiple-login-sessions"></span>
-                            </label>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -124,60 +89,10 @@
                 <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#details_tab" aria-selected="true" role="tab">Details</a>
             </li>
             <li class="nav-item" role="presentation">
-                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#logs_tab" aria-selected="false" tabindex="-1" role="tab">Logs</a>
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#subscription_tab" aria-selected="false" tabindex="-1" role="tab">Subscription</a>
             </li>
-            <li class="nav-item ms-auto">
-                <?php
-                    if ($deleteAccess['total'] > 0 || $activateUserAccount['total'] > 0 || $deactivateUserAccount['total'] > 0 || $lockUserAccount['total'] > 0 || $unlockUserAccount['total'] > 0) {
-                        $action = '<a href="#" class="btn btn-primary btn-flex btn-center show menu-dropdown align-self-center" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                                        Actions
-                                        <i class="ki-outline ki-down fs-5 ms-1"></i>
-                                    </a>
-                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-60px, 539px);" data-popper-placement="bottom-end">';
-                                    
-                        if ($deleteAccess['total'] > 0) {
-                            $action .= '<div class="menu-item px-3">
-                                            <a href="javascript:void(0);" class="menu-link px-3" id="delete-user-account">
-                                                Delete
-                                            </a>
-                                        </div>';
-                        }
-
-                        if($userAccountActive == 'Yes' && $deactivateUserAccount['total'] > 0){
-                            $action .= '<div class="menu-item px-3">
-                                            <a href="javascript:void(0);" class="menu-link px-3" id="deactivate-user-account">
-                                                Deactivate
-                                            </a>
-                                        </div>';
-                        }
-                        else if($userAccountActive == 'No' && $activateUserAccount['total'] > 0){
-                            $action .= '<div class="menu-item px-3">
-                                            <a href="javascript:void(0);" class="menu-link px-3" id="activate-user-account">
-                                                Activate
-                                            </a>
-                                        </div>';
-                        }
-                
-                        if($userAccountLocked == 'Yes' && $unlockUserAccount['total'] > 0){
-                            $action .= '<div class="menu-item px-3">
-                                            <a href="javascript:void(0);" class="menu-link px-3" id="unlock-user-account">
-                                                Unlock
-                                            </a>
-                                        </div>';
-                        }
-                        else if($userAccountLocked == 'No' && $lockUserAccount['total'] > 0){
-                            $action .= '<div class="menu-item px-3">
-                                            <a href="javascript:void(0);" class="menu-link px-3" id="lock-user-account">
-                                                Lock
-                                            </a>
-                                        </div>';
-                        }
-                                        
-                        $action .= '</div>';
-                                        
-                        echo $action;
-                    }
-                ?>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#logs_tab" aria-selected="false" tabindex="-1" role="tab">Logs</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -356,23 +271,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="card mb-5 mb-xl-10">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h3>Role</h3>
-                        </div>
-                        <div class="card-toolbar">
-                            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
-                                <?php
-                                    echo $addRoleUserAccount['total'] > 0 ? '<button type="button" class="btn btn-light-primary" data-bs-toggle="modal" data-bs-target="#role-assignment-modal" id="assign-role"><i class="ki-outline ki-plus fs-2"></i> Assign</button>' : '';
-                                ?>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-body" id="role-list"></div>
                 </div>
             </div>
             <div class="tab-pane fade" id="logs_tab" role="tabpanel">
