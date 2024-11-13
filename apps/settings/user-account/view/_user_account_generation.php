@@ -115,6 +115,38 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
         # -------------------------------------------------------------
 
         # -------------------------------------------------------------
+        case 'account setting login session table':
+            $userID = $_SESSION['user_account_id'];
+           
+            $sql = $databaseModel->getConnection()->prepare('CALL generateUserAccountLoginSession(:userID)');
+            $sql->bindValue(':userID', $userID, PDO::PARAM_INT);
+            $sql->execute();
+            $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+            $sql->closeCursor();
+
+            foreach ($options as $row) {
+                $location = $row['location'];
+                $device = $row['device'];
+                $loginStatus = $row['login_status'];
+                $ipAddress = $row['ip_address'];
+                $loginDate = $systemModel->checkDate('empty', $row['login_date'], '', 'd M Y h:i:s a', '');
+
+                $loginStatusBadge = $loginStatus == 'Ok' ? '<span class="badge badge-light-success">Ok</span>' : '<span class="badge badge-light-danger">'. $loginStatus .'</span>';
+
+                $response[] = [
+                    'LOCATION' => $location,
+                    'LOGIN_STATUS' => $loginStatusBadge,
+                    'DEVICE' => $device,
+                    'IP_ADDRESS' => $ipAddress,
+                    'LOGIN_DATE' => $loginDate
+                ];
+            }
+
+            echo json_encode($response);
+        break;
+        # -------------------------------------------------------------
+
+        # -------------------------------------------------------------
         case 'user account options':
             $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;
 

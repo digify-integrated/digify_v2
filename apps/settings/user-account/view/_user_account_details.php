@@ -235,7 +235,7 @@
                                             <div class="col-lg-12 mb-4 mb-lg-0">
                                                 <div class="fv-row mb-0 fv-plugins-icon-container">
                                                     <label for="username" class="form-label fs-6 fw-bold mb-3">Enter New Username</label>
-                                                    <input type="text" class="form-control form-control-lg" id="username" name="username">
+                                                    <input type="text" class="form-control" id="username" name="username" autocomplete="off">
                                                 </div>
                                             </div>
                                         </div>
@@ -267,7 +267,7 @@
                                             <div class="col-lg-12 mb-4 mb-lg-0">
                                                 <div class="fv-row mb-0 fv-plugins-icon-container">
                                                     <label for="email" class="form-label fs-6 fw-bold mb-3">Enter New Email Address</label>
-                                                    <input type="email" class="form-control form-control-lg" id="email" name="email">
+                                                    <input type="email" class="form-control" id="email" name="email" autocomplete="off">
                                                 </div>
                                             </div>
                                         </div>
@@ -299,7 +299,7 @@
                                             <div class="col-lg-12 mb-4 mb-lg-0">
                                                 <div class="fv-row mb-0 fv-plugins-icon-container">
                                                     <label for="phone" class="form-label fs-6 fw-bold mb-3">Enter New Phone</label>
-                                                    <input type="text" class="form-control form-control-lg" id="phone" name="phone">
+                                                    <input type="text" class="form-control" id="phone" name="phone" autocomplete="off">
                                                 </div>
                                             </div>
                                         </div>

@@ -33,7 +33,7 @@
                         <div class="d-flex flex-column flex-column-fluid">
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
-                                    require_once('apps/settings/account-settings/view/_account_settings.php');
+                                    require_once('apps/settings/user-account/view/_account_settings.php');
                                 ?>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
         
     ?>
     <script src="./assets/plugins/datatables/datatables.bundle.js"></script>
-    <script src="./apps/settings/account-settings/js/account-settings.js?v=<?php echo rand(); ?>"></script>
+    <script src="./apps/settings/user-account/js/account-settings.js?v=<?php echo rand(); ?>"></script>
 </body>
 
 </html>

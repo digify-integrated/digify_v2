@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 12, 2024 at 10:30 AM
+-- Generation Time: Nov 13, 2024 at 10:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -1693,7 +1693,18 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (44, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:21:55 -> 2024-11-11 18:34:39<br/>', 2, '2024-11-11 18:34:39', '2024-11-11 18:34:39'),
 (45, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 18:34:39 -> 2024-11-11 20:07:41<br/>', 2, '2024-11-11 20:07:41', '2024-11-11 20:07:41'),
 (46, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 20:07:41 -> 2024-11-11 20:11:39<br/>', 2, '2024-11-11 20:11:39', '2024-11-11 20:11:39'),
-(47, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 20:11:39 -> 2024-11-12 14:17:42<br/>', 2, '2024-11-12 14:17:42', '2024-11-12 14:17:42');
+(47, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-11 20:11:39 -> 2024-11-12 14:17:42<br/>', 2, '2024-11-12 14:17:42', '2024-11-12 14:17:42'),
+(48, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-12 14:17:42 -> 2024-11-13 09:03:49<br/>', 2, '2024-11-13 09:03:49', '2024-11-13 09:03:49'),
+(49, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-13 09:03:49 -> 2024-11-13 11:24:08<br/>', 2, '2024-11-13 11:24:08', '2024-11-13 11:24:08'),
+(50, 'user_account', 2, 'User account changed.<br/><br/>File As: Administrator -> Administrators<br/>', 2, '2024-11-13 11:51:43', '2024-11-13 11:51:43'),
+(51, 'user_account', 2, 'User account changed.<br/><br/>File As: Administrators -> asd<br/>', 2, '2024-11-13 11:51:57', '2024-11-13 11:51:57'),
+(52, 'user_account', 2, 'User account changed.<br/><br/>File As: asd -> asdasd<br/>', 2, '2024-11-13 11:52:18', '2024-11-13 11:52:18'),
+(53, 'user_account', 2, 'User account changed.<br/><br/>File As: asdasd -> Administrator<br/>', 2, '2024-11-13 11:53:09', '2024-11-13 11:53:09'),
+(54, 'user_account', 2, 'User account changed.<br/><br/>File As: Administrator -> Administrators<br/>', 2, '2024-11-13 11:53:38', '2024-11-13 11:53:38'),
+(55, 'user_account', 2, 'User account changed.<br/><br/>File As: Administrators -> Administrator<br/>', 2, '2024-11-13 11:53:43', '2024-11-13 11:53:43'),
+(56, 'user_account', 2, 'User account changed.<br/><br/>Username: ldagulto -> ldagultos<br/>', 2, '2024-11-13 11:56:33', '2024-11-13 11:56:33'),
+(57, 'user_account', 2, 'User account changed.<br/><br/>Username: ldagultos -> cgmibot<br/>', 2, '2024-11-13 11:56:39', '2024-11-13 11:56:39'),
+(58, 'user_account', 2, 'User account changed.<br/><br/>Username: cgmibot -> ldagulto<br/>', 2, '2024-11-13 11:56:47', '2024-11-13 11:56:47');
 
 -- --------------------------------------------------------
 
@@ -1827,7 +1838,9 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (11, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 18:34:39'),
 (12, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 20:07:41'),
 (13, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 20:11:39'),
-(14, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-12 14:17:42');
+(14, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-12 14:17:42'),
+(15, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 09:03:49'),
+(16, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 11:24:08');
 
 -- --------------------------------------------------------
 
@@ -2535,7 +2548,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-12 14:17:42', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'TjpRyWbubfOEzD%2Bf%2FxEnOYc4PkvMYs1pxR9fx4zjSlA%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'DUQATXSdEfWBhDi0JWEEN%2FCpbgFL0uiS2tmU73rtJgQ%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-13 11:24:08', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', '97eP52kprexd7dtnWLnVVQrOtuuv04tCWlUGWj%2FK5q8%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -2804,7 +2817,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -2816,7 +2829,7 @@ ALTER TABLE `email_setting`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `menu_group`

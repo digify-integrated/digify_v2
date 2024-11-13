@@ -2,7 +2,7 @@
     'use strict';    
 
     $(function() {
-        //displayDetails('get account settings details');
+        displayDetails('get account settings details');
 
         if($('#update-full-name-form').length){
             updateFullNameForm();
@@ -70,12 +70,10 @@
 
         $(document).on('change','#profile_picture',function() {
             if ($(this).val() !== '' && $(this)[0].files.length > 0) {
-                const transaction = 'update profile picture';
-                const user_account_id = $('#details-id').text();
+                const transaction = 'update account settings profile picture';
                 var formData = new FormData();
                 formData.append('profile_picture', $(this)[0].files[0]);
                 formData.append('transaction', transaction);
-                formData.append('user_account_id', user_account_id);
         
                 $.ajax({
                     type: 'POST',
@@ -87,7 +85,7 @@
                     success: function(response) {
                         if (response.success) {
                             showNotification(response.title, response.message, response.messageType);
-                            displayDetails('get user account details');
+                            displayDetails('get account settings details');
                         }
                         else {
                             if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -111,16 +109,14 @@
         });
 
         $(document).on('change','#two-factor-authentication',function() {
-            const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href');
             var checkbox = document.getElementById('two-factor-authentication');
-            var transaction = (checkbox).checked ? 'enable two factor authentication' : 'disable two factor authentication';
+            var transaction = (checkbox).checked ? 'enable account setting two factor authentication' : 'disable account setting two factor authentication';
 
             $.ajax({
                 type: 'POST',
                 url: 'apps/settings/user-account/controller/user-account-controller.php',
                 data: {
-                    user_account_id : user_account_id,
                     transaction : transaction
                 },
                 dataType: 'json',
@@ -154,11 +150,17 @@
             table.page.len(length).draw();
         });
 
-        if($('#log-notes-main').length){
-            const user_account_id = $('#details-id').text();
-
-            logNotes('user_account', user_account_id);
-        }
+        $(document).on('click', '[data-kt-plan-price-month]', function() {
+            var n = $(this).data('kt-plan'); // Assuming this is how the plan is selected
+            var e = $(this).data('kt-plan-price-month');
+            var a = $(this).data('kt-plan-price-annual');
+            
+            if (n === "month") {
+                $(this).html(e);
+            } else if (n === "annual") {
+                $(this).html(a);
+            }
+        });
     });
 })(jQuery);
 
@@ -190,7 +192,7 @@ function updateFullNameForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update full name';
+            const transaction = 'update acccount settings full name';
           
             $.ajax({
                 type: 'POST',
@@ -203,7 +205,7 @@ function updateFullNameForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
+                        displayDetails('get account settings details');
                         toggleFullNameSections();
                     }
                     else {
@@ -225,7 +227,6 @@ function updateFullNameForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('update_full_name_submit');
-                    logNotes('user_account', user_account_id);
                 }
             });
         
@@ -262,7 +263,7 @@ function updateUsernameForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update username';
+            const transaction = 'update acccount settings username';
           
             $.ajax({
                 type: 'POST',
@@ -275,7 +276,7 @@ function updateUsernameForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
+                        displayDetails('get account settings details');
                         toggleUsernameSections();
                     }
                     else {
@@ -297,7 +298,6 @@ function updateUsernameForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('update_username_submit');
-                    logNotes('user_account', user_account_id);
                 }
             });
         
@@ -334,7 +334,7 @@ function updateEmailForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update email';
+            const transaction = 'update acccount settings email';
           
             $.ajax({
                 type: 'POST',
@@ -347,7 +347,7 @@ function updateEmailForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
+                        displayDetails('get account settings details');
                         toggleEmailSections();
                     }
                     else {
@@ -369,7 +369,6 @@ function updateEmailForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('update_email_submit');
-                    logNotes('user_account', user_account_id);
                 }
             });
         
@@ -406,7 +405,7 @@ function updatePhoneForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update phone';
+            const transaction = 'update acccount settings phone';
           
             $.ajax({
                 type: 'POST',
@@ -419,7 +418,7 @@ function updatePhoneForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
+                        displayDetails('get account settings details');
                         togglePhoneSections();
                     }
                     else {
@@ -441,7 +440,6 @@ function updatePhoneForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('update_phone_submit');
-                    logNotes('user_account', user_account_id);
                 }
             });
         
@@ -479,7 +477,7 @@ function updatePasswordForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update password';
+            const transaction = 'update acccount settings password';
           
             $.ajax({
                 type: 'POST',
@@ -492,7 +490,7 @@ function updatePasswordForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
+                        displayDetails('get account settings details');
                         togglePasswordSections();
                     }
                     else {
@@ -523,10 +521,9 @@ function updatePasswordForm(){
 }
 
 function loginSessionTable(datatable_name) {
-    const type = 'login session table';
+    const type = 'account setting login session table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
-    const user_account_id = $('#details-id').text();
 
     const columns = [ 
         { data: 'LOCATION' },
@@ -554,8 +551,7 @@ function loginSessionTable(datatable_name) {
             data: {
                 type: type,
                 page_id: page_id,
-                page_link: page_link,
-                user_account_id: user_account_id
+                page_link: page_link
             },
             dataSrc: '',
             error: function(xhr, status, error) {
@@ -585,8 +581,7 @@ function loginSessionTable(datatable_name) {
 
 function displayDetails(transaction){
     switch (transaction) {
-        case 'get user account details':
-            var user_account_id = $('#details-id').text();
+        case 'get account settings details':
             const page_link = document.getElementById('page-link').getAttribute('href'); 
             
             $.ajax({
@@ -594,7 +589,6 @@ function displayDetails(transaction){
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    user_account_id : user_account_id, 
                     transaction : transaction
                 },
                 success: function(response) {
@@ -612,7 +606,6 @@ function displayDetails(transaction){
                         $('#phone_summary').text(response.phoneSummary);
 
                         document.getElementById('two-factor-authentication').checked = response.twoFactorAuthentication === 'Yes';
-                        document.getElementById('multiple-login-sessions').checked = response.multipleSession === 'Yes';
 
                         document.getElementById('profile_picture_image').style.backgroundImage = `url(${response.profilePicture})`;
 
