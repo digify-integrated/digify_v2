@@ -9,64 +9,6 @@
             menuItemTable('#menu-item-table');
         }
 
-        $(document).on('click','.delete-menu-item',function() {
-            const menu_item_id = $(this).data('menu-item-id');
-            const transaction = 'delete menu item';
-    
-            Swal.fire({
-                title: 'Confirm Menu Item Deletion',
-                text: 'Are you sure you want to delete this menu item?',
-                icon: 'warning',
-                showCancelButton: !0,
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    confirmButton: 'btn btn-danger mt-2',
-                    cancelButton: 'btn btn-secondary ms-2 mt-2'
-                },
-                buttonsStyling: !1
-            }).then(function(result) {
-                if (result.value) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'apps/settings/menu-item/controller/menu-item-controller.php',
-                        dataType: 'json',
-                        data: {
-                            menu_item_id : menu_item_id, 
-                            transaction : transaction
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                showNotification(response.title, response.message, response.messageType);
-                                reloadDatatable('#menu-item-table');
-                            }
-                            else {
-                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    window.location = 'logout.php?logout';
-                                }
-                                else if (response.notExist) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#menu-item-table');
-                                }
-                                else {
-                                    showNotification(response.title, response.message, response.messageType);
-                                }
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                            if (xhr.responseText) {
-                                fullErrorMessage += `, Response: ${xhr.responseText}`;
-                            }
-                            showErrorDialog(fullErrorMessage);
-                        }
-                    });
-                    return false;
-                }
-            });
-        });
-
         $(document).on('click','#delete-menu-item',function() {
             let menu_item_id = [];
             const transaction = 'delete multiple menu item';

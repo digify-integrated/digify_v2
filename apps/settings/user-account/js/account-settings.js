@@ -149,18 +149,6 @@
             var length = $(this).val(); 
             table.page.len(length).draw();
         });
-
-        $(document).on('click', '[data-kt-plan-price-month]', function() {
-            var n = $(this).data('kt-plan'); // Assuming this is how the plan is selected
-            var e = $(this).data('kt-plan-price-month');
-            var a = $(this).data('kt-plan-price-annual');
-            
-            if (n === "month") {
-                $(this).html(e);
-            } else if (n === "annual") {
-                $(this).html(a);
-            }
-        });
     });
 })(jQuery);
 
@@ -569,9 +557,6 @@ function loginSessionTable(datatable_name) {
             sLengthMenu: '_MENU_',
             info: '_START_ - _END_ of _TOTAL_ items',
             loadingRecords: 'Just a moment while we fetch your data...'
-        },
-        fnDrawCallback: function(oSettings) {
-            readjustDatatableColumn();
         }
     };
 
@@ -608,9 +593,6 @@ function displayDetails(transaction){
                         document.getElementById('two-factor-authentication').checked = response.twoFactorAuthentication === 'Yes';
 
                         document.getElementById('profile_picture_image').style.backgroundImage = `url(${response.profilePicture})`;
-
-                        document.getElementById('status_side_summary').innerHTML = response.activeBadge;
-                        document.getElementById('locked_status_side_summary').innerHTML = response.lockedBadge;
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {

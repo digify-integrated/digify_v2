@@ -1081,7 +1081,8 @@ class UserAccountController {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
-
+        
+        $userID = $_SESSION['user_account_id'];
         $userAccountID = filter_input(INPUT_POST, 'user_account_id', FILTER_VALIDATE_INT);
         
         $checkUserAccountExist = $this->userAccountModel->checkUserAccountExist($userAccountID);
@@ -1096,6 +1097,18 @@ class UserAccountController {
                 'messageType' => 'error'
             ];
                 
+            echo json_encode($response);
+            exit;
+        }
+
+        if($userAccountID == $userID){
+            $response = [
+                'success' => false,
+                'title' => 'Delete User Account',
+                'message' => 'You cannot delete the user account you are currently logged in as.',
+                'messageType' => 'error'
+            ];
+            
             echo json_encode($response);
             exit;
         }
@@ -1138,6 +1151,7 @@ class UserAccountController {
         }
 
         if (isset($_POST['user_account_id']) && !empty($_POST['user_account_id'])) {
+            $userID = $_SESSION['user_account_id'];
             $userAccountIDs = $_POST['user_account_id'];
     
             foreach($userAccountIDs as $userAccountID){
@@ -1145,30 +1159,32 @@ class UserAccountController {
                 $total = $checkUserAccountExist['total'] ?? 0;
 
                 if($total > 0){
-                    $userAccountDetails = $this->userAccountModel->getUserAccount($userAccountID);
-                    $profilePicturePath = !empty($userAccountDetails['profile_picture']) ? str_replace('../', '../../../../apps/', $userAccountDetails['profile_picture']) : null;
+                    if($userAccountID != $userID){
+                        $userAccountDetails = $this->userAccountModel->getUserAccount($userAccountID);
+                        $profilePicturePath = !empty($userAccountDetails['profile_picture']) ? str_replace('../', '../../../../apps/', $userAccountDetails['profile_picture']) : null;
 
-                    if(file_exists($profilePicturePath)){
-                        if (!unlink($profilePicturePath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple User Account',
-                                'message' => 'The profile picture cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
+                        if(file_exists($profilePicturePath)){
+                            if (!unlink($profilePicturePath)) {
+                                $response = [
+                                    'success' => false,
+                                    'title' => 'Delete Multiple User Accounts',
+                                    'message' => 'The profile picture cannot be deleted due to an error.',
+                                    'messageType' => 'error'
+                                ];
+                                
+                                echo json_encode($response);
+                                exit;
+                            }
                         }
+                        
+                        $this->userAccountModel->deleteUserAccount($userAccountID);
                     }
-                    
-                    $this->userAccountModel->deleteUserAccount($userAccountID);
                 }
             }
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple User Account',
+                'title' => 'Delete Multiple User Accounts',
                 'message' => 'The selected user accounts have been deleted successfully.',
                 'messageType' => 'success'
             ];

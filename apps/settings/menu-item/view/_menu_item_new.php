@@ -724,7 +724,7 @@
                 <div class="col">
                     <div class="fv-row mb-7">
                         <label class="fs-6 fw-semibold form-label mt-3" for="app_module_id">
-                            Export Table
+                            Import Table
                         </label>
 
                         <select id="table_name" name="table_name" class="form-select" data-control="select2" data-allow-clear="false"></select>

@@ -294,7 +294,7 @@ class MenuItemController {
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple Menu Item',
+                'title' => 'Delete Multiple Menu Items',
                 'message' => 'The selected menu items have been deleted successfully.',
                 'messageType' => 'success'
             ];

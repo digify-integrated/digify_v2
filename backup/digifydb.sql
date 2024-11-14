@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 13, 2024 at 10:32 AM
+-- Generation Time: Nov 14, 2024 at 10:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -140,6 +140,27 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkBillingCycleExist` (IN `p_bill
     WHERE billing_cycle_id = p_billing_cycle_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkCityExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCityExist` (IN `p_city_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM city
+    WHERE city_id = p_city_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkCountryExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCountryExist` (IN `p_country_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM country
+    WHERE country_id = p_country_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkCurrencyExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCurrencyExist` (IN `p_currency_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM currency
+    WHERE currency_id = p_currency_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkLoginCredentialsExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkLoginCredentialsExist` (IN `p_user_account_id` INT, IN `p_credentials` VARCHAR(255))   BEGIN
     SELECT COUNT(*) AS total
@@ -189,6 +210,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkRoleUserAccountExist` (IN `p_r
 	SELECT COUNT(*) AS total
     FROM role_user_account
     WHERE role_user_account_id = p_role_user_account_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkStateExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkStateExist` (IN `p_state_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM state
+    WHERE state_id = p_state_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkSubscriberExist`$$
@@ -277,6 +305,50 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteBillingCycle` (IN `p_billing_
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteCity`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCity` (IN `p_city_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM city WHERE city_id = p_city_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteCountry`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCountry` (IN `p_country_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM state WHERE country_id = p_country_id;
+    DELETE FROM city WHERE country_id = p_country_id;
+    DELETE FROM country WHERE country_id = p_country_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteCurrency`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCurrency` (IN `p_currency_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM currency WHERE currency_id = p_currency_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `deleteMenuGroup`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteMenuGroup` (IN `p_menu_group_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -361,6 +433,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteRoleUserAccount` (IN `p_role_
     START TRANSACTION;
 
     DELETE FROM role_user_account WHERE role_user_account_id = p_role_user_account_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteState`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteState` (IN `p_state_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM city WHERE state_id = p_state_id;
+    DELETE FROM state WHERE state_id = p_state_id;
 
     COMMIT;
 END$$
@@ -459,6 +546,71 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBillingCycleTable` ()   BEG
 	SELECT billing_cycle_id, billing_cycle_name
     FROM billing_cycle 
     ORDER BY billing_cycle_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCityOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCityOptions` ()   BEGIN
+    SELECT city_id, city_name, state_name, country_name
+    FROM city 
+    ORDER BY city_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCityTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCityTable` (IN `p_filter_by_state` TEXT, IN `p_filter_by_country` TEXT)   BEGIN
+    DECLARE query TEXT;
+    DECLARE filter_conditions TEXT DEFAULT '';
+
+    SET query = 'SELECT city_id, city_name, state_name, country_name 
+                FROM city ';
+
+    IF p_filter_by_state IS NOT NULL AND p_filter_by_state <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' state_id IN (', p_filter_by_state, ')');
+    END IF;
+
+    IF p_filter_by_country IS NOT NULL AND p_filter_by_country <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+         SET filter_conditions = CONCAT(filter_conditions, ' country_id IN (', p_filter_by_country, ')');
+    END IF;
+
+    IF filter_conditions <> '' THEN
+        SET query = CONCAT(query, ' WHERE ', filter_conditions);
+    END IF;
+
+    SET query = CONCAT(query, ' ORDER BY city_name');
+
+    PREPARE stmt FROM query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCountryOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCountryOptions` ()   BEGIN
+    SELECT country_id, country_name 
+    FROM country 
+    ORDER BY country_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCountryTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCountryTable` ()   BEGIN
+    SELECT country_id, country_name, country_code, phone_code 
+    FROM country
+    ORDER BY country_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCurrencyOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCurrencyOptions` ()   BEGIN
+    SELECT currency_id, currency_name, symbol
+    FROM currency 
+    ORDER BY currency_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCurrencyTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCurrencyTable` ()   BEGIN
+    SELECT currency_id, currency_name, symbol, shorthand 
+    FROM currency
+    ORDER BY currency_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateExportOption`$$
@@ -630,6 +782,36 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateRoleUserAccountTable` (IN `
     ORDER BY file_as;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateStateOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateStateOptions` ()   BEGIN
+    SELECT state_id, state_name 
+    FROM state 
+    ORDER BY state_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateStateTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateStateTable` (IN `p_filter_by_country` TEXT)   BEGIN
+    DECLARE query TEXT;
+    DECLARE filter_conditions TEXT DEFAULT '';
+
+    SET query = 'SELECT state_id, state_name, country_name 
+                FROM state ';
+
+    IF p_filter_by_country IS NOT NULL AND p_filter_by_country <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' country_id IN (', p_filter_by_country, ')');
+    END IF;
+
+    IF filter_conditions <> '' THEN
+        SET query = CONCAT(query, ' WHERE ', filter_conditions);
+    END IF;
+
+    SET query = CONCAT(query, ' ORDER BY state_name');
+
+    PREPARE stmt FROM query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateSubscriberOptions`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateSubscriberOptions` ()   BEGIN
 	SELECT subscriber_id, subscriber_name 
@@ -759,6 +941,24 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getBillingCycle` (IN `p_billing_cyc
 	WHERE billing_cycle_id = p_billing_cycle_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getCity`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getCity` (IN `p_city_id` INT)   BEGIN
+	SELECT * FROM city
+	WHERE city_id = p_city_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getCountry`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getCountry` (IN `p_country_id` INT)   BEGIN
+	SELECT * FROM country
+	WHERE country_id = p_country_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getCurrency`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getCurrency` (IN `p_currency_id` INT)   BEGIN
+	SELECT * FROM currency
+	WHERE currency_id = p_currency_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getEmailNotificationTemplate`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmailNotificationTemplate` (IN `p_notification_setting_id` INT)   BEGIN
 	SELECT * FROM notification_setting_email_template
@@ -815,6 +1015,12 @@ DROP PROCEDURE IF EXISTS `getSecuritySetting`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getSecuritySetting` (IN `p_security_setting_id` INT)   BEGIN
 	SELECT * FROM security_setting
 	WHERE security_setting_id = p_security_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getState`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getState` (IN `p_state_id` INT)   BEGIN
+	SELECT * FROM state
+	WHERE state_id = p_state_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getSubscriber`$$
@@ -990,6 +1196,103 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBillingCycle` (IN `p_billing_cy
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveCity`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCity` (IN `p_city_id` INT, IN `p_city_name` VARCHAR(100), IN `p_state_id` INT, IN `p_state_name` VARCHAR(100), IN `p_country_id` INT, IN `p_country_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_city_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_city_id IS NULL OR NOT EXISTS (SELECT 1 FROM city WHERE city_id = p_city_id) THEN
+        INSERT INTO city (city_name, state_id, state_name, country_id, country_name, last_log_by) 
+        VALUES(p_city_name, p_state_id, p_state_name, p_country_id, p_country_name, p_last_log_by);
+        
+        SET p_new_city_id = LAST_INSERT_ID();
+    ELSE        
+        UPDATE city
+        SET city_name = p_city_name,
+            state_id = p_state_id,
+            state_name = p_state_name,
+            country_name = p_country_name,
+            country_id = p_country_id,
+            country_name = p_country_name,
+            last_log_by = p_last_log_by
+        WHERE city_id = p_city_id;
+
+        SET p_new_city_id = p_city_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveCountry`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCountry` (IN `p_country_id` INT, IN `p_country_name` VARCHAR(100), IN `p_country_code` VARCHAR(10), IN `p_phone_code` VARCHAR(10), IN `p_last_log_by` INT, OUT `p_new_country_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_country_id IS NULL OR NOT EXISTS (SELECT 1 FROM country WHERE country_id = p_country_id) THEN
+        INSERT INTO country (country_name, country_code, phone_code, last_log_by) 
+        VALUES(p_country_name, p_country_code, p_phone_code, p_last_log_by);
+        
+        SET p_new_country_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE state
+        SET country_name = p_country_name,
+            last_log_by = p_last_log_by
+        WHERE country_id = p_country_id;
+
+        UPDATE city
+        SET country_name = p_country_name,
+            last_log_by = p_last_log_by
+        WHERE country_id = p_country_id;
+        
+        UPDATE country
+        SET country_name = p_country_name,
+            country_code = p_country_code,
+            phone_code = p_phone_code,
+            last_log_by = p_last_log_by
+        WHERE country_id = p_country_id;
+
+        SET p_new_country_id = p_country_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveCurrency`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCurrency` (IN `p_currency_id` INT, IN `p_currency_name` VARCHAR(100), IN `p_symbol` VARCHAR(5), IN `p_shorthand` VARCHAR(10), IN `p_last_log_by` INT, OUT `p_new_currency_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_currency_id IS NULL OR NOT EXISTS (SELECT 1 FROM currency WHERE currency_id = p_currency_id) THEN
+        INSERT INTO currency (currency_name, symbol, shorthand, last_log_by) 
+        VALUES(p_currency_name, p_symbol, p_shorthand, p_last_log_by);
+        
+        SET p_new_currency_id = LAST_INSERT_ID();
+    ELSE        
+        UPDATE currency
+        SET currency_name = p_currency_name,
+            symbol = p_symbol,
+            shorthand = p_shorthand,
+            last_log_by = p_last_log_by
+        WHERE currency_id = p_currency_id;
+
+        SET p_new_currency_id = p_currency_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveImport`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveImport` (IN `p_table_name` VARCHAR(255), IN `p_columns` TEXT, IN `p_placeholders` TEXT, IN `p_updateFields` TEXT, IN `p_values` TEXT)   BEGIN
     SET @sql = CONCAT(
@@ -1121,6 +1424,39 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveRole` (IN `p_role_id` INT, IN `
         WHERE role_id = p_role_id;
 
         SET p_new_role_id = p_role_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveState`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveState` (IN `p_state_id` INT, IN `p_state_name` VARCHAR(100), IN `p_country_id` INT, IN `p_country_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_state_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_state_id IS NULL OR NOT EXISTS (SELECT 1 FROM state WHERE state_id = p_state_id) THEN
+        INSERT INTO state (state_name, country_id, country_name, last_log_by) 
+        VALUES(p_state_name, p_country_id, p_country_name, p_last_log_by);
+        
+        SET p_new_state_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE city
+        SET state_name = p_state_name,
+            last_log_by = p_last_log_by
+        WHERE state_id = p_state_id;
+        
+        UPDATE state
+        SET state_name = p_state_name,
+            country_id = p_country_id,
+            country_name = p_country_name,
+            last_log_by = p_last_log_by
+        WHERE state_id = p_state_id;
+
+        SET p_new_state_id = p_state_id;
     END IF;
 
     COMMIT;
@@ -1704,7 +2040,238 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (55, 'user_account', 2, 'User account changed.<br/><br/>File As: Administrators -> Administrator<br/>', 2, '2024-11-13 11:53:43', '2024-11-13 11:53:43'),
 (56, 'user_account', 2, 'User account changed.<br/><br/>Username: ldagulto -> ldagultos<br/>', 2, '2024-11-13 11:56:33', '2024-11-13 11:56:33'),
 (57, 'user_account', 2, 'User account changed.<br/><br/>Username: ldagultos -> cgmibot<br/>', 2, '2024-11-13 11:56:39', '2024-11-13 11:56:39'),
-(58, 'user_account', 2, 'User account changed.<br/><br/>Username: cgmibot -> ldagulto<br/>', 2, '2024-11-13 11:56:47', '2024-11-13 11:56:47');
+(58, 'user_account', 2, 'User account changed.<br/><br/>Username: cgmibot -> ldagulto<br/>', 2, '2024-11-13 11:56:47', '2024-11-13 11:56:47'),
+(59, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-13 11:24:08 -> 2024-11-14 08:50:03<br/>', 2, '2024-11-14 08:50:03', '2024-11-14 08:50:03'),
+(60, 'country', 1, 'Country created.', 2, '2024-11-14 14:32:11', '2024-11-14 14:32:11'),
+(61, 'country', 1, 'Country changed.<br/><br/>Phone Code:  -> phoneCode<br/>', 2, '2024-11-14 14:32:41', '2024-11-14 14:32:41'),
+(62, 'country', 2, 'Country created.', 2, '2024-11-14 14:33:11', '2024-11-14 14:33:11'),
+(63, 'country', 3, 'Country created.', 2, '2024-11-14 14:33:16', '2024-11-14 14:33:16'),
+(64, 'country', 3, 'Country changed.<br/><br/>Country Name: test -> test2<br/>Country Code: test -> test2<br/>Phone Code: test -> test2<br/>', 2, '2024-11-14 14:33:21', '2024-11-14 14:33:21'),
+(65, 'country', 1, 'Country created.', 2, '2024-11-14 14:35:47', '2024-11-14 14:35:47'),
+(66, 'country', 2, 'Country created.', 2, '2024-11-14 14:35:47', '2024-11-14 14:35:47'),
+(67, 'country', 4, 'Country created.', 2, '2024-11-14 14:36:45', '2024-11-14 14:36:45'),
+(68, 'state', 1, 'State changed.<br/><br/>State Name: test2 -> test22<br/>', 2, '2024-11-14 15:52:52', '2024-11-14 15:52:52'),
+(69, 'state', 2, 'State created.', 2, '2024-11-14 15:53:13', '2024-11-14 15:53:13'),
+(70, 'state', 3, 'State created.', 2, '2024-11-14 15:53:20', '2024-11-14 15:53:20'),
+(71, 'country', 5, 'Country created.', 2, '2024-11-14 15:56:02', '2024-11-14 15:56:02'),
+(72, 'country', 4, 'Country changed.<br/><br/>Country Name: Philippines -> Philippine<br/>', 2, '2024-11-14 15:56:13', '2024-11-14 15:56:13'),
+(73, 'country', 4, 'Country changed.<br/><br/>Country Name: Philippine -> Philippines<br/>', 2, '2024-11-14 15:56:19', '2024-11-14 15:56:19'),
+(74, 'state', 2, 'State changed.<br/><br/>Country: Philippines -> Japan<br/>', 2, '2024-11-14 15:56:30', '2024-11-14 15:56:30'),
+(75, 'state', 4, 'State created.', 2, '2024-11-14 15:58:30', '2024-11-14 15:58:30'),
+(76, 'city', 1, 'City created.', 2, '2024-11-14 16:39:35', '2024-11-14 16:39:35'),
+(77, 'city', 1, 'City changed.<br/><br/>City Name: test -> test2<br/>', 2, '2024-11-14 16:39:41', '2024-11-14 16:39:41'),
+(78, 'city', 2, 'City created.', 2, '2024-11-14 16:39:48', '2024-11-14 16:39:48'),
+(79, 'city', 3, 'City created.', 2, '2024-11-14 16:39:53', '2024-11-14 16:39:53'),
+(80, 'city', 1, 'City created.', 2, '2024-11-14 16:42:41', '2024-11-14 16:42:41'),
+(81, 'city', 2, 'City created.', 2, '2024-11-14 16:42:41', '2024-11-14 16:42:41'),
+(82, 'state', 4, 'State changed.<br/><br/>Country: Philippines -> Philippine<br/>', 2, '2024-11-14 16:44:34', '2024-11-14 16:44:34'),
+(83, 'city', 1, 'City changed.<br/><br/>Country: Philippines -> Philippine<br/>', 2, '2024-11-14 16:44:34', '2024-11-14 16:44:34'),
+(84, 'city', 2, 'City changed.<br/><br/>Country: Philippines -> Philippine<br/>', 2, '2024-11-14 16:44:34', '2024-11-14 16:44:34'),
+(85, 'country', 4, 'Country changed.<br/><br/>Country Name: Philippines -> Philippine<br/>', 2, '2024-11-14 16:44:34', '2024-11-14 16:44:34'),
+(86, 'city', 1, 'City changed.<br/><br/>State: Nueva Ecija -> Nueva Ecijas<br/>', 2, '2024-11-14 16:44:48', '2024-11-14 16:44:48'),
+(87, 'city', 2, 'City changed.<br/><br/>State: Nueva Ecija -> Nueva Ecijas<br/>', 2, '2024-11-14 16:44:48', '2024-11-14 16:44:48'),
+(88, 'state', 4, 'State changed.<br/><br/>State Name: Nueva Ecija -> Nueva Ecijas<br/>', 2, '2024-11-14 16:44:48', '2024-11-14 16:44:48'),
+(89, 'state', 4, 'State changed.<br/><br/>Country: Philippine -> Philippines<br/>', 2, '2024-11-14 16:44:57', '2024-11-14 16:44:57'),
+(90, 'city', 1, 'City changed.<br/><br/>Country: Philippine -> Philippines<br/>', 2, '2024-11-14 16:44:57', '2024-11-14 16:44:57'),
+(91, 'city', 2, 'City changed.<br/><br/>Country: Philippine -> Philippines<br/>', 2, '2024-11-14 16:44:57', '2024-11-14 16:44:57'),
+(92, 'country', 4, 'Country changed.<br/><br/>Country Name: Philippine -> Philippines<br/>', 2, '2024-11-14 16:44:57', '2024-11-14 16:44:57'),
+(93, 'city', 1, 'City changed.<br/><br/>State: Nueva Ecijas -> Nueva Ecija<br/>', 2, '2024-11-14 16:44:59', '2024-11-14 16:44:59'),
+(94, 'city', 2, 'City changed.<br/><br/>State: Nueva Ecijas -> Nueva Ecija<br/>', 2, '2024-11-14 16:44:59', '2024-11-14 16:44:59'),
+(95, 'state', 4, 'State changed.<br/><br/>State Name: Nueva Ecijas -> Nueva Ecija<br/>', 2, '2024-11-14 16:44:59', '2024-11-14 16:44:59'),
+(96, 'currency', 1, 'Currency created.', 2, '2024-11-14 17:06:35', '2024-11-14 17:06:35'),
+(97, 'currency', 1, 'Currency changed.<br/><br/>Currency Name: test -> testasdasd<br/>Symbol: P -> Pasd<br/>Shorthand: asdasd -> asdasdasd<br/>', 2, '2024-11-14 17:06:41', '2024-11-14 17:06:41'),
+(98, 'currency', 2, 'Currency created.', 2, '2024-11-14 17:06:49', '2024-11-14 17:06:49'),
+(99, 'currency', 3, 'Currency created.', 2, '2024-11-14 17:06:55', '2024-11-14 17:06:55'),
+(100, 'currency', 1, 'Currency created.', 2, '2024-11-14 17:08:08', '2024-11-14 17:08:08'),
+(101, 'currency', 2, 'Currency created.', 2, '2024-11-14 17:08:08', '2024-11-14 17:08:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `city`
+--
+
+DROP TABLE IF EXISTS `city`;
+CREATE TABLE `city` (
+  `city_id` int(10) UNSIGNED NOT NULL,
+  `city_name` varchar(100) NOT NULL,
+  `state_id` int(10) UNSIGNED NOT NULL,
+  `state_name` varchar(100) NOT NULL,
+  `country_id` int(10) UNSIGNED NOT NULL,
+  `country_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `city`
+--
+
+INSERT INTO `city` (`city_id`, `city_name`, `state_id`, `state_name`, `country_id`, `country_name`, `created_date`, `last_log_by`) VALUES
+(1, 'test2', 4, 'Nueva Ecija', 4, 'Philippines', '2024-11-14 16:39:35', 2),
+(2, 'test', 4, 'Nueva Ecija', 4, 'Philippines', '2024-11-14 16:39:48', 2);
+
+--
+-- Triggers `city`
+--
+DROP TRIGGER IF EXISTS `city_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `city_trigger_insert` AFTER INSERT ON `city` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'City created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('city', NEW.city_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `city_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `city_trigger_update` AFTER UPDATE ON `city` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'City changed.<br/><br/>';
+
+    IF NEW.city_name <> OLD.city_name THEN
+        SET audit_log = CONCAT(audit_log, "City Name: ", OLD.city_name, " -> ", NEW.city_name, "<br/>");
+    END IF;
+
+    IF NEW.state_name <> OLD.state_name THEN
+        SET audit_log = CONCAT(audit_log, "State: ", OLD.state_name, " -> ", NEW.state_name, "<br/>");
+    END IF;
+
+    IF NEW.country_name <> OLD.country_name THEN
+        SET audit_log = CONCAT(audit_log, "Country: ", OLD.country_name, " -> ", NEW.country_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'City changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('city', NEW.city_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `country`
+--
+
+DROP TABLE IF EXISTS `country`;
+CREATE TABLE `country` (
+  `country_id` int(10) UNSIGNED NOT NULL,
+  `country_name` varchar(100) NOT NULL,
+  `country_code` varchar(10) NOT NULL,
+  `phone_code` varchar(10) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `country`
+--
+
+INSERT INTO `country` (`country_id`, `country_name`, `country_code`, `phone_code`, `created_date`, `last_log_by`) VALUES
+(4, 'Philippines', 'PH', '+63', '2024-11-14 14:36:45', 2),
+(5, 'Japan', 'JP', '+43', '2024-11-14 15:56:02', 2);
+
+--
+-- Triggers `country`
+--
+DROP TRIGGER IF EXISTS `country_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `country_trigger_insert` AFTER INSERT ON `country` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Country created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('country', NEW.country_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `country_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `country_trigger_update` AFTER UPDATE ON `country` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Country changed.<br/><br/>';
+
+    IF NEW.country_name <> OLD.country_name THEN
+        SET audit_log = CONCAT(audit_log, "Country Name: ", OLD.country_name, " -> ", NEW.country_name, "<br/>");
+    END IF;
+
+    IF NEW.country_code <> OLD.country_code THEN
+        SET audit_log = CONCAT(audit_log, "Country Code: ", OLD.country_code, " -> ", NEW.country_code, "<br/>");
+    END IF;
+
+    IF NEW.phone_code <> OLD.phone_code THEN
+        SET audit_log = CONCAT(audit_log, "Phone Code: ", OLD.phone_code, " -> ", NEW.phone_code, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Country changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('country', NEW.country_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `currency`
+--
+
+DROP TABLE IF EXISTS `currency`;
+CREATE TABLE `currency` (
+  `currency_id` int(10) UNSIGNED NOT NULL,
+  `currency_name` varchar(100) NOT NULL,
+  `symbol` varchar(5) NOT NULL,
+  `shorthand` varchar(10) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `currency`
+--
+
+INSERT INTO `currency` (`currency_id`, `currency_name`, `symbol`, `shorthand`, `created_date`, `last_log_by`) VALUES
+(1, 'testasdasd', 'Pasd', 'asdasdasd', '2024-11-14 17:06:35', 2),
+(2, 'test', 'test', 'asdasd', '2024-11-14 17:06:49', 2);
+
+--
+-- Triggers `currency`
+--
+DROP TRIGGER IF EXISTS `currency_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `currency_trigger_insert` AFTER INSERT ON `currency` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Currency created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('currency', NEW.currency_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `currency_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `currency_trigger_update` AFTER UPDATE ON `currency` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Currency changed.<br/><br/>';
+
+    IF NEW.currency_name <> OLD.currency_name THEN
+        SET audit_log = CONCAT(audit_log, "Currency Name: ", OLD.currency_name, " -> ", NEW.currency_name, "<br/>");
+    END IF;
+
+    IF NEW.symbol <> OLD.symbol THEN
+        SET audit_log = CONCAT(audit_log, "Symbol: ", OLD.symbol, " -> ", NEW.symbol, "<br/>");
+    END IF;
+
+    IF NEW.shorthand <> OLD.shorthand THEN
+        SET audit_log = CONCAT(audit_log, "Shorthand: ", OLD.shorthand, " -> ", NEW.shorthand, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Currency changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('currency', NEW.currency_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -1840,7 +2407,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (13, 2, 'Makati City, PH', 'Ok', 'Opera - Windows', '112.207.178.12', '2024-11-11 20:11:39'),
 (14, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-12 14:17:42'),
 (15, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 09:03:49'),
-(16, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 11:24:08');
+(16, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 11:24:08'),
+(17, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-14 08:50:03');
 
 -- --------------------------------------------------------
 
@@ -1932,16 +2500,22 @@ CREATE TABLE `menu_item` (
 --
 
 INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `menu_item_icon`, `app_module_id`, `app_module_name`, `parent_id`, `parent_name`, `table_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-11-07 10:43:23', 2),
-(2, 'General Settings', 'general-settings.php', '', 1, 'Settings', 0, '', '', 7, '2024-11-07 10:43:23', 2),
-(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-11-07 10:43:23', 2),
-(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-11-07 10:43:23', 2),
-(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-11-07 10:43:23', 2),
-(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-07 10:43:23', 2),
-(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-07 10:43:23', 2),
-(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-07 10:43:23', 2),
-(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 2, '2024-11-07 10:43:23', 2),
-(10, 'Account Settings', 'account-settings.php', '', 1, 'Settings', 0, '', '', 1, '2024-11-12 15:33:29', 2);
+(1, 'App Module', 'app-module.php', '', 1, 'Settings', 0, '', 'app_module', 1, '2024-11-14 11:44:44', 2),
+(2, 'Settings', '', '', 1, 'Settings', 0, '', '', 80, '2024-11-14 11:44:44', 2),
+(3, 'Users & Companies', '', '', 1, 'Settings', 0, '', '', 21, '2024-11-14 11:44:44', 2),
+(4, 'User Account', 'user-account.php', 'ki-outline ki-user', 1, 'Settings', 3, 'Users & Companies', 'user_account', 21, '2024-11-14 11:44:44', 2),
+(5, 'Company', 'company.php', 'ki-outline ki-shop', 1, 'Settings', 3, 'Users & Companies', 'company', 3, '2024-11-14 11:44:44', 2),
+(6, 'Role', 'role.php', '', 1, 'Settings', NULL, NULL, 'role', 3, '2024-11-14 11:44:44', 2),
+(7, 'User Interface', '', '', 1, 'Settings', NULL, NULL, '', 16, '2024-11-14 11:44:44', 2),
+(8, 'Menu Item', 'menu-item.php', 'ki-outline ki-data', 1, 'Settings', 7, 'User Interface', 'menu_item', 2, '2024-11-14 11:44:44', 2),
+(9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 3, '2024-11-14 11:44:44', 2),
+(10, 'Account Settings', 'account-settings.php', '', 1, 'Settings', NULL, NULL, NULL, 127, '2024-11-14 11:44:44', 2),
+(11, 'Configurations', '', '', 1, 'Settings', 0, '', '', 50, '2024-11-14 11:49:18', 2),
+(12, 'Localization', '', 'ki-outline ki-compass', 1, 'Settings', 11, 'Configurations', '', 10, '2024-11-14 11:56:25', 2),
+(13, 'Country', 'country.php', '', 1, 'Settings', 12, 'Localization', 'country', 3, '2024-11-14 11:57:15', 2),
+(14, 'State', 'state.php', '', 1, 'Settings', 12, 'Localization', '', 19, '2024-11-14 12:13:03', 2),
+(15, 'City', 'city.php', '', 1, 'Settings', 12, 'Localization', 'city', 3, '2024-11-14 12:14:05', 2),
+(16, 'Currency', 'currency.php', '', 1, 'Settings', 12, 'Localization', 'currency', 3, '2024-11-14 12:16:32', 2);
 
 -- --------------------------------------------------------
 
@@ -2245,15 +2819,21 @@ CREATE TABLE `role_permission` (
 
 INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `menu_item_id`, `menu_item_name`, `read_access`, `write_access`, `create_access`, `delete_access`, `import_access`, `export_access`, `log_notes_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
 (1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
-(2, 1, 'Administrator', 2, 'General Settings', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(2, 1, 'Administrator', 2, 'Settings', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
 (3, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (8, 1, 'Administrator', 8, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(19, 1, 'Administrator', 10, 'Account Settings', 1, 1, 0, 0, 0, 0, 0, '2024-11-12 15:33:52', '2024-11-12 15:33:52', 2);
+(9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
+(19, 1, 'Administrator', 10, 'Account Settings', 1, 1, 0, 0, 0, 0, 0, '2024-11-12 15:33:52', '2024-11-12 15:33:52', 2),
+(20, 1, 'Administrator', 11, 'Configurations', 1, 0, 0, 0, 0, 0, 0, '2024-11-14 11:49:21', '2024-11-14 11:49:21', 2),
+(21, 1, 'Administrator', 12, 'Localization', 1, 0, 0, 0, 0, 0, 0, '2024-11-14 11:56:29', '2024-11-14 11:56:29', 2),
+(22, 1, 'Administrator', 13, 'Country', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 11:57:23', '2024-11-14 11:57:23', 2),
+(23, 1, 'Administrator', 14, 'State', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:13:08', '2024-11-14 12:13:08', 2),
+(24, 1, 'Administrator', 15, 'City', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:14:09', '2024-11-14 12:14:09', 2),
+(25, 1, 'Administrator', 16, 'Currency', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:16:35', '2024-11-14 12:16:35', 2);
 
 -- --------------------------------------------------------
 
@@ -2377,6 +2957,63 @@ CREATE TRIGGER `security_setting_trigger_update` AFTER UPDATE ON `security_setti
     IF audit_log <> 'Security setting changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('security_setting', NEW.security_setting_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `state`
+--
+
+DROP TABLE IF EXISTS `state`;
+CREATE TABLE `state` (
+  `state_id` int(10) UNSIGNED NOT NULL,
+  `state_name` varchar(100) NOT NULL,
+  `country_id` int(10) UNSIGNED NOT NULL,
+  `country_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `state`
+--
+
+INSERT INTO `state` (`state_id`, `state_name`, `country_id`, `country_name`, `created_date`, `last_log_by`) VALUES
+(4, 'Nueva Ecija', 4, 'Philippines', '2024-11-14 15:58:30', 2);
+
+--
+-- Triggers `state`
+--
+DROP TRIGGER IF EXISTS `state_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `state_trigger_insert` AFTER INSERT ON `state` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'State created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('state', NEW.state_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `state_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `state_trigger_update` AFTER UPDATE ON `state` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'State changed.<br/><br/>';
+
+    IF NEW.state_name <> OLD.state_name THEN
+        SET audit_log = CONCAT(audit_log, "State Name: ", OLD.state_name, " -> ", NEW.state_name, "<br/>");
+    END IF;
+
+    IF NEW.country_name <> OLD.country_name THEN
+        SET audit_log = CONCAT(audit_log, "Country: ", OLD.country_name, " -> ", NEW.country_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'State changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('state', NEW.state_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -2548,7 +3185,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-13 11:24:08', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', '97eP52kprexd7dtnWLnVVQrOtuuv04tCWlUGWj%2FK5q8%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-14 08:50:03', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', '7LM0LEh%2BttNezcpjwlvrbdnvX8FIq1f1nlnogzhCp%2FA%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -2630,6 +3267,32 @@ ALTER TABLE `audit_log`
   ADD KEY `audit_log_index_table_name` (`table_name`),
   ADD KEY `audit_log_index_reference_id` (`reference_id`),
   ADD KEY `audit_log_index_changed_by` (`changed_by`);
+
+--
+-- Indexes for table `city`
+--
+ALTER TABLE `city`
+  ADD PRIMARY KEY (`city_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `city_index_city_id` (`city_id`),
+  ADD KEY `city_index_state_id` (`state_id`),
+  ADD KEY `city_index_country_id` (`country_id`);
+
+--
+-- Indexes for table `country`
+--
+ALTER TABLE `country`
+  ADD PRIMARY KEY (`country_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `country_index_country_id` (`country_id`);
+
+--
+-- Indexes for table `currency`
+--
+ALTER TABLE `currency`
+  ADD PRIMARY KEY (`currency_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `currency_index_currency_id` (`currency_id`);
 
 --
 -- Indexes for table `email_setting`
@@ -2757,6 +3420,15 @@ ALTER TABLE `security_setting`
   ADD KEY `security_setting_index_security_setting_id` (`security_setting_id`);
 
 --
+-- Indexes for table `state`
+--
+ALTER TABLE `state`
+  ADD PRIMARY KEY (`state_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `state_index_state_id` (`state_id`),
+  ADD KEY `state_index_country_id` (`country_id`);
+
+--
 -- Indexes for table `system_action`
 --
 ALTER TABLE `system_action`
@@ -2817,7 +3489,25 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
+
+--
+-- AUTO_INCREMENT for table `city`
+--
+ALTER TABLE `city`
+  MODIFY `city_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `country`
+--
+ALTER TABLE `country`
+  MODIFY `country_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `currency`
+--
+ALTER TABLE `currency`
+  MODIFY `currency_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -2829,7 +3519,7 @@ ALTER TABLE `email_setting`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -2841,7 +3531,7 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`
@@ -2883,7 +3573,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`
@@ -2902,6 +3592,12 @@ ALTER TABLE `role_user_account`
 --
 ALTER TABLE `security_setting`
   MODIFY `security_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `state`
+--
+ALTER TABLE `state`
+  MODIFY `state_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `system_action`
@@ -2948,6 +3644,26 @@ ALTER TABLE `app_module`
 --
 ALTER TABLE `audit_log`
   ADD CONSTRAINT `audit_log_ibfk_1` FOREIGN KEY (`changed_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `city`
+--
+ALTER TABLE `city`
+  ADD CONSTRAINT `city_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`),
+  ADD CONSTRAINT `city_ibfk_2` FOREIGN KEY (`state_id`) REFERENCES `state` (`state_id`),
+  ADD CONSTRAINT `city_ibfk_3` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
+
+--
+-- Constraints for table `country`
+--
+ALTER TABLE `country`
+  ADD CONSTRAINT `country_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `currency`
+--
+ALTER TABLE `currency`
+  ADD CONSTRAINT `currency_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `email_setting`
@@ -3038,6 +3754,13 @@ ALTER TABLE `role_user_account`
   ADD CONSTRAINT `role_user_account_ibfk_1` FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`user_account_id`),
   ADD CONSTRAINT `role_user_account_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
   ADD CONSTRAINT `role_user_account_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `state`
+--
+ALTER TABLE `state`
+  ADD CONSTRAINT `state_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`),
+  ADD CONSTRAINT `state_ibfk_2` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
 
 --
 -- Constraints for table `upload_setting`

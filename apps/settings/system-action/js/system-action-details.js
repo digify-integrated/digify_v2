@@ -411,9 +411,6 @@ function displayDetails(transaction){
                     if (response.success) {
                         $('#system_action_name').val(response.systemActionName);
                         $('#system_action_description').val(response.systemActionDescription);
-                        
-                        $('#system_action_name_summary').text(response.systemActionName);
-                        $('#system_action_description_summary').text(response.systemActionDescription);
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {

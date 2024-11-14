@@ -464,7 +464,7 @@ class AppModuleController {
                         if (!unlink($appLogoPath)) {
                             $response = [
                                 'success' => false,
-                                'title' => 'Delete Multiple App Module',
+                                'title' => 'Delete Multiple App Modules',
                                 'message' => 'The app logo cannot be deleted due to an error.',
                                 'messageType' => 'error'
                             ];
@@ -480,7 +480,7 @@ class AppModuleController {
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple App Module',
+                'title' => 'Delete Multiple App Modules',
                 'message' => 'The selected app modules have been deleted successfully.',
                 'messageType' => 'success'
             ];

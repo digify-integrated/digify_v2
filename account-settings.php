@@ -44,8 +44,7 @@
     </div>
     <?php 
         require_once('components/view/_error_modal.php');
-        require_once('components/view/_required_js.php');
-        
+        require_once('components/view/_required_js.php');        
     ?>
     <script src="./assets/plugins/datatables/datatables.bundle.js"></script>
     <script src="./apps/settings/user-account/js/account-settings.js?v=<?php echo rand(); ?>"></script>

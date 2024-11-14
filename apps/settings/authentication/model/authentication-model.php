@@ -333,7 +333,7 @@ class AuthenticationModel {
                                     <span class="menu-title">'. $menuItemName .'</span>
                                     <span class="menu-arrow d-lg-none"></span>
                                 </span>
-                                <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-250px" style="">';
+                                <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown px-lg-2 py-lg-4 w-lg-250px">';
 
                 foreach ($children as $child) {
                     $html .= $this->buildMenuItemHTML($child, $level + 1);
@@ -344,22 +344,29 @@ class AuthenticationModel {
             }
         }
         else {
+            if($level == 2){
+                $icon = '<span class="menu-icon">
+                                    <i class="'. $menuItemIcon .' fs-2"></i>
+                                </span>';
+            }
+            else{
+                $icon = '<span class="menu-bullet">
+                                    <span class="bullet bullet-dot"></span>
+                                </span>';
+            }
+            
             if (empty($children)) {
                 $html .= ' <div data-kt-menu-trigger="{default: \'click\', lg: \'hover\'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion">
                                 <a class="menu-link" href="'. $menuItemURL .'">
-                                    <span class="menu-icon">
-                                        <i class="'. $menuItemIcon .' fs-2"></i>
-                                    </span>
+                                    '. $icon .'
                                     <span class="menu-title">'. $menuItemName .'</span>
                                 </a>
                             </div>';
             }
             else {
-                $html .= '  <div data-kt-menu-trigger="{default: \'click\', lg: \'hover\'}" data-kt-menu-placement="bottom-start" class="menu-item menu-lg-down-accordion">
+                $html .= '  <div data-kt-menu-trigger="{default: \'click\', lg: \'hover\'}" data-kt-menu-placement="right-start" class="menu-item menu-lg-down-accordion">
                                 <span class="menu-link">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot">/span>
-                                    </span>
+                                    '. $icon .'
                                     <span class="menu-title">'. $menuItemName .'</span>
                                     <span class="menu-arrow"></span>
                                 </span>
@@ -369,7 +376,8 @@ class AuthenticationModel {
                     $html .= $this->buildMenuItemHTML($child, $level + 1);
                 }
     
-                $html .= '</div>';
+                $html .= '</div>
+                </div>';
             }
         }
     

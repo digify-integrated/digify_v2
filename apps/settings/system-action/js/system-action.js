@@ -6,64 +6,6 @@
             systemActionTable('#system-action-table');
         }
 
-        $(document).on('click','.delete-system-action',function() {
-            const system_action_id = $(this).data('system-action-id');
-            const transaction = 'delete system action';
-    
-            Swal.fire({
-                title: 'Confirm System Action Deletion',
-                text: 'Are you sure you want to delete this system action?',
-                icon: 'warning',
-                showCancelButton: !0,
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    confirmButton: 'btn btn-danger mt-2',
-                    cancelButton: 'btn btn-secondary ms-2 mt-2'
-                },
-                buttonsStyling: !1
-            }).then(function(result) {
-                if (result.value) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'apps/settings/system-action/controller/system-action-controller.php',
-                        dataType: 'json',
-                        data: {
-                            system_action_id : system_action_id, 
-                            transaction : transaction
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                showNotification(response.title, response.message, response.messageType);
-                                reloadDatatable('#system-action-table');
-                            }
-                            else {
-                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    window.location = 'logout.php?logout';
-                                }
-                                else if (response.notExist) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#system-action-table');
-                                }
-                                else {
-                                    showNotification(response.title, response.message, response.messageType);
-                                }
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                            if (xhr.responseText) {
-                                fullErrorMessage += `, Response: ${xhr.responseText}`;
-                            }
-                            showErrorDialog(fullErrorMessage);
-                        }
-                    });
-                    return false;
-                }
-            });
-        });
-
         $(document).on('click','#delete-system-action',function() {
             let system_action_id = [];
             const transaction = 'delete multiple system action';

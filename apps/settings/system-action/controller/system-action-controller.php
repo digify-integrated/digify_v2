@@ -269,7 +269,7 @@ class SystemActionController {
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple System Action',
+                'title' => 'Delete Multiple System Actions',
                 'message' => 'The selected system actions have been deleted successfully.',
                 'messageType' => 'success'
             ];

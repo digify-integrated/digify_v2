@@ -6,64 +6,6 @@
             userAccountTable('#user-account-table');
         }
 
-        $(document).on('click','.delete-user-account',function() {
-            const user_account_id = $(this).data('user-account-id');
-            const transaction = 'delete user account';
-    
-            Swal.fire({
-                title: 'Confirm User Account Deletion',
-                text: 'Are you sure you want to delete this user account?',
-                icon: 'warning',
-                showCancelButton: !0,
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    confirmButton: 'btn btn-danger mt-2',
-                    cancelButton: 'btn btn-secondary ms-2 mt-2'
-                },
-                buttonsStyling: !1
-            }).then(function(result) {
-                if (result.value) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'apps/settings/user-account/controller/user-account-controller.php',
-                        dataType: 'json',
-                        data: {
-                            user_account_id : user_account_id, 
-                            transaction : transaction
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                showNotification(response.title, response.message, response.messageType);
-                                reloadDatatable('#user-account-table');
-                            }
-                            else {
-                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    window.location = 'logout.php?logout';
-                                }
-                                else if (response.notExist) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#user-account-table');
-                                }
-                                else {
-                                    showNotification(response.title, response.message, response.messageType);
-                                }
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                            if (xhr.responseText) {
-                                fullErrorMessage += `, Response: ${xhr.responseText}`;
-                            }
-                            showErrorDialog(fullErrorMessage);
-                        }
-                    });
-                    return false;
-                }
-            });
-        });
-
         $(document).on('click','#delete-user-account',function() {
             let user_account_id = [];
             const transaction = 'delete multiple user account';

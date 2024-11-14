@@ -79,7 +79,7 @@
                             </div>
                         </div>
                         <div class="menu-item px-5 my-1">
-                            <a href="/metronic8/demo34/account/settings.html" class="menu-link px-5">
+                            <a href="account-settings.php" class="menu-link px-5">
                                 Account Settings
                             </a>
                         </div>

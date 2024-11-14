@@ -773,7 +773,7 @@ class RoleController {
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple Role',
+                'title' => 'Delete Multiple Roles',
                 'message' => 'The selected roles have been deleted successfully.',
                 'messageType' => 'success'
             ];
