@@ -2,17 +2,17 @@
     'use strict';
 
     $(function() {
-        if($('#role-table').length){
-            roleTable('#role-table');
+        if($('#file-type-table').length){
+            fileTypeTable('#file-type-table');
         }
 
-        $(document).on('click','.delete-role',function() {
-            const role_id = $(this).data('role-id');
-            const transaction = 'delete role';
+        $(document).on('click','.delete-file-type',function() {
+            const file_type_id = $(this).data('file-type-id');
+            const transaction = 'delete file type';
     
             Swal.fire({
-                title: 'Confirm Role Deletion',
-                text: 'Are you sure you want to delete this role?',
+                title: 'Confirm File Type Deletion',
+                text: 'Are you sure you want to delete this file type?',
                 icon: 'warning',
                 showCancelButton: !0,
                 confirmButtonText: 'Delete',
@@ -26,16 +26,16 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: 'apps/settings/role/controller/role-controller.php',
+                        url: 'apps/settings/file-type/controller/file-type-controller.php',
                         dataType: 'json',
                         data: {
-                            role_id : role_id, 
+                            file_type_id : file_type_id, 
                             transaction : transaction
                         },
                         success: function (response) {
                             if (response.success) {
                                 showNotification(response.title, response.message, response.messageType);
-                                reloadDatatable('#role-table');
+                                reloadDatatable('#file-type-table');
                             }
                             else {
                                 if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -44,7 +44,7 @@
                                 }
                                 else if (response.notExist) {
                                     setNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#role-table');
+                                    reloadDatatable('#file-type-table');
                                 }
                                 else {
                                     showNotification(response.title, response.message, response.messageType);
@@ -60,20 +60,20 @@
             });
         });
 
-        $(document).on('click','#delete-role',function() {
-            let role_id = [];
-            const transaction = 'delete multiple role';
+        $(document).on('click','#delete-file-type',function() {
+            let file_type_id = [];
+            const transaction = 'delete multiple file type';
 
             $('.datatable-checkbox-children').each((index, element) => {
                 if ($(element).is(':checked')) {
-                    role_id.push(element.value);
+                    file_type_id.push(element.value);
                 }
             });
     
-            if(role_id.length > 0){
+            if(file_type_id.length > 0){
                 Swal.fire({
-                    title: 'Confirm Multiple Roles Deletion',
-                    text: 'Are you sure you want to delete these roles?',
+                    title: 'Confirm Multiple File Types Deletion',
+                    text: 'Are you sure you want to delete these file types?',
                     icon: 'warning',
                     showCancelButton: !0,
                     confirmButtonText: 'Delete',
@@ -87,16 +87,16 @@
                     if (result.value) {
                         $.ajax({
                             type: 'POST',
-                            url: 'apps/settings/role/controller/role-controller.php',
+                            url: 'apps/settings/file-type/controller/file-type-controller.php',
                             dataType: 'json',
                             data: {
-                                role_id: role_id,
+                                file_type_id: file_type_id,
                                 transaction : transaction
                             },
                             success: function (response) {
                                 if (response.success) {
                                     showNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#role-table');
+                                    reloadDatatable('#file-type-table');
                                 }
                                 else {
                                     if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -121,46 +121,45 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple Role Error', 'Please select the roles you wish to delete.', 'danger');
+                showNotification('Deletion Multiple File Type Error', 'Please select the file types you wish to delete.', 'danger');
             }
         });
 
         $(document).on('click','#export-data',function() {
-            generateExportColumns('role');
+            generateExportColumns('file_type');
         });
 
         $(document).on('click','#submit-export',function() {
-            exportData('role');
+            exportData('file_type');
         });
 
         $('#datatable-search').on('keyup', function () {
-            var table = $('#role-table').DataTable();
+            var table = $('#file-type-table').DataTable();
             table.search(this.value).draw();
         });
 
         $('#datatable-length').on('change', function() {
-            var table = $('#role-table').DataTable();
+            var table = $('#file-type-table').DataTable();
             var length = $(this).val(); 
             table.page.len(length).draw();
         });
     });
 })(jQuery);
 
-function roleTable(datatable_name) {
+function fileTypeTable(datatable_name) {
     toggleHideActionDropdown();
 
-    const type = 'role table';
+    const type = 'file type table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
 
-
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'ROLE_NAME' }
+        { data: 'FILE_TYPE_NAME' }
     ];
 
     const columnDefs = [
-        { width: '1%', bSortable: false, targets: 0, responsivePriority: 1 },
+        { width: '5%', bSortable: false, targets: 0, responsivePriority: 1 },
         { width: 'auto', targets: 1, responsivePriority: 2 }
     ];
 
@@ -168,7 +167,7 @@ function roleTable(datatable_name) {
 
     const settings = {
         ajax: { 
-            url: 'apps/settings/role/view/_role_generation.php',
+            url: 'apps/settings/file-type/view/_file_type_generation.php',
             method: 'POST',
             dataType: 'json',
             data: {

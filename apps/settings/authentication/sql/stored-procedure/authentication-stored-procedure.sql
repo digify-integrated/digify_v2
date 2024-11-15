@@ -374,3 +374,57 @@ BEGIN
     WHERE table_name = p_table_name AND reference_id  = p_reference_id
     ORDER BY changed_at DESC;
 END //
+
+
+DROP PROCEDURE IF EXISTS buildBreadcrumb//
+CREATE PROCEDURE buildBreadcrumb(IN pageID INT)
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE current_id INT DEFAULT pageID;
+    
+    DECLARE menu_name VARCHAR(100);
+    DECLARE menu_url VARCHAR(50);
+    DECLARE parent INT;
+    
+    DECLARE breadcrumb_cursor CURSOR FOR
+        SELECT menu_item_name, menu_item_url, parent_id
+        FROM menu_item
+        WHERE menu_item_id = current_id;
+        
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    CREATE TEMPORARY TABLE IF NOT EXISTS BreadcrumbTrail (
+        menu_item_name VARCHAR(100),
+        menu_item_url VARCHAR(50)
+    );
+    
+    OPEN breadcrumb_cursor;
+    
+    read_loop: LOOP
+        FETCH breadcrumb_cursor INTO menu_name, menu_url, parent;
+        
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        IF current_id != pageID THEN
+            INSERT INTO BreadcrumbTrail (menu_item_name, menu_item_url) 
+            VALUES (menu_name, menu_url);
+        END IF;
+
+        SET current_id = parent;
+        
+        IF current_id IS NULL THEN
+            LEAVE read_loop;
+        END IF;
+        
+        CLOSE breadcrumb_cursor;
+        OPEN breadcrumb_cursor;
+    END LOOP read_loop;
+
+    CLOSE breadcrumb_cursor;
+
+    SELECT * FROM BreadcrumbTrail ORDER BY FIELD(menu_item_name, menu_item_name);
+
+    DROP TEMPORARY TABLE BreadcrumbTrail;
+END//

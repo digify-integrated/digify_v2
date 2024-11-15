@@ -8,6 +8,25 @@
                             <i class="ki-outline ki-abstract-26 text-gray-700 fs-6"></i>
                         </a>
                     </li>
+                    <?php
+                        $sql = $databaseModel->getConnection()->prepare('CALL buildBreadcrumb(:pageID)');
+                        $sql->bindValue(':pageID', $pageID, PDO::PARAM_INT);
+                        $sql->execute();
+                        $breadcrumbTrail = $sql->fetchAll(PDO::FETCH_ASSOC);
+                        $sql->closeCursor();
+
+                        $breadcrumbTrail = array_reverse($breadcrumbTrail);
+
+                        foreach ($breadcrumbTrail as $item) {
+                            echo '<li class="breadcrumb-item">';
+                            echo '<i class="ki-outline ki-right fs-7 text-gray-700 mx-n1"></i>';
+                            echo '</li>';
+                            echo '<li class="breadcrumb-item text-white fw-bold lh-1">';
+                            echo htmlspecialchars($item['menu_item_name']);
+                            echo '</li>';
+                        }
+                    ?>
+
                     <li class="breadcrumb-item">
                         <i class="ki-outline ki-right fs-7 text-gray-700 mx-n1"></i>
                     </li>
@@ -16,6 +35,7 @@
                             <?php echo $pageTitle; ?>
                         </a>
                     </li>
+                    
                     <?php
                         if(!$newRecord && !empty($detailID)){
                             echo '<li class="breadcrumb-item">

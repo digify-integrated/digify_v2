@@ -2,26 +2,27 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('menu item options');
+        generateDropdownOptions('city options');
+        generateDropdownOptions('currency options');
 
-        displayDetails('get app module details');
+        displayDetails('get company details');
 
-        if($('#app-module-form').length){
-            appModuleForm();
+        if($('#company-form').length){
+            companyForm();
         }
 
         $(document).on('click','#edit-details',function() {
-            displayDetails('get app module details');
+            displayDetails('get company details');
         });
 
-        $(document).on('click','#delete-app-module',function() {
-            const app_module_id = $('#details-id').text();
+        $(document).on('click','#delete-company',function() {
+            const company_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'delete app module';
+            const transaction = 'delete company';
     
             Swal.fire({
-                title: 'Confirm App Module Deletion',
-                text: 'Are you sure you want to delete this app module?',
+                title: 'Confirm Company Deletion',
+                text: 'Are you sure you want to delete this company?',
                 icon: 'warning',
                 showCancelButton: !0,
                 confirmButtonText: 'Delete',
@@ -35,10 +36,10 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: 'apps/settings/app-module/controller/app-module-controller.php',
+                        url: 'apps/settings/company/controller/company-controller.php',
                         dataType: 'json',
                         data: {
-                            app_module_id : app_module_id, 
+                            company_id : company_id, 
                             transaction : transaction
                         },
                         success: function (response) {
@@ -69,18 +70,18 @@
             });
         });
 
-        $(document).on('change','#app_logo',function() {
+        $(document).on('change','#company_logo',function() {
             if ($(this).val() !== '' && $(this)[0].files.length > 0) {
-                const transaction = 'update app logo';
-                const app_module_id = $('#details-id').text();
+                const transaction = 'update company logo';
+                const company_id = $('#details-id').text();
                 var formData = new FormData();
-                formData.append('app_logo', $(this)[0].files[0]);
+                formData.append('company_logo', $(this)[0].files[0]);
                 formData.append('transaction', transaction);
-                formData.append('app_module_id', app_module_id);
+                formData.append('company_id', company_id);
         
                 $.ajax({
                     type: 'POST',
-                    url: 'apps/settings/app-module/controller/app-module-controller.php',
+                    url: 'apps/settings/company/controller/company-controller.php',
                     dataType: 'json',
                     data: formData,
                     contentType: false,
@@ -88,7 +89,7 @@
                     success: function(response) {
                         if (response.success) {
                             showNotification(response.title, response.message, response.messageType);
-                            displayDetails('get app module details');
+                            displayDetails('get company details');
                         }
                         else {
                             if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -112,41 +113,35 @@
         });
 
         $(document).on('click','#log-notes-main',function() {
-            const app_module_id = $('#details-id').text();
+            const company_id = $('#details-id').text();
 
-            logNotes('app_module', app_module_id);
+            logNotes('company', company_id);
         });
     });
 })(jQuery);
 
-function appModuleForm(){
-    $('#app-module-form').validate({
+function companyForm(){
+    $('#company-form').validate({
         rules: {
-            app_module_name: {
+            company_name: {
                 required: true
             },
-            app_module_description: {
+            address: {
                 required: true
             },
-            menu_item_id: {
-                required: true
-            },
-            order_sequence: {
+            city_id: {
                 required: true
             }
         },
         messages: {
-            app_module_name: {
+            company_name: {
                 required: 'Enter the display name'
             },
-            app_module_description: {
-                required: 'Enter the description'
+            address: {
+                required: 'Enter the display name'
             },
-            menu_item_id: {
-                required: 'Select the default page'
-            },
-            order_sequence: {
-                required: 'Enter the order sequence'
+            city_id: {
+                required: 'Choose the city'
             }
         },
         errorPlacement: function(error, element) {
@@ -163,14 +158,14 @@ function appModuleForm(){
             $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
-            const app_module_id = $('#details-id').text();
+            const company_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update app module';
+            const transaction = 'update company';
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/settings/app-module/controller/app-module-controller.php',
-                data: $(form).serialize() + '&transaction=' + transaction + '&app_module_id=' + encodeURIComponent(app_module_id),
+                url: 'apps/settings/company/controller/company-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&company_id=' + encodeURIComponent(company_id),
                 dataType: 'json',
                 beforeSend: function() {
                     disableFormSubmitButton('submit-data');
@@ -198,7 +193,7 @@ function appModuleForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('app_module', app_module_id);
+                    logNotes('company', company_id);
                 }
             });
         
@@ -209,30 +204,35 @@ function appModuleForm(){
 
 function displayDetails(transaction){
     switch (transaction) {
-        case 'get app module details':
-            var app_module_id = $('#details-id').text();
+        case 'get company details':
+            var company_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
             
             $.ajax({
-                url: 'apps/settings/app-module/controller/app-module-controller.php',
+                url: 'apps/settings/company/controller/company-controller.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    app_module_id : app_module_id, 
+                    company_id : company_id, 
                     transaction : transaction
                 },
                 beforeSend: function(){
-                    resetForm('app-module-form');
+                    resetForm('company-form');
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#app_module_name').val(response.appModuleName);
-                        $('#app_module_description').val(response.appModuleDescription);
-                        $('#order_sequence').val(response.orderSequence);
+                        $('#company_name').val(response.companyName);
+                        $('#address').val(response.address);
+                        $('#tax_id').val(response.taxID);
+                        $('#phone').val(response.phone);
+                        $('#telephone').val(response.telephone);
+                        $('#email').val(response.email);
+                        $('#website').val(response.website);
                         
-                        $('#menu_item_id').val(response.menuItemID).trigger('change');
+                        $('#city_id').val(response.cityID).trigger('change');
+                        $('#currency_id').val(response.currencyID).trigger('change');
 
-                        document.getElementById('app_thumbnail').style.backgroundImage = `url(${response.appLogo})`;
+                        document.getElementById('compay_logo_thumbnail').style.backgroundImage = `url(${response.companyLogo})`;
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -258,17 +258,38 @@ function displayDetails(transaction){
 
 function generateDropdownOptions(type){
     switch (type) {
-        case 'menu item options':
+        case 'city options':
             
             $.ajax({
-                url: 'apps/settings/menu-item/view/_menu_item_generation.php',
+                url: 'apps/settings/city/view/_city_generation.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {
                     type : type
                 },
                 success: function(response) {
-                    $('#menu_item_id').select2({
+                    $('#city_id').select2({
+                        data: response
+                    }).on('change', function (e) {
+                        $(this).valid()
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+        case 'currency options':
+            
+            $.ajax({
+                url: 'apps/settings/currency/view/_currency_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type
+                },
+                success: function(response) {
+                    $('#currency_id').select2({
                         data: response
                     }).on('change', function (e) {
                         $(this).valid()

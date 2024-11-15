@@ -21,7 +21,11 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
     
     switch ($type) {
         # -------------------------------------------------------------
-        case 'city table':
+        case 'company table':
+            $filterCity = isset($_POST['city_filter']) && is_array($_POST['city_filter']) 
+            ? "'" . implode("','", array_map('trim', $_POST['city_filter'])) . "'" 
+            : null;
+
             $filterState = isset($_POST['state_filter']) && is_array($_POST['state_filter']) 
             ? "'" . implode("','", array_map('trim', $_POST['state_filter'])) . "'" 
             : null;
@@ -30,29 +34,48 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             ? "'" . implode("','", array_map('trim', $_POST['country_filter'])) . "'" 
             : null;
 
-            $sql = $databaseModel->getConnection()->prepare('CALL generateCityTable(:filterState, :filterCountry)');
+            $filterCurrency = isset($_POST['currency_filter']) && is_array($_POST['currency_filter']) 
+            ? "'" . implode("','", array_map('trim', $_POST['currency_filter'])) . "'" 
+            : null;
+
+            $sql = $databaseModel->getConnection()->prepare('CALL generateCompanyTable(:filterCity, :filterState, :filterCountry, :filterCurrency)');
+            $sql->bindValue(':filterCity', $filterCity, PDO::PARAM_STR);
             $sql->bindValue(':filterState', $filterState, PDO::PARAM_STR);
             $sql->bindValue(':filterCountry', $filterCountry, PDO::PARAM_STR);
+            $sql->bindValue(':filterCurrency', $filterCurrency, PDO::PARAM_STR);
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
             $sql->closeCursor();
 
             foreach ($options as $row) {
-                $cityID = $row['city_id'];
+                $companyID = $row['company_id'];
+                $companyName = $row['company_name'];
+                $address = $row['address'];
                 $cityName = $row['city_name'];
                 $stateName = $row['state_name'];
                 $countryName = $row['country_name'];
+                $companyLogo = $systemModel->checkImage(str_replace('../', './apps/', $row['company_logo'])  ?? null, 'company logo');
 
-                $cityIDEncrypted = $securityModel->encryptData($cityID);
+                $companyAddress = $address . ', ' . $cityName . ', ' . $stateName . ', ' . $countryName;
+
+                $companyIDEncrypted = $securityModel->encryptData($companyID);
 
                 $response[] = [
                     'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $cityID .'">
+                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $companyID .'">
                                     </div>',
-                    'CITY_NAME' => $cityName,
-                    'STATE_NAME' => $stateName,
-                    'COUNTRY_NAME' => $countryName,
-                    'LINK' => $pageLink .'&id='. $cityIDEncrypted
+                    'COMPANY_NAME' => '<div class="d-flex align-items-center">
+                                    <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                        <div class="symbol-label">
+                                            <img src="'. $companyLogo .'" alt="'. $companyName .'" class="w-100">
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <span class="text-gray-800 fw-bold mb-1">'. $companyName .'</span>
+                                        <small class="text-gray-600">'. $companyAddress .'</small>
+                                    </div>
+                                </div>',
+                    'LINK' => $pageLink .'&id='. $companyIDEncrypted
                 ];
             }
 
@@ -61,10 +84,10 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
         # -------------------------------------------------------------
         
         # -------------------------------------------------------------
-        case 'city options':
+        case 'company options':
             $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;
 
-            $sql = $databaseModel->getConnection()->prepare('CALL generateCityOptions()');
+            $sql = $databaseModel->getConnection()->prepare('CALL generateCompanyOptions()');
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
             $sql->closeCursor();
@@ -78,35 +101,8 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
 
             foreach ($options as $row) {
                 $response[] = [
-                    'id' => $row['city_id'],
-                    'text' => $row['city_name'] . ', ' . $row['state_name'] . ', ' . $row['country_name']
-                ];
-            }
-
-            echo json_encode($response);
-        break;
-        # -------------------------------------------------------------
-        
-        # -------------------------------------------------------------
-        case 'filter city options':
-            $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;
-
-            $sql = $databaseModel->getConnection()->prepare('CALL generateCityOptions()');
-            $sql->execute();
-            $options = $sql->fetchAll(PDO::FETCH_ASSOC);
-            $sql->closeCursor();
-
-            if(!$multiple){
-                $response[] = [
-                    'id' => '',
-                    'text' => '--'
-                ];
-            }
-
-            foreach ($options as $row) {
-                $response[] = [
-                    'id' => $row['city_id'],
-                    'text' => $row['city_name']
+                    'id' => $row['company_id'],
+                    'text' => $row['company_name']
                 ];
             }
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 14, 2024 at 10:21 AM
+-- Generation Time: Nov 15, 2024 at 10:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,6 +61,72 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `buildAppModuleStack` (IN `p_user_ac
         )
     )
     ORDER BY am.order_sequence, am.app_module_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `buildBreadcrumb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `buildBreadcrumb` (IN `pageID` INT)   BEGIN
+    -- Temporary table to store breadcrumb trail
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE current_id INT DEFAULT pageID;
+    
+    DECLARE menu_name VARCHAR(100);
+    DECLARE menu_url VARCHAR(50);
+    DECLARE parent INT;
+    
+    -- Cursor to fetch the current page and its parent
+    DECLARE breadcrumb_cursor CURSOR FOR
+        SELECT menu_item_name, menu_item_url, parent_id
+        FROM menu_item
+        WHERE menu_item_id = current_id;
+        
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Temporary table to hold breadcrumb data
+    CREATE TEMPORARY TABLE IF NOT EXISTS BreadcrumbTrail (
+        menu_item_name VARCHAR(100),
+        menu_item_url VARCHAR(50)
+    );
+    
+    -- Open the cursor to start fetching data
+    OPEN breadcrumb_cursor;
+    
+    -- Loop to trace the breadcrumb trail upwards
+    read_loop: LOOP
+        FETCH breadcrumb_cursor INTO menu_name, menu_url, parent;
+        
+        -- If no more data is found, exit the loop
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Skip inserting the current page ID (pageID) into the breadcrumb trail
+        IF current_id != pageID THEN
+            -- Insert the breadcrumb into the temporary table
+            INSERT INTO BreadcrumbTrail (menu_item_name, menu_item_url) 
+            VALUES (menu_name, menu_url);
+        END IF;
+
+        -- Set the current_id to the parent to trace upwards
+        SET current_id = parent;
+        
+        -- If there's no parent, exit the loop
+        IF current_id IS NULL THEN
+            LEAVE read_loop;
+        END IF;
+        
+        -- Reopen the cursor to fetch the next parent
+        CLOSE breadcrumb_cursor;
+        OPEN breadcrumb_cursor;
+    END LOOP read_loop;
+
+    -- Close the cursor once the loop is done
+    CLOSE breadcrumb_cursor;
+
+    -- Select the breadcrumb trail in the correct order (in reverse)
+    SELECT * FROM BreadcrumbTrail ORDER BY FIELD(menu_item_name, menu_item_name);
+
+    -- Clean up by dropping the temporary table
+    DROP TEMPORARY TABLE BreadcrumbTrail;
 END$$
 
 DROP PROCEDURE IF EXISTS `buildMenuGroup`$$
@@ -147,6 +213,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCityExist` (IN `p_city_id` INT
     WHERE city_id = p_city_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkCompanyExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCompanyExist` (IN `p_company_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM company
+    WHERE company_id = p_company_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkCountryExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCountryExist` (IN `p_country_id` INT)   BEGIN
 	SELECT COUNT(*) AS total
@@ -159,6 +232,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCurrencyExist` (IN `p_currency
 	SELECT COUNT(*) AS total
     FROM currency
     WHERE currency_id = p_currency_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkFileTypeExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkFileTypeExist` (IN `p_file_type_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM file_type
+    WHERE file_type_id = p_file_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkLoginCredentialsExist`$$
@@ -319,6 +399,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCity` (IN `p_city_id` INT)   
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteCompany`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCompany` (IN `p_company_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM company WHERE company_id = p_company_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `deleteCountry`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCountry` (IN `p_country_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -345,6 +439,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCurrency` (IN `p_currency_id`
     START TRANSACTION;
 
     DELETE FROM currency WHERE currency_id = p_currency_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteFileType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteFileType` (IN `p_file_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    /*DELETE FROM file_extension WHERE file_type_id = p_file_type_id;*/
+    DELETE FROM file_type WHERE file_type_id = p_file_type_id;
 
     COMMIT;
 END$$
@@ -585,6 +694,57 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCityTable` (IN `p_filter_by
     DEALLOCATE PREPARE stmt;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateCompanyOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCompanyOptions` ()   BEGIN
+	SELECT company_id, company_name 
+    FROM company 
+    ORDER BY company_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCompanyTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCompanyTable` (IN `p_filter_by_city` TEXT, IN `p_filter_by_state` TEXT, IN `p_filter_by_country` TEXT, IN `p_filter_by_currency` TEXT)   BEGIN
+    DECLARE query TEXT;
+    DECLARE filter_conditions TEXT DEFAULT '';
+
+    SET query = 'SELECT company_id, company_name, company_logo, address, city_name, state_name, country_name 
+                FROM company ';
+
+    IF p_filter_by_city IS NOT NULL AND p_filter_by_city <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' city_id IN (', p_filter_by_city, ')');
+    END IF;
+
+    IF p_filter_by_state IS NOT NULL AND p_filter_by_state <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+         SET filter_conditions = CONCAT(filter_conditions, ' state_id IN (', p_filter_by_state, ')');
+    END IF;
+
+    IF p_filter_by_country IS NOT NULL AND p_filter_by_country <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+         SET filter_conditions = CONCAT(filter_conditions, ' country_id IN (', p_filter_by_country, ')');
+    END IF;
+
+    IF p_filter_by_currency IS NOT NULL AND p_filter_by_currency <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+         SET filter_conditions = CONCAT(filter_conditions, ' currency_id IN (', p_filter_by_currency, ')');
+    END IF;
+
+    IF filter_conditions <> '' THEN
+        SET query = CONCAT(query, ' WHERE ', filter_conditions);
+    END IF;
+
+    SET query = CONCAT(query, ' ORDER BY company_name');
+
+    PREPARE stmt FROM query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateCountryOptions`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCountryOptions` ()   BEGIN
     SELECT country_id, country_name 
@@ -620,6 +780,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateExportOption` (IN `p_databa
     WHERE table_schema = p_databasename 
     AND table_name = p_table_name
     ORDER BY ordinal_position;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateFileTypeOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateFileTypeOptions` ()   BEGIN
+	SELECT file_type_id, file_type_name 
+    FROM file_type 
+    ORDER BY file_type_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateFileTypeTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateFileTypeTable` ()   BEGIN
+	SELECT file_type_id, file_type_name
+    FROM file_type 
+    ORDER BY file_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateInternalNotes`$$
@@ -947,6 +1121,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getCity` (IN `p_city_id` INT)   BEG
 	WHERE city_id = p_city_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getCompany`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getCompany` (IN `p_company_id` INT)   BEGIN
+	SELECT * FROM company
+	WHERE company_id = p_company_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getCountry`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getCountry` (IN `p_country_id` INT)   BEGIN
 	SELECT * FROM country
@@ -969,6 +1149,12 @@ DROP PROCEDURE IF EXISTS `getEmailSetting`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmailSetting` (IN `p_email_setting_id` INT)   BEGIN
 	SELECT * FROM email_setting
     WHERE email_setting_id = p_email_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getFileType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getFileType` (IN `p_file_type_id` INT)   BEGIN
+	SELECT * FROM file_type
+	WHERE file_type_id = p_file_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getInternalNotesAttachment`$$
@@ -1227,6 +1413,46 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCity` (IN `p_city_id` INT, IN `
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveCompany`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCompany` (IN `p_company_id` INT, IN `p_company_name` VARCHAR(100), IN `p_address` VARCHAR(1000), IN `p_city_id` INT, IN `p_city_name` VARCHAR(100), IN `p_state_id` INT, IN `p_state_name` VARCHAR(100), IN `p_country_id` INT, IN `p_country_name` VARCHAR(100), IN `p_tax_id` VARCHAR(100), IN `p_currency_id` INT, IN `p_currency_name` VARCHAR(100), IN `p_phone` VARCHAR(20), IN `p_telephone` VARCHAR(20), IN `p_email` VARCHAR(255), IN `p_website` VARCHAR(255), IN `p_last_log_by` INT, OUT `p_new_company_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_company_id IS NULL OR NOT EXISTS (SELECT 1 FROM company WHERE company_id = p_company_id) THEN
+        INSERT INTO company (company_name, address, city_id, city_name, state_id, state_name, country_id, country_name, tax_id, currency_id, currency_name, phone, telephone, email, website, last_log_by) 
+        VALUES(p_company_name, p_address, p_city_id, p_city_name, p_state_id, p_state_name, p_country_id, p_country_name, p_tax_id, p_currency_id, p_currency_name, p_phone, p_telephone, p_email, p_website, p_last_log_by);
+        
+        SET p_new_company_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE company
+        SET company_name = p_company_name,
+            address = p_address,
+            city_id = p_city_id,
+            city_name = p_city_name,
+            state_id = p_state_id,
+            state_name = p_state_name,
+            country_id = p_country_id,
+            country_name = p_country_name,
+            tax_id = p_tax_id,
+            currency_id = p_currency_id,
+            currency_name = p_currency_name,
+            phone = p_phone,
+            telephone = p_telephone,
+            email = p_email,
+            website = p_website,
+            last_log_by = p_last_log_by
+        WHERE company_id = p_company_id;
+
+        SET p_new_company_id = p_company_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveCountry`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCountry` (IN `p_country_id` INT, IN `p_country_name` VARCHAR(100), IN `p_country_code` VARCHAR(10), IN `p_phone_code` VARCHAR(10), IN `p_last_log_by` INT, OUT `p_new_country_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -1288,6 +1514,37 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCurrency` (IN `p_currency_id` I
         WHERE currency_id = p_currency_id;
 
         SET p_new_currency_id = p_currency_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveFileType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveFileType` (IN `p_file_type_id` INT, IN `p_file_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_file_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_file_type_id IS NULL OR NOT EXISTS (SELECT 1 FROM file_type WHERE file_type_id = p_file_type_id) THEN
+        INSERT INTO file_type (file_type_name, last_log_by) 
+        VALUES(p_file_type_name, p_last_log_by);
+        
+        SET p_new_file_type_id = LAST_INSERT_ID();
+    ELSE
+        /*UPDATE file_extension
+        SET file_type_name = p_file_type_name,
+            last_log_by = p_last_log_by
+        WHERE file_type_id = p_file_type_id;*/
+
+        UPDATE file_type
+        SET file_type_name = p_file_type_name,
+            last_log_by = p_last_log_by
+        WHERE file_type_id = p_file_type_id;
+
+        SET p_new_file_type_id = p_file_type_id;
     END IF;
 
     COMMIT;
@@ -1596,6 +1853,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateAppLogo` (IN `p_app_module_id
     SET app_logo = p_app_logo,
         last_log_by = p_last_log_by
     WHERE app_module_id = p_app_module_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateCompanyLogo`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateCompanyLogo` (IN `p_company_id` INT, IN `p_company_logo` VARCHAR(500), IN `p_last_log_by` INT)   BEGIN
+ 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE company
+    SET company_logo = p_company_logo,
+        last_log_by = p_last_log_by
+    WHERE company_id = p_company_id;
 
     COMMIT;
 END$$
@@ -1959,7 +2233,7 @@ CREATE TABLE `app_module` (
 --
 
 INSERT INTO `app_module` (`app_module_id`, `app_module_name`, `app_module_description`, `app_logo`, `menu_item_id`, `menu_item_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control.', '../settings/app-module/image/logo/1/Pboex.png', 1, 'App Module', 100, '2024-11-03 20:44:42', 2);
+(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control.', '../settings/app-module/image/logo/1/Pboex.png', 10, 'Account Settings', 100, '2024-11-03 20:44:42', 2);
 
 -- --------------------------------------------------------
 
@@ -2083,7 +2357,31 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (98, 'currency', 2, 'Currency created.', 2, '2024-11-14 17:06:49', '2024-11-14 17:06:49'),
 (99, 'currency', 3, 'Currency created.', 2, '2024-11-14 17:06:55', '2024-11-14 17:06:55'),
 (100, 'currency', 1, 'Currency created.', 2, '2024-11-14 17:08:08', '2024-11-14 17:08:08'),
-(101, 'currency', 2, 'Currency created.', 2, '2024-11-14 17:08:08', '2024-11-14 17:08:08');
+(101, 'currency', 2, 'Currency created.', 2, '2024-11-14 17:08:08', '2024-11-14 17:08:08'),
+(102, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-14 08:50:03 -> 2024-11-15 08:50:55<br/>', 2, '2024-11-15 08:50:55', '2024-11-15 08:50:55'),
+(103, 'company', 1, 'Company created.', 2, '2024-11-15 15:43:37', '2024-11-15 15:43:37'),
+(104, 'company', 1, 'Company changed.<br/><br/>Tax ID:  -> asdads<br/>', 2, '2024-11-15 15:59:40', '2024-11-15 15:59:40'),
+(105, 'company', 2, 'Company created.', 2, '2024-11-15 16:06:23', '2024-11-15 16:06:23'),
+(106, 'company', 2, 'Company changed.<br/><br/>Tax ID:  -> asdas<br/>', 2, '2024-11-15 16:06:47', '2024-11-15 16:06:47'),
+(107, 'company', 1, 'Company changed.<br/><br/>Company Name: test -> testtest<br/>Address: test -> testteste<br/>City: test -> test2<br/>Tax ID: asdads -> asdadsteetet<br/>Currency: test -> testasdasd<br/>Phone: test -> testetet<br/>Telephone: test -> testetete<br/>Email: tes -> testete<br/>Website: tes -> testete<br/>', 2, '2024-11-15 16:13:17', '2024-11-15 16:13:17'),
+(108, 'company', 1, 'Company changed.<br/><br/>Email: testete -> testete@gmail.com<br/>', 2, '2024-11-15 16:14:03', '2024-11-15 16:14:03'),
+(109, 'company', 2, 'Company created.', 2, '2024-11-15 16:18:52', '2024-11-15 16:18:52'),
+(110, 'file_type', 15, 'File type created.', 2, '2024-11-15 17:05:13', '2024-11-15 17:05:13'),
+(111, 'file_type', 15, 'File type changed.<br/><br/>File Type Name: test -> testtest<br/>', 2, '2024-11-15 17:05:25', '2024-11-15 17:05:25'),
+(112, 'file_type', 1, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(113, 'file_type', 2, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(114, 'file_type', 3, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(115, 'file_type', 4, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(116, 'file_type', 5, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(117, 'file_type', 6, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(118, 'file_type', 7, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(119, 'file_type', 8, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(120, 'file_type', 9, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(121, 'file_type', 10, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(122, 'file_type', 11, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(123, 'file_type', 12, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(124, 'file_type', 13, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(125, 'file_type', 14, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25');
 
 -- --------------------------------------------------------
 
@@ -2144,6 +2442,112 @@ CREATE TRIGGER `city_trigger_update` AFTER UPDATE ON `city` FOR EACH ROW BEGIN
     IF audit_log <> 'City changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('city', NEW.city_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `company`
+--
+
+DROP TABLE IF EXISTS `company`;
+CREATE TABLE `company` (
+  `company_id` int(10) UNSIGNED NOT NULL,
+  `company_name` varchar(100) NOT NULL,
+  `company_logo` varchar(500) DEFAULT NULL,
+  `address` varchar(1000) DEFAULT NULL,
+  `city_id` int(10) UNSIGNED NOT NULL,
+  `city_name` varchar(100) NOT NULL,
+  `state_id` int(10) UNSIGNED NOT NULL,
+  `state_name` varchar(100) NOT NULL,
+  `country_id` int(10) UNSIGNED NOT NULL,
+  `country_name` varchar(100) NOT NULL,
+  `tax_id` varchar(100) DEFAULT NULL,
+  `currency_id` int(10) UNSIGNED DEFAULT NULL,
+  `currency_name` varchar(100) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `telephone` varchar(20) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `company`
+--
+
+INSERT INTO `company` (`company_id`, `company_name`, `company_logo`, `address`, `city_id`, `city_name`, `state_id`, `state_name`, `country_id`, `country_name`, `tax_id`, `currency_id`, `currency_name`, `phone`, `telephone`, `email`, `website`, `created_date`, `last_log_by`) VALUES
+(2, 'test', '../settings/company/image/logo/2/yOjC.png', 'test', 2, 'test', 4, 'Nueva Ecija', 4, 'Philippines', 'asdas', 2, 'test', 'test', 'test', 'test', 'test', '2024-11-15 16:06:23', 2);
+
+--
+-- Triggers `company`
+--
+DROP TRIGGER IF EXISTS `company_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `company_trigger_insert` AFTER INSERT ON `company` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Company created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('company', NEW.company_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `company_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `company_trigger_update` AFTER UPDATE ON `company` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Company changed.<br/><br/>';
+
+    IF NEW.company_name <> OLD.company_name THEN
+        SET audit_log = CONCAT(audit_log, "Company Name: ", OLD.company_name, " -> ", NEW.company_name, "<br/>");
+    END IF;
+
+    IF NEW.address <> OLD.address THEN
+        SET audit_log = CONCAT(audit_log, "Address: ", OLD.address, " -> ", NEW.address, "<br/>");
+    END IF;
+
+    IF NEW.city_name <> OLD.city_name THEN
+        SET audit_log = CONCAT(audit_log, "City: ", OLD.city_name, " -> ", NEW.city_name, "<br/>");
+    END IF;
+
+    IF NEW.state_name <> OLD.state_name THEN
+        SET audit_log = CONCAT(audit_log, "State: ", OLD.state_name, " -> ", NEW.state_name, "<br/>");
+    END IF;
+
+    IF NEW.country_name <> OLD.country_name THEN
+        SET audit_log = CONCAT(audit_log, "Country: ", OLD.country_name, " -> ", NEW.country_name, "<br/>");
+    END IF;
+
+    IF NEW.tax_id <> OLD.tax_id THEN
+        SET audit_log = CONCAT(audit_log, "Tax ID: ", OLD.tax_id, " -> ", NEW.tax_id, "<br/>");
+    END IF;
+
+    IF NEW.currency_name <> OLD.currency_name THEN
+        SET audit_log = CONCAT(audit_log, "Currency: ", OLD.currency_name, " -> ", NEW.currency_name, "<br/>");
+    END IF;
+
+    IF NEW.phone <> OLD.phone THEN
+        SET audit_log = CONCAT(audit_log, "Phone: ", OLD.phone, " -> ", NEW.phone, "<br/>");
+    END IF;
+
+    IF NEW.telephone <> OLD.telephone THEN
+        SET audit_log = CONCAT(audit_log, "Telephone: ", OLD.telephone, " -> ", NEW.telephone, "<br/>");
+    END IF;
+
+    IF NEW.email <> OLD.email THEN
+        SET audit_log = CONCAT(audit_log, "Email: ", OLD.email, " -> ", NEW.email, "<br/>");
+    END IF;
+
+    IF NEW.website <> OLD.website THEN
+        SET audit_log = CONCAT(audit_log, "Website: ", OLD.website, " -> ", NEW.website, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Company changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('company', NEW.company_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -2373,6 +2777,70 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `file_type`
+--
+
+DROP TABLE IF EXISTS `file_type`;
+CREATE TABLE `file_type` (
+  `file_type_id` int(10) UNSIGNED NOT NULL,
+  `file_type_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `file_type`
+--
+
+INSERT INTO `file_type` (`file_type_id`, `file_type_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Audio', '2024-11-15 17:04:49', 1),
+(2, 'Compressed', '2024-11-15 17:04:49', 1),
+(3, 'Disk and Media', '2024-11-15 17:04:49', 1),
+(4, 'Data and Database', '2024-11-15 17:04:49', 1),
+(5, 'Email', '2024-11-15 17:04:49', 1),
+(6, 'Executable', '2024-11-15 17:04:49', 1),
+(7, 'Font', '2024-11-15 17:04:49', 1),
+(8, 'Image', '2024-11-15 17:04:49', 1),
+(9, 'Internet Related', '2024-11-15 17:04:49', 1),
+(10, 'Presentation', '2024-11-15 17:04:49', 1),
+(11, 'Spreadsheet', '2024-11-15 17:04:49', 1),
+(12, 'System Related', '2024-11-15 17:04:49', 1),
+(13, 'Video', '2024-11-15 17:04:49', 1),
+(14, 'Word Processor', '2024-11-15 17:04:49', 1);
+
+--
+-- Triggers `file_type`
+--
+DROP TRIGGER IF EXISTS `file_type_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `file_type_trigger_insert` AFTER INSERT ON `file_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'File type created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('file_type', NEW.file_type_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `file_type_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `file_type_trigger_update` AFTER UPDATE ON `file_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'File type changed.<br/><br/>';
+
+    IF NEW.file_type_name <> OLD.file_type_name THEN
+        SET audit_log = CONCAT(audit_log, "File Type Name: ", OLD.file_type_name, " -> ", NEW.file_type_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'File type changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('file_type', NEW.file_type_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `login_session`
 --
 
@@ -2408,7 +2876,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (14, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-12 14:17:42'),
 (15, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 09:03:49'),
 (16, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 11:24:08'),
-(17, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-14 08:50:03');
+(17, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-14 08:50:03'),
+(18, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-15 08:50:55');
 
 -- --------------------------------------------------------
 
@@ -2511,11 +2980,14 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (9, 'System Action', 'system-action.php', 'ki-outline ki-key-square', 1, 'Settings', 7, 'User Interface', 'system_action', 3, '2024-11-14 11:44:44', 2),
 (10, 'Account Settings', 'account-settings.php', '', 1, 'Settings', NULL, NULL, NULL, 127, '2024-11-14 11:44:44', 2),
 (11, 'Configurations', '', '', 1, 'Settings', 0, '', '', 50, '2024-11-14 11:49:18', 2),
-(12, 'Localization', '', 'ki-outline ki-compass', 1, 'Settings', 11, 'Configurations', '', 10, '2024-11-14 11:56:25', 2),
+(12, 'Localization', '', 'ki-outline ki-compass', 1, 'Settings', 11, 'Configurations', '', 12, '2024-11-14 11:56:25', 2),
 (13, 'Country', 'country.php', '', 1, 'Settings', 12, 'Localization', 'country', 3, '2024-11-14 11:57:15', 2),
 (14, 'State', 'state.php', '', 1, 'Settings', 12, 'Localization', '', 19, '2024-11-14 12:13:03', 2),
 (15, 'City', 'city.php', '', 1, 'Settings', 12, 'Localization', 'city', 3, '2024-11-14 12:14:05', 2),
-(16, 'Currency', 'currency.php', '', 1, 'Settings', 12, 'Localization', 'currency', 3, '2024-11-14 12:16:32', 2);
+(16, 'Currency', 'currency.php', '', 1, 'Settings', 12, 'Localization', 'currency', 3, '2024-11-14 12:16:32', 2),
+(17, 'Data Classification', '', 'ki-outline ki-file-up', 1, 'Settings', 11, 'Configurations', '', 4, '2024-11-15 16:41:47', 2),
+(18, 'File Type', 'file-type.php', '', 1, 'Settings', 17, 'Data Classification', 'file_type', 6, '2024-11-15 16:42:51', 2),
+(19, 'File Extension', 'file-extension.php', '', 1, 'Settings', 17, 'Data Classification', '', 6, '2024-11-15 16:43:31', 2);
 
 -- --------------------------------------------------------
 
@@ -2833,7 +3305,10 @@ INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `me
 (22, 1, 'Administrator', 13, 'Country', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 11:57:23', '2024-11-14 11:57:23', 2),
 (23, 1, 'Administrator', 14, 'State', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:13:08', '2024-11-14 12:13:08', 2),
 (24, 1, 'Administrator', 15, 'City', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:14:09', '2024-11-14 12:14:09', 2),
-(25, 1, 'Administrator', 16, 'Currency', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:16:35', '2024-11-14 12:16:35', 2);
+(25, 1, 'Administrator', 16, 'Currency', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:16:35', '2024-11-14 12:16:35', 2),
+(26, 1, 'Administrator', 17, 'Data Classification', 1, 0, 0, 0, 0, 0, 0, '2024-11-15 16:41:51', '2024-11-15 16:41:51', 2),
+(27, 1, 'Administrator', 18, 'File Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-15 16:42:56', '2024-11-15 16:42:56', 2),
+(28, 1, 'Administrator', 19, 'File Extension', 1, 1, 1, 1, 1, 1, 1, '2024-11-15 16:43:35', '2024-11-15 16:43:35', 2);
 
 -- --------------------------------------------------------
 
@@ -3094,10 +3569,11 @@ CREATE TABLE `upload_setting` (
 --
 
 INSERT INTO `upload_setting` (`upload_setting_id`, `upload_setting_name`, `upload_setting_description`, `max_file_size`, `created_date`, `last_log_by`) VALUES
-(1, 'App Logo', 'Sets the upload setting when uploading app logo.', 800, '2024-11-09 20:29:34', 1),
-(2, 'Internal Notes Attachment', 'Sets the upload setting when uploading internal notes attachement.', 800, '2024-11-09 20:29:34', 1),
-(3, 'Import File', 'Sets the upload setting when importing data.', 800, '2024-11-09 20:29:34', 2),
-(4, 'User Account Profile Picture', 'Sets the upload setting when uploading user account profile picture.', 800, '2024-11-09 20:29:34', 2);
+(1, 'App Logo', 'Sets the upload setting when uploading app logo.', 800, '2024-11-15 15:37:13', 1),
+(2, 'Internal Notes Attachment', 'Sets the upload setting when uploading internal notes attachement.', 800, '2024-11-15 15:37:13', 1),
+(3, 'Import File', 'Sets the upload setting when importing data.', 800, '2024-11-15 15:37:13', 2),
+(4, 'User Account Profile Picture', 'Sets the upload setting when uploading user account profile picture.', 800, '2024-11-15 15:37:13', 1),
+(5, 'Company Logo', 'Sets the upload setting when uploading company logo.', 800, '2024-11-15 15:37:13', 1);
 
 -- --------------------------------------------------------
 
@@ -3123,24 +3599,27 @@ CREATE TABLE `upload_setting_file_extension` (
 --
 
 INSERT INTO `upload_setting_file_extension` (`upload_setting_file_extension_id`, `upload_setting_id`, `upload_setting_name`, `file_extension_id`, `file_extension_name`, `file_extension`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'App Logo', 63, 'PNG', 'png', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(2, 1, 'App Logo', 61, 'JPG', 'jpg', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(3, 1, 'App Logo', 62, 'JPEG', 'jpeg', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(4, 2, 'Internal Notes Attachment', 63, 'PNG', 'png', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(5, 2, 'Internal Notes Attachment', 61, 'JPG', 'jpg', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(6, 2, 'Internal Notes Attachment', 62, 'JPEG', 'jpeg', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(7, 2, 'Internal Notes Attachment', 127, 'PDF', 'pdf', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(8, 2, 'Internal Notes Attachment', 125, 'DOC', 'doc', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(9, 2, 'Internal Notes Attachment', 125, 'DOCX', 'docx', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(10, 2, 'Internal Notes Attachment', 130, 'TXT', 'txt', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(11, 2, 'Internal Notes Attachment', 92, 'XLS', 'xls', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(12, 2, 'Internal Notes Attachment', 94, 'XLSX', 'xlsx', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(13, 2, 'Internal Notes Attachment', 89, 'PPT', 'ppt', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(14, 2, 'Internal Notes Attachment', 90, 'PPTX', 'pptx', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(15, 3, 'Import File', 25, 'CSV', 'csv', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(16, 4, 'User Account Profile Picture', 63, 'PNG', 'png', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(17, 4, 'User Account Profile Picture', 61, 'JPG', 'jpg', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1),
-(18, 4, 'User Account Profile Picture', 62, 'JPEG', 'jpeg', '2024-11-09 20:29:34', '2024-11-09 20:29:34', 1);
+(1, 1, 'App Logo', 63, 'PNG', 'png', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(2, 1, 'App Logo', 61, 'JPG', 'jpg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(3, 1, 'App Logo', 62, 'JPEG', 'jpeg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(4, 2, 'Internal Notes Attachment', 63, 'PNG', 'png', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(5, 2, 'Internal Notes Attachment', 61, 'JPG', 'jpg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(6, 2, 'Internal Notes Attachment', 62, 'JPEG', 'jpeg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(7, 2, 'Internal Notes Attachment', 127, 'PDF', 'pdf', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(8, 2, 'Internal Notes Attachment', 125, 'DOC', 'doc', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(9, 2, 'Internal Notes Attachment', 125, 'DOCX', 'docx', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(10, 2, 'Internal Notes Attachment', 130, 'TXT', 'txt', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(11, 2, 'Internal Notes Attachment', 92, 'XLS', 'xls', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(12, 2, 'Internal Notes Attachment', 94, 'XLSX', 'xlsx', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(13, 2, 'Internal Notes Attachment', 89, 'PPT', 'ppt', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(14, 2, 'Internal Notes Attachment', 90, 'PPTX', 'pptx', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(15, 3, 'Import File', 25, 'CSV', 'csv', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(16, 4, 'User Account Profile Picture', 63, 'PNG', 'png', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(17, 4, 'User Account Profile Picture', 61, 'JPG', 'jpg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(18, 4, 'User Account Profile Picture', 62, 'JPEG', 'jpeg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(19, 5, 'Company Logo', 63, 'PNG', 'png', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(20, 5, 'Company Logo', 61, 'JPG', 'jpg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
+(21, 5, 'Company Logo', 62, 'JPEG', 'jpeg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1);
 
 -- --------------------------------------------------------
 
@@ -3185,7 +3664,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-14 08:50:03', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', '7LM0LEh%2BttNezcpjwlvrbdnvX8FIq1f1nlnogzhCp%2FA%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-15 08:50:55', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'dKXe9FrDZXeLrba1jTuAAttBhUXz%2Bsy4RwrU8kY6QgA%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -3279,6 +3758,18 @@ ALTER TABLE `city`
   ADD KEY `city_index_country_id` (`country_id`);
 
 --
+-- Indexes for table `company`
+--
+ALTER TABLE `company`
+  ADD PRIMARY KEY (`company_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `company_index_company_id` (`company_id`),
+  ADD KEY `company_index_city_id` (`city_id`),
+  ADD KEY `company_index_state_id` (`state_id`),
+  ADD KEY `company_index_country_id` (`country_id`),
+  ADD KEY `company_index_currency_id` (`currency_id`);
+
+--
 -- Indexes for table `country`
 --
 ALTER TABLE `country`
@@ -3301,6 +3792,14 @@ ALTER TABLE `email_setting`
   ADD PRIMARY KEY (`email_setting_id`),
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `email_setting_index_email_setting_id` (`email_setting_id`);
+
+--
+-- Indexes for table `file_type`
+--
+ALTER TABLE `file_type`
+  ADD PRIMARY KEY (`file_type_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `file_type_index_file_type_id` (`file_type_id`);
 
 --
 -- Indexes for table `login_session`
@@ -3489,13 +3988,19 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT for table `city`
 --
 ALTER TABLE `city`
   MODIFY `city_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `company`
+--
+ALTER TABLE `company`
+  MODIFY `company_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `country`
@@ -3516,10 +4021,16 @@ ALTER TABLE `email_setting`
   MODIFY `email_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `file_type`
+--
+ALTER TABLE `file_type`
+  MODIFY `file_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -3531,7 +4042,7 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`
@@ -3573,7 +4084,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`
@@ -3615,13 +4126,13 @@ ALTER TABLE `system_subscription`
 -- AUTO_INCREMENT for table `upload_setting`
 --
 ALTER TABLE `upload_setting`
-  MODIFY `upload_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `upload_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `upload_setting_file_extension`
 --
 ALTER TABLE `upload_setting_file_extension`
-  MODIFY `upload_setting_file_extension_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `upload_setting_file_extension_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `user_account`
@@ -3654,6 +4165,15 @@ ALTER TABLE `city`
   ADD CONSTRAINT `city_ibfk_3` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
 
 --
+-- Constraints for table `company`
+--
+ALTER TABLE `company`
+  ADD CONSTRAINT `company_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`),
+  ADD CONSTRAINT `company_ibfk_2` FOREIGN KEY (`city_id`) REFERENCES `city` (`city_id`),
+  ADD CONSTRAINT `company_ibfk_3` FOREIGN KEY (`state_id`) REFERENCES `state` (`state_id`),
+  ADD CONSTRAINT `company_ibfk_4` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
+
+--
 -- Constraints for table `country`
 --
 ALTER TABLE `country`
@@ -3670,6 +4190,12 @@ ALTER TABLE `currency`
 --
 ALTER TABLE `email_setting`
   ADD CONSTRAINT `email_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `file_type`
+--
+ALTER TABLE `file_type`
+  ADD CONSTRAINT `file_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `login_session`

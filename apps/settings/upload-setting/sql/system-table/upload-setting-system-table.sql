@@ -17,7 +17,8 @@ INSERT INTO upload_setting (upload_setting_id, upload_setting_name, upload_setti
 (1, 'App Logo', 'Sets the upload setting when uploading app logo.', 800, 1),
 (2, 'Internal Notes Attachment', 'Sets the upload setting when uploading internal notes attachement.', 800, 1),
 (3, 'Import File', 'Sets the upload setting when importing data.', 800, 2),
-(4, 'User Account Profile Picture', 'Sets the upload setting when uploading user account profile picture.', 800, 2);
+(4, 'User Account Profile Picture', 'Sets the upload setting when uploading user account profile picture.', 800, 1),
+(5, 'Company Logo', 'Sets the upload setting when uploading company logo.', 800, 1);
 
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
@@ -60,6 +61,9 @@ INSERT INTO upload_setting_file_extension (upload_setting_file_extension_id, upl
 (15, 3, 'Import File', 25, 'CSV', 'csv', 1),
 (16, 4, 'User Account Profile Picture', 63, 'PNG', 'png', 1),
 (17, 4, 'User Account Profile Picture', 61, 'JPG', 'jpg', 1),
-(18, 4, 'User Account Profile Picture', 62, 'JPEG', 'jpeg', 1);
+(18, 4, 'User Account Profile Picture', 62, 'JPEG', 'jpeg', 1),
+(19, 5, 'Company Logo', 63, 'PNG', 'png', 1),
+(20, 5, 'Company Logo', 61, 'JPG', 'jpg', 1),
+(21, 5, 'Company Logo', 62, 'JPEG', 'jpeg', 1);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

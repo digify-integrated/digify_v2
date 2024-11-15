@@ -52,11 +52,7 @@
                             }
                         },
                         error: function(xhr, status, error) {
-                            var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                            if (xhr.responseText) {
-                                fullErrorMessage += `, Response: ${xhr.responseText}`;
-                            }
-                            showErrorDialog(fullErrorMessage);
+                            handleSystemError(xhr, status, error);
                         }
                     });
                     return false;
