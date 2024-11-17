@@ -20,7 +20,12 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
     switch ($type) {
         # -------------------------------------------------------------
         case 'file extension table':
-            $sql = $databaseModel->getConnection()->prepare('CALL generateFileExtensionTable()');
+            $filterFileType = isset($_POST['file_type_filter']) && is_array($_POST['file_type_filter']) 
+            ? "'" . implode("','", array_map('trim', $_POST['file_type_filter'])) . "'" 
+            : null;
+
+            $sql = $databaseModel->getConnection()->prepare('CALL generateFileExtensionTable(:filterFileType)');
+            $sql->bindValue(':filterFileType', $filterFileType, PDO::PARAM_STR);
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
             $sql->closeCursor();
@@ -28,9 +33,8 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $fileExtensionID = $row['file_extension_id'];
                 $fileExtensionName = $row['file_extension_name'];
-                $fileExtensionDescription = $row['file_extension_description'];
-                $orderSequence = $row['order_sequence'];
-                $appLogo = $systemModel->checkImage(str_replace('../', './apps/', $row['app_logo'])  ?? null, 'file extension logo');
+                $fileExtension = $row['file_extension'];
+                $fileTypeName = $row['file_type_name'];
 
                 $fileExtensionIDEncrypted = $securityModel->encryptData($fileExtensionID);
 
@@ -38,15 +42,8 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                     'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $fileExtensionID .'">
                                     </div>',
-                    'APP_MODULE_NAME' => '<div class="d-flex align-items-center">
-                                            <img src="'. $appLogo .'" alt="app-logo" width="45" />
-                                            <div class="ms-3">
-                                                <div class="user-meta-info">
-                                                    <h6 class="mb-0">'. $fileExtensionName .'</h6>
-                                                    <small class="text-wrap fs-7 text-gray-500">'. $fileExtensionDescription .'</small>
-                                                </div>
-                                            </div>
-                                        </div>',
+                    'FILE_EXTENSION' => $fileExtensionName . ' (.' . $fileExtension . ')',
+                    'FILE_TYPE' => $fileTypeName,
                     'LINK' => $pageLink .'&id='. $fileExtensionIDEncrypted
                 ];
             }

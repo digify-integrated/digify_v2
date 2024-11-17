@@ -7,7 +7,7 @@
             <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                 <?php
                     if ($deleteAccess['total'] > 0 || $exportAccess['total'] > 0) {
-                        $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown action-dropdown me-30d-none" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                        $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown action-dropdown me-3 d-none" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                                         Actions
                                         <i class="ki-outline ki-down fs-5 ms-1"></i>
                                     </a>
@@ -34,12 +34,31 @@
                         echo $action;
                     }
                 ?>
+            <div>
+                <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"><i class="ki-outline ki-filter fs-2"></i> Filter</button>
+                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
+                    <div class="px-7 py-5">
+                        <div class="fs-5 text-gray-900 fw-bold">Filter Options</div>
+                    </div>
+                    <div class="separator border-gray-200"></div>
+                        <div class="px-7 py-5" data-kt-user-table-filter="form">
+                            <div class="mb-10">
+                                <label class="form-label fs-6 fw-semibold" for="file_type_filter">File Type:</label>
+                                <select id="file_type_filter" name="file_type_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6" id="reset-filter" data-kt-menu-dismiss="true" data-kt-user-table-filter="reset">Reset</button>
+                                <button type="button" class="btn btn-primary fw-semibold px-6" id="apply-filter" data-kt-menu-dismiss="true" data-kt-user-table-filter="filter">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="card-body pt-9">
         <div class="table-responsive">
-            <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5" id="file-extension-table">
+            <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5 text-nowrap" id="file-extension-table">
                 <thead>
                     <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
                         <th>
@@ -48,6 +67,7 @@
                             </div>
                         </th>
                         <th>File Extension</th>
+                        <th>File Type</th>
                     </tr>
                 </thead>
                 <tbody class="fw-semibold text-gray-800"></tbody>

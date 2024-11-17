@@ -35,14 +35,14 @@ BEGIN
     START TRANSACTION;
 
     IF p_file_extension_id IS NULL OR NOT EXISTS (SELECT 1 FROM file_extension WHERE file_extension_id = p_file_extension_id) THEN
-        INSERT INTO file_extension (file_extension_name, file_extension_description, file_type_id, file_type_name, last_log_by) 
-        VALUES(p_file_extension_name, p_file_extension_description, p_file_type_id, p_file_type_name, p_last_log_by);
+        INSERT INTO file_extension (file_extension_name, file_extension, file_type_id, file_type_name, last_log_by) 
+        VALUES(p_file_extension_name, p_file_extension, p_file_type_id, p_file_type_name, p_last_log_by);
         
         SET p_new_file_extension_id = LAST_INSERT_ID();
     ELSE
         UPDATE file_extension
         SET file_extension_name = p_file_extension_name,
-            file_extension_description = p_file_extension_description,
+            file_extension = p_file_extension,
             file_type_id = p_file_type_id,
             file_type_name = p_file_type_name,
             last_log_by = p_last_log_by
@@ -93,11 +93,29 @@ END //
 /* Generate Stored Procedure */
 
 DROP PROCEDURE IF EXISTS generateFileExtensionTable//
-CREATE PROCEDURE generateFileExtensionTable()
+CREATE PROCEDURE generateFileExtensionTable(
+    IN p_filter_by_file_type TEXT
+)
 BEGIN
-	SELECT file_extension_id, file_extension_name, file_extension, file_type_name 
-    FROM file_extension 
-    ORDER BY file_extension_id;
+    DECLARE query TEXT;
+    DECLARE filter_conditions TEXT DEFAULT '';
+
+    SET query = 'SELECT file_extension_id, file_extension_name, file_extension, file_type_name 
+                FROM file_extension ';
+
+    IF p_filter_by_file_type IS NOT NULL AND p_filter_by_file_type <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' file_type_id IN (', p_filter_by_file_type, ')');
+    END IF;
+
+    IF filter_conditions <> '' THEN
+        SET query = CONCAT(query, ' WHERE ', filter_conditions);
+    END IF;
+
+    SET query = CONCAT(query, ' ORDER BY file_extension_name');
+
+    PREPARE stmt FROM query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 END //
 
 DROP PROCEDURE IF EXISTS generateFileExtensionOptions//

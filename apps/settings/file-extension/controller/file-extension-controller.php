@@ -7,13 +7,12 @@ require_once '../../../../components/model/security-model.php';
 require_once '../../../../components/model/system-model.php';
 require_once '../../authentication/model/authentication-model.php';
 require_once '../../file-extension/model/file-extension-model.php';
-require_once '../../security-setting/model/security-setting-model.php';
 require_once '../../file-type/model/file-type-model.php';
-require_once '../../upload-setting/model/upload-setting-model.php';
+require_once '../../security-setting/model/security-setting-model.php';
 
 require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new FileExtensionController(new FileExtensionModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new FileTypeModel(new DatabaseModel), new UploadSettingModel(new DatabaseModel), new SecurityModel(), new SystemModel());
+$controller = new FileExtensionController(new FileExtensionModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new FileTypeModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
@@ -21,16 +20,14 @@ class FileExtensionController {
     private $fileExtensionModel;
     private $authenticationModel;
     private $fileTypeModel;
-    private $uploadSettingModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(FileExtensionModel $fileExtensionModel, AuthenticationModel $authenticationModel, FileTypeModel $fileTypeModel, UploadSettingModel $uploadSettingModel, SecurityModel $securityModel, SystemModel $systemModel) {
+    public function __construct(FileExtensionModel $fileExtensionModel, AuthenticationModel $authenticationModel, FileTypeModel $fileTypeModel, SecurityModel $securityModel, SystemModel $systemModel) {
         $this->fileExtensionModel = $fileExtensionModel;
         $this->authenticationModel = $authenticationModel;
         $this->fileTypeModel = $fileTypeModel;
-        $this->uploadSettingModel = $uploadSettingModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
     }
@@ -112,9 +109,6 @@ class FileExtensionController {
                 case 'update file extension':
                     $this->updateFileExtension();
                     break;
-                case 'update app logo':
-                    $this->updateAppLogo();
-                    break;
                 case 'get file extension details':
                     $this->getFileExtensionDetails();
                     break;
@@ -154,19 +148,18 @@ class FileExtensionController {
 
         $userID = $_SESSION['user_account_id'];
         $fileExtensionName = filter_input(INPUT_POST, 'file_extension_name', FILTER_SANITIZE_STRING);
-        $fileExtensionDescription = filter_input(INPUT_POST, 'file_extension_description', FILTER_SANITIZE_STRING);
-        $fileTypeID = filter_input(INPUT_POST, 'menu_item_id', FILTER_VALIDATE_INT);
-        $orderSequence = filter_input(INPUT_POST, 'order_sequence', FILTER_VALIDATE_INT);
+        $fileExtension = filter_input(INPUT_POST, 'file_extension', FILTER_SANITIZE_STRING);
+        $fileTypeID = filter_input(INPUT_POST, 'file_type_id', FILTER_VALIDATE_INT);
 
         $fileTypeDetails = $this->fileTypeModel->getFileType($fileTypeID);
-        $fileTypeName = $fileTypeDetails['menu_item_name'];
+        $fileTypeName = $fileTypeDetails['file_type_name'] ?? null;
         
-        $fileExtensionID = $this->fileExtensionModel->saveFileExtension(null, $fileExtensionName, $fileExtensionDescription, $fileTypeID, $fileTypeName, $orderSequence, $userID);
+        $fileExtensionID = $this->fileExtensionModel->saveFileExtension(null, $fileExtensionName, $fileExtension, $fileTypeID, $fileTypeName, $userID);
     
         $response = [
             'success' => true,
             'fileExtensionID' => $this->securityModel->encryptData($fileExtensionID),
-            'title' => 'Save App Module',
+            'title' => 'Save File Extension',
             'message' => 'The file extension has been saved successfully.',
             'messageType' => 'success'
         ];
@@ -189,9 +182,8 @@ class FileExtensionController {
         $userID = $_SESSION['user_account_id'];
         $fileExtensionID = filter_input(INPUT_POST, 'file_extension_id', FILTER_VALIDATE_INT);
         $fileExtensionName = filter_input(INPUT_POST, 'file_extension_name', FILTER_SANITIZE_STRING);
-        $fileExtensionDescription = filter_input(INPUT_POST, 'file_extension_description', FILTER_SANITIZE_STRING);
-        $fileTypeID = filter_input(INPUT_POST, 'menu_item_id', FILTER_VALIDATE_INT);
-        $orderSequence = filter_input(INPUT_POST, 'order_sequence', FILTER_VALIDATE_INT);
+        $fileExtension = filter_input(INPUT_POST, 'file_extension', FILTER_SANITIZE_STRING);
+        $fileTypeID = filter_input(INPUT_POST, 'file_type_id', FILTER_VALIDATE_INT);
     
         $checkFileExtensionExist = $this->fileExtensionModel->checkFileExtensionExist($fileExtensionID);
         $total = $checkFileExtensionExist['total'] ?? 0;
@@ -200,7 +192,7 @@ class FileExtensionController {
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Save App Module',
+                'title' => 'Save File Extension',
                 'message' => 'The file extension does not exist.',
                 'messageType' => 'error'
             ];
@@ -210,175 +202,17 @@ class FileExtensionController {
         }
 
         $fileTypeDetails = $this->fileTypeModel->getFileType($fileTypeID);
-        $fileTypeName = $fileTypeDetails['menu_item_name'];
+        $fileTypeName = $fileTypeDetails['file_type_name'] ?? null;
 
-        $this->fileExtensionModel->saveFileExtension($fileExtensionID, $fileExtensionName, $fileExtensionDescription, $fileTypeID, $fileTypeName, $orderSequence, $userID);
+        $this->fileExtensionModel->saveFileExtension($fileExtensionID, $fileExtensionName, $fileExtension, $fileTypeID, $fileTypeName, $userID);
             
         $response = [
             'success' => true,
-            'title' => 'Save App Module',
+            'title' => 'Save File Extension',
             'message' => 'The file extension has been saved successfully.',
             'messageType' => 'success'
         ];
         
-        echo json_encode($response);
-        exit;
-    }
-    # -------------------------------------------------------------
-
-    # -------------------------------------------------------------
-    public function updateAppLogo() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return;
-        }
-
-        $userID = $_SESSION['user_account_id'];
-
-        $fileExtensionID = filter_input(INPUT_POST, 'file_extension_id', FILTER_VALIDATE_INT);
-
-        $checkFileExtensionExist = $this->fileExtensionModel->checkFileExtensionExist($fileExtensionID);
-        $total = $checkFileExtensionExist['total'] ?? 0;
-
-        if($total === 0){
-            $response = [
-                'success' => false,
-                'notExist' => true,
-                'title' => 'Update App Logo',
-                'message' => 'The app logo does not exist.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-
-        $appLogoFileName = $_FILES['app_logo']['name'];
-        $appLogoFileSize = $_FILES['app_logo']['size'];
-        $appLogoFileError = $_FILES['app_logo']['error'];
-        $appLogoTempName = $_FILES['app_logo']['tmp_name'];
-        $appLogoFileExtension = explode('.', $appLogoFileName);
-        $appLogoActualFileExtension = strtolower(end($appLogoFileExtension));
-
-        $uploadSetting = $this->uploadSettingModel->getUploadSetting(1);
-        $maxFileSize = $uploadSetting['max_file_size'];
-
-        $uploadSettingFileExtension = $this->uploadSettingModel->getUploadSettingFileExtension(1);
-        $allowedFileExtensions = [];
-
-        foreach ($uploadSettingFileExtension as $row) {
-            $allowedFileExtensions[] = $row['file_extension'];
-        }
-
-        if (!in_array($appLogoActualFileExtension, $allowedFileExtensions)) {
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'The file uploaded is not supported.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-            
-        if(empty($appLogoTempName)){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'Please choose the app logo.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-            
-        if($appLogoFileError){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'An error occurred while uploading the file.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-            
-        if($appLogoFileSize > ($maxFileSize * 1024)){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'The app logo exceeds the maximum allowed size of ' . number_format($maxFileSize) . ' kb.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-
-        $fileName = $this->securityModel->generateFileName();
-        $fileNew = $fileName . '.' . $appLogoActualFileExtension;
-            
-        define('PROJECT_BASE_DIR', dirname(__DIR__));
-        define('APP_LOGO_DIR', 'image/logo/');
-
-        $directory = PROJECT_BASE_DIR . '/'. APP_LOGO_DIR. $fileExtensionID. '/';
-        $fileDestination = $directory. $fileNew;
-        $filePath = '../settings/file-extension/image/logo/'. $fileExtensionID . '/' . $fileNew;
-
-        $directoryChecker = $this->securityModel->directoryChecker(str_replace('./', '../', $directory));
-
-        if(!$directoryChecker){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo Error',
-                'message' => $directoryChecker,
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-
-        $fileExtensionDetails = $this->fileExtensionModel->getFileExtension($fileExtensionID);
-        $appLogoPath = !empty($fileExtensionDetails['app_logo']) ? str_replace('../', '../../../../apps/', $fileExtensionDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Update App Logo',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
-        if(!move_uploaded_file($appLogoTempName, $fileDestination)){
-            $response = [
-                'success' => false,
-                'title' => 'Update App Logo',
-                'message' => 'The app logo cannot be uploaded due to an error.',
-                'messageType' => 'error'
-            ];
-                
-            echo json_encode($response);
-            exit;
-        }
-
-        $this->fileExtensionModel->updateAppLogo($fileExtensionID, $filePath, $userID);
-
-        $response = [
-            'success' => true,
-            'title' => 'Update App Logo',
-            'message' => 'The app logo has been updated successfully.',
-            'messageType' => 'success'
-        ];
-
         echo json_encode($response);
         exit;
     }
@@ -403,7 +237,7 @@ class FileExtensionController {
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Delete App Module',
+                'title' => 'Delete File Extension',
                 'message' => 'The file extension does not exist.',
                 'messageType' => 'error'
             ];
@@ -419,7 +253,7 @@ class FileExtensionController {
             if (!unlink($appLogoPath)) {
                 $response = [
                     'success' => false,
-                    'title' => 'Delete App Module',
+                    'title' => 'Delete File Extension',
                     'message' => 'The app logo cannot be deleted due to an error.',
                     'messageType' => 'error'
                 ];
@@ -433,7 +267,7 @@ class FileExtensionController {
                 
         $response = [
             'success' => true,
-            'title' => 'Delete App Module',
+            'title' => 'Delete File Extension',
             'message' => 'The file extension has been deleted successfully.',
             'messageType' => 'success'
         ];
@@ -456,31 +290,14 @@ class FileExtensionController {
                 $checkFileExtensionExist = $this->fileExtensionModel->checkFileExtensionExist($fileExtensionID);
                 $total = $checkFileExtensionExist['total'] ?? 0;
 
-                if($total > 0){
-                    $fileExtensionDetails = $this->fileExtensionModel->getFileExtension($fileExtensionID);
-                    $appLogoPath = !empty($fileExtensionDetails['app_logo']) ? str_replace('../', '../../../../apps/', $fileExtensionDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple App Modules',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
+                if($total > 0){                    
                     $this->fileExtensionModel->deleteFileExtension($fileExtensionID);
                 }
             }
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple App Modules',
+                'title' => 'Delete Multiple File Extensions',
                 'message' => 'The selected file extensions have been deleted successfully.',
                 'messageType' => 'success'
             ];
@@ -612,7 +429,7 @@ class FileExtensionController {
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Get App Module Details',
+                'title' => 'Get File Extension Details',
                 'message' => 'The file extension does not exist.',
                 'messageType' => 'error'
             ];
@@ -622,16 +439,12 @@ class FileExtensionController {
         }
 
         $fileExtensionDetails = $this->fileExtensionModel->getFileExtension($fileExtensionID);
-        $appLogo = $this->systemModel->checkImage(str_replace('../', './apps/', $fileExtensionDetails['app_logo'])  ?? null, 'file extension logo');
 
         $response = [
             'success' => true,
             'fileExtensionName' => $fileExtensionDetails['file_extension_name'] ?? null,
-            'fileExtensionDescription' => $fileExtensionDetails['file_extension_description'] ?? null,
-            'fileTypeID' => $fileExtensionDetails['menu_item_id'] ?? null,
-            'fileTypeName' => $fileExtensionDetails['menu_item_name'] ?? null,
-            'orderSequence' => $fileExtensionDetails['order_sequence'] ?? null,
-            'appLogo' => $appLogo
+            'fileExtension' => $fileExtensionDetails['file_extension'] ?? null,
+            'fileTypeID' => $fileExtensionDetails['file_type_id'] ?? null
         ];
 
         echo json_encode($response);

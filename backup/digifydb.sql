@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 15, 2024 at 10:21 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Nov 17, 2024 at 08:42 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -234,6 +234,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCurrencyExist` (IN `p_currency
     WHERE currency_id = p_currency_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkFileExtensionExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkFileExtensionExist` (IN `p_file_extension_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM file_extension
+    WHERE file_extension_id = p_file_extension_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkFileTypeExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkFileTypeExist` (IN `p_file_type_id` INT)   BEGIN
 	SELECT COUNT(*) AS total
@@ -439,6 +446,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCurrency` (IN `p_currency_id`
     START TRANSACTION;
 
     DELETE FROM currency WHERE currency_id = p_currency_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteFileExtension`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteFileExtension` (IN `p_file_extension_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM file_extension WHERE file_extension_id = p_file_extension_id;
 
     COMMIT;
 END$$
@@ -780,6 +801,36 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateExportOption` (IN `p_databa
     WHERE table_schema = p_databasename 
     AND table_name = p_table_name
     ORDER BY ordinal_position;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateFileExtensionOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateFileExtensionOptions` ()   BEGIN
+	SELECT file_extension_id, file_extension_name, file_extension
+    FROM file_extension 
+    ORDER BY file_extension_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateFileExtensionTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateFileExtensionTable` (IN `p_filter_by_file_type` TEXT)   BEGIN
+    DECLARE query TEXT;
+    DECLARE filter_conditions TEXT DEFAULT '';
+
+    SET query = 'SELECT file_extension_id, file_extension_name, file_extension, file_type_name 
+                FROM file_extension ';
+
+    IF p_filter_by_file_type IS NOT NULL AND p_filter_by_file_type <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' file_type_id IN (', p_filter_by_file_type, ')');
+    END IF;
+
+    IF filter_conditions <> '' THEN
+        SET query = CONCAT(query, ' WHERE ', filter_conditions);
+    END IF;
+
+    SET query = CONCAT(query, ' ORDER BY file_extension_name');
+
+    PREPARE stmt FROM query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateFileTypeOptions`$$
@@ -1151,6 +1202,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmailSetting` (IN `p_email_setti
     WHERE email_setting_id = p_email_setting_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getFileExtension`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getFileExtension` (IN `p_file_extension_id` INT)   BEGIN
+	SELECT * FROM file_extension
+	WHERE file_extension_id = p_file_extension_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getFileType`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getFileType` (IN `p_file_type_id` INT)   BEGIN
 	SELECT * FROM file_type
@@ -1519,6 +1576,35 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCurrency` (IN `p_currency_id` I
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveFileExtension`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveFileExtension` (IN `p_file_extension_id` INT, IN `p_file_extension_name` VARCHAR(100), IN `p_file_extension` VARCHAR(10), IN `p_file_type_id` INT, IN `p_file_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_file_extension_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_file_extension_id IS NULL OR NOT EXISTS (SELECT 1 FROM file_extension WHERE file_extension_id = p_file_extension_id) THEN
+        INSERT INTO file_extension (file_extension_name, file_extension, file_type_id, file_type_name, last_log_by) 
+        VALUES(p_file_extension_name, p_file_extension, p_file_type_id, p_file_type_name, p_last_log_by);
+        
+        SET p_new_file_extension_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE file_extension
+        SET file_extension_name = p_file_extension_name,
+            file_extension = p_file_extension,
+            file_type_id = p_file_type_id,
+            file_type_name = p_file_type_name,
+            last_log_by = p_last_log_by
+        WHERE file_extension_id = p_file_extension_id;
+
+        SET p_new_file_extension_id = p_file_extension_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveFileType`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveFileType` (IN `p_file_type_id` INT, IN `p_file_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_file_type_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -1706,6 +1792,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveState` (IN `p_state_id` INT, IN
             last_log_by = p_last_log_by
         WHERE state_id = p_state_id;
         
+
         UPDATE state
         SET state_name = p_state_name,
             country_id = p_country_id,
@@ -2381,7 +2468,111 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (122, 'file_type', 11, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
 (123, 'file_type', 12, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
 (124, 'file_type', 13, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
-(125, 'file_type', 14, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25');
+(125, 'file_type', 14, 'File type created.', 1, '2024-11-15 17:06:25', '2024-11-15 17:06:25'),
+(126, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-15 08:50:55 -> 2024-11-17 12:52:56<br/>', 2, '2024-11-17 12:52:56', '2024-11-17 12:52:56'),
+(127, 'file_extension', 132, 'File extension created.', 1, '2024-11-17 14:48:56', '2024-11-17 14:48:56'),
+(128, 'file_extension', 133, 'File extension created.', 2, '2024-11-17 14:58:22', '2024-11-17 14:58:22'),
+(129, 'file_extension', 133, 'File extension changed.<br/><br/>File Extension Name: test -> test2<br/>File Extension: test -> test22<br/>File Type: Compressed -> Audio<br/>', 2, '2024-11-17 14:58:32', '2024-11-17 14:58:32'),
+(130, 'file_extension', 1, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(131, 'file_extension', 2, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(132, 'file_extension', 3, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(133, 'file_extension', 4, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(134, 'file_extension', 5, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(135, 'file_extension', 6, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(136, 'file_extension', 7, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(137, 'file_extension', 11, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(138, 'file_extension', 12, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(139, 'file_extension', 13, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(140, 'file_extension', 14, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(141, 'file_extension', 15, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(142, 'file_extension', 16, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(143, 'file_extension', 20, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(144, 'file_extension', 21, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(145, 'file_extension', 22, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(146, 'file_extension', 25, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(147, 'file_extension', 26, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(148, 'file_extension', 27, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(149, 'file_extension', 28, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(150, 'file_extension', 29, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(151, 'file_extension', 30, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(152, 'file_extension', 31, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(153, 'file_extension', 35, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(154, 'file_extension', 36, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(155, 'file_extension', 37, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(156, 'file_extension', 38, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(157, 'file_extension', 39, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(158, 'file_extension', 40, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(159, 'file_extension', 41, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(160, 'file_extension', 43, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(161, 'file_extension', 44, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(162, 'file_extension', 45, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(163, 'file_extension', 46, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(164, 'file_extension', 47, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(165, 'file_extension', 48, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(166, 'file_extension', 49, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(167, 'file_extension', 50, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(168, 'file_extension', 51, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(169, 'file_extension', 53, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(170, 'file_extension', 54, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(171, 'file_extension', 55, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(172, 'file_extension', 57, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(173, 'file_extension', 58, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(174, 'file_extension', 59, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(175, 'file_extension', 60, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(176, 'file_extension', 61, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(177, 'file_extension', 62, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(178, 'file_extension', 63, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(179, 'file_extension', 64, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(180, 'file_extension', 65, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(181, 'file_extension', 70, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(182, 'file_extension', 71, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(183, 'file_extension', 72, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(184, 'file_extension', 73, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(185, 'file_extension', 74, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(186, 'file_extension', 75, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(187, 'file_extension', 76, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(188, 'file_extension', 77, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(189, 'file_extension', 78, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(190, 'file_extension', 79, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(191, 'file_extension', 80, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(192, 'file_extension', 81, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(193, 'file_extension', 82, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(194, 'file_extension', 83, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(195, 'file_extension', 84, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(196, 'file_extension', 86, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(197, 'file_extension', 87, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(198, 'file_extension', 88, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(199, 'file_extension', 89, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(200, 'file_extension', 90, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(201, 'file_extension', 91, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(202, 'file_extension', 95, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(203, 'file_extension', 96, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(204, 'file_extension', 97, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(205, 'file_extension', 98, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(206, 'file_extension', 99, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(207, 'file_extension', 100, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(208, 'file_extension', 101, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(209, 'file_extension', 102, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(210, 'file_extension', 103, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(211, 'file_extension', 104, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(212, 'file_extension', 105, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(213, 'file_extension', 106, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(214, 'file_extension', 109, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(215, 'file_extension', 110, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(216, 'file_extension', 111, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(217, 'file_extension', 112, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(218, 'file_extension', 113, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(219, 'file_extension', 114, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(220, 'file_extension', 115, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(221, 'file_extension', 116, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(222, 'file_extension', 117, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(223, 'file_extension', 118, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(224, 'file_extension', 119, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(225, 'file_extension', 120, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(226, 'file_extension', 125, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(227, 'file_extension', 126, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(228, 'file_extension', 127, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(229, 'file_extension', 128, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48');
 
 -- --------------------------------------------------------
 
@@ -2777,6 +2968,167 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `file_extension`
+--
+
+DROP TABLE IF EXISTS `file_extension`;
+CREATE TABLE `file_extension` (
+  `file_extension_id` int(10) UNSIGNED NOT NULL,
+  `file_extension_name` varchar(100) NOT NULL,
+  `file_extension` varchar(10) NOT NULL,
+  `file_type_id` int(11) NOT NULL,
+  `file_type_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `file_extension`
+--
+
+INSERT INTO `file_extension` (`file_extension_id`, `file_extension_name`, `file_extension`, `file_type_id`, `file_type_name`, `created_date`, `last_log_by`) VALUES
+(1, 'AIF', 'aif', 1, 'Audio', '2024-11-17 14:36:26', 1),
+(2, 'CDA', 'cda', 1, 'Audio', '2024-11-17 14:36:26', 1),
+(3, 'MID', 'mid', 1, 'Audio', '2024-11-17 14:36:26', 1),
+(4, 'MIDI', 'midi', 1, 'Audio', '2024-11-17 14:36:26', 1),
+(5, 'MP3', 'mp3', 1, 'Audio', '2024-11-17 14:36:26', 1),
+(6, 'MPA', 'mpa', 1, 'Audio', '2024-11-17 14:36:26', 1),
+(7, 'OGG', 'ogg', 1, 'Audio', '2024-11-17 14:36:26', 1),
+(11, '7Z', '7z', 2, 'Compressed', '2024-11-17 14:36:26', 1),
+(12, 'ARJ', 'arj', 2, 'Compressed', '2024-11-17 14:36:26', 1),
+(13, 'DEB', 'deb', 2, 'Compressed', '2024-11-17 14:36:26', 1),
+(14, 'PKG', 'pkg', 2, 'Compressed', '2024-11-17 14:36:26', 1),
+(15, 'RAR', 'rar', 2, 'Compressed', '2024-11-17 14:36:26', 1),
+(16, 'RPM', 'rpm', 2, 'Compressed', '2024-11-17 14:36:26', 1),
+(20, 'BIN', 'bin', 3, 'Disk and Media', '2024-11-17 14:36:26', 1),
+(21, 'DMG', 'dmg', 3, 'Disk and Media', '2024-11-17 14:36:26', 1),
+(22, 'ISO', 'iso', 3, 'Disk and Media', '2024-11-17 14:36:26', 1),
+(25, 'CSV', 'csv', 4, 'Data and Database', '2024-11-17 14:36:26', 1),
+(26, 'DAT', 'dat', 4, 'Data and Database', '2024-11-17 14:36:26', 1),
+(27, 'DB', 'db', 4, 'Data and Database', '2024-11-17 14:36:26', 1),
+(28, 'DBF', 'dbf', 4, 'Data and Database', '2024-11-17 14:36:26', 1),
+(29, 'LOG', 'log', 4, 'Data and Database', '2024-11-17 14:36:26', 1),
+(30, 'MDB', 'mdb', 4, 'Data and Database', '2024-11-17 14:36:26', 1),
+(31, 'SAV', 'sav', 4, 'Data and Database', '2024-11-17 14:36:26', 1),
+(35, 'EMAIL', 'email', 5, 'Email', '2024-11-17 14:36:26', 1),
+(36, 'EML', 'eml', 5, 'Email', '2024-11-17 14:36:26', 1),
+(37, 'EMLX', 'emlx', 5, 'Email', '2024-11-17 14:36:26', 1),
+(38, 'MSG', 'msg', 5, 'Email', '2024-11-17 14:36:26', 1),
+(39, 'OFT', 'oft', 5, 'Email', '2024-11-17 14:36:26', 1),
+(40, 'OST', 'ost', 5, 'Email', '2024-11-17 14:36:26', 1),
+(41, 'PST', 'pst', 5, 'Email', '2024-11-17 14:36:26', 1),
+(43, 'APK', 'apk', 6, 'Executable', '2024-11-17 14:36:26', 1),
+(44, 'BAT', 'bat', 6, 'Executable', '2024-11-17 14:36:26', 1),
+(45, 'BIN', 'bin', 6, 'Executable', '2024-11-17 14:36:26', 1),
+(46, 'CGI', 'cgi', 6, 'Executable', '2024-11-17 14:36:26', 1),
+(47, 'PL', 'pl', 6, 'Executable', '2024-11-17 14:36:26', 1),
+(48, 'COM', 'com', 6, 'Executable', '2024-11-17 14:36:26', 1),
+(49, 'EXE', 'exe', 6, 'Executable', '2024-11-17 14:36:26', 1),
+(50, 'GADGET', 'gadget', 6, 'Executable', '2024-11-17 14:36:26', 1),
+(51, 'JAR', 'jar', 6, 'Executable', '2024-11-17 14:36:26', 1),
+(53, 'FNT', 'fnt', 7, 'Font', '2024-11-17 14:36:26', 1),
+(54, 'FON', 'fon', 7, 'Font', '2024-11-17 14:36:26', 1),
+(55, 'OTF', 'otf', 7, 'Font', '2024-11-17 14:36:26', 1),
+(57, 'AI', 'ai', 8, 'Image', '2024-11-17 14:36:26', 1),
+(58, 'BMP', 'bmp', 8, 'Image', '2024-11-17 14:36:26', 1),
+(59, 'GIF', 'gif', 8, 'Image', '2024-11-17 14:36:26', 1),
+(60, 'ICO', 'ico', 8, 'Image', '2024-11-17 14:36:26', 1),
+(61, 'JPG', 'jpg', 8, 'Image', '2024-11-17 14:36:26', 1),
+(62, 'JPEG', 'jpeg', 8, 'Image', '2024-11-17 14:36:26', 1),
+(63, 'PNG', 'png', 8, 'Image', '2024-11-17 14:36:26', 1),
+(64, 'PS', 'ps', 8, 'Image', '2024-11-17 14:36:26', 1),
+(65, 'PSD', 'psd', 8, 'Image', '2024-11-17 14:36:26', 1),
+(70, 'ASP', 'asp', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(71, 'ASPX', 'aspx', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(72, 'CER', 'cer', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(73, 'CFM', 'cfm', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(74, 'CGI', 'cgi', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(75, 'PL', 'pl', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(76, 'CSS', 'css', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(77, 'HTM', 'htm', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(78, 'HTML', 'html', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(79, 'JS', 'js', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(80, 'JSP', 'jsp', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(81, 'PART', 'part', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(82, 'PHP', 'php', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(83, 'PY', 'py', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(84, 'RSS', 'rss', 9, 'Internet Related', '2024-11-17 14:36:26', 1),
+(86, 'KEY', 'key', 10, 'Presentation', '2024-11-17 14:36:26', 1),
+(87, 'ODP', 'odp', 10, 'Presentation', '2024-11-17 14:36:26', 1),
+(88, 'PPS', 'pps', 10, 'Presentation', '2024-11-17 14:36:26', 1),
+(89, 'PPT', 'ppt', 10, 'Presentation', '2024-11-17 14:36:26', 1),
+(90, 'PPTX', 'pptx', 10, 'Presentation', '2024-11-17 14:36:26', 1),
+(91, 'ODS', 'ods', 11, 'Spreadsheet', '2024-11-17 14:36:26', 1),
+(95, 'BAK', 'bak', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(96, 'CAB', 'cab', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(97, 'CFG', 'cfg', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(98, 'CPL', 'cpl', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(99, 'CUR', 'cur', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(100, 'DLL', 'dll', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(101, 'DMP', 'dmp', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(102, 'DRV', 'drv', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(103, 'ICNS', 'icns', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(104, 'INI', 'ini', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(105, 'LNK', 'lnk', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(106, 'MSI', 'msi', 12, 'System Related', '2024-11-17 14:36:26', 1),
+(109, '3G2', '3g2', 13, 'Video', '2024-11-17 14:36:26', 1),
+(110, '3GP', '3gp', 13, 'Video', '2024-11-17 14:36:26', 1),
+(111, 'AVI', 'avi', 13, 'Video', '2024-11-17 14:36:26', 1),
+(112, 'FLV', 'flv', 13, 'Video', '2024-11-17 14:36:26', 1),
+(113, 'H264', 'h264', 13, 'Video', '2024-11-17 14:36:26', 1),
+(114, 'M4V', 'm4v', 13, 'Video', '2024-11-17 14:36:26', 1),
+(115, 'MKV', 'mkv', 13, 'Video', '2024-11-17 14:36:26', 1),
+(116, 'MOV', 'mov', 13, 'Video', '2024-11-17 14:36:26', 1),
+(117, 'MP4', 'mp4', 13, 'Video', '2024-11-17 14:36:26', 1),
+(118, 'MPG', 'mpg', 13, 'Video', '2024-11-17 14:36:26', 1),
+(119, 'MPEG', 'mpeg', 13, 'Video', '2024-11-17 14:36:26', 1),
+(120, 'RM', 'rm', 13, 'Video', '2024-11-17 14:36:26', 1),
+(125, 'DOC', 'doc', 14, 'Word Processor', '2024-11-17 14:36:26', 1),
+(126, 'DOCX', 'docx', 14, 'Word Processor', '2024-11-17 14:36:26', 1),
+(127, 'PDF', 'pdf', 14, 'Word Processor', '2024-11-17 14:36:26', 1),
+(128, 'RTF', 'rtf', 14, 'Word Processor', '2024-11-17 14:36:26', 1);
+
+--
+-- Triggers `file_extension`
+--
+DROP TRIGGER IF EXISTS `file_extension_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `file_extension_trigger_insert` AFTER INSERT ON `file_extension` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'File extension created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('file_extension', NEW.file_extension_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `file_extension_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `file_extension_trigger_update` AFTER UPDATE ON `file_extension` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'File extension changed.<br/><br/>';
+
+    IF NEW.file_extension_name <> OLD.file_extension_name THEN
+        SET audit_log = CONCAT(audit_log, "File Extension Name: ", OLD.file_extension_name, " -> ", NEW.file_extension_name, "<br/>");
+    END IF;
+
+    IF NEW.file_extension <> OLD.file_extension THEN
+        SET audit_log = CONCAT(audit_log, "File Extension: ", OLD.file_extension, " -> ", NEW.file_extension, "<br/>");
+    END IF;
+
+    IF NEW.file_type_name <> OLD.file_type_name THEN
+        SET audit_log = CONCAT(audit_log, "File Type: ", OLD.file_type_name, " -> ", NEW.file_type_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'File extension changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('file_extension', NEW.file_extension_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `file_type`
 --
 
@@ -2877,7 +3229,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (15, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 09:03:49'),
 (16, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 11:24:08'),
 (17, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-14 08:50:03'),
-(18, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-15 08:50:55');
+(18, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-15 08:50:55'),
+(19, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-17 12:52:56');
 
 -- --------------------------------------------------------
 
@@ -2987,7 +3340,7 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (16, 'Currency', 'currency.php', '', 1, 'Settings', 12, 'Localization', 'currency', 3, '2024-11-14 12:16:32', 2),
 (17, 'Data Classification', '', 'ki-outline ki-file-up', 1, 'Settings', 11, 'Configurations', '', 4, '2024-11-15 16:41:47', 2),
 (18, 'File Type', 'file-type.php', '', 1, 'Settings', 17, 'Data Classification', 'file_type', 6, '2024-11-15 16:42:51', 2),
-(19, 'File Extension', 'file-extension.php', '', 1, 'Settings', 17, 'Data Classification', '', 6, '2024-11-15 16:43:31', 2);
+(19, 'File Extension', 'file-extension.php', '', 1, 'Settings', 17, 'Data Classification', 'file_extension', 6, '2024-11-15 16:43:31', 2);
 
 -- --------------------------------------------------------
 
@@ -3664,7 +4017,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-15 08:50:55', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'dKXe9FrDZXeLrba1jTuAAttBhUXz%2Bsy4RwrU8kY6QgA%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-17 12:52:56', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'XWUnFX7sqv3WwQq%2B2HYEm%2FbSCGWQ4wIFcsTbDk1Zd%2B0%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -3792,6 +4145,15 @@ ALTER TABLE `email_setting`
   ADD PRIMARY KEY (`email_setting_id`),
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `email_setting_index_email_setting_id` (`email_setting_id`);
+
+--
+-- Indexes for table `file_extension`
+--
+ALTER TABLE `file_extension`
+  ADD PRIMARY KEY (`file_extension_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `file_extension_index_file_extension_id` (`file_extension_id`),
+  ADD KEY `file_extension_index_file_type_id` (`file_type_id`);
 
 --
 -- Indexes for table `file_type`
@@ -3988,7 +4350,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=230;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -4021,6 +4383,12 @@ ALTER TABLE `email_setting`
   MODIFY `email_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `file_extension`
+--
+ALTER TABLE `file_extension`
+  MODIFY `file_extension_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=134;
+
+--
 -- AUTO_INCREMENT for table `file_type`
 --
 ALTER TABLE `file_type`
@@ -4030,7 +4398,7 @@ ALTER TABLE `file_type`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -4190,6 +4558,12 @@ ALTER TABLE `currency`
 --
 ALTER TABLE `email_setting`
   ADD CONSTRAINT `email_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `file_extension`
+--
+ALTER TABLE `file_extension`
+  ADD CONSTRAINT `file_extension_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `file_type`

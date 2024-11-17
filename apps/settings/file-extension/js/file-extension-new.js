@@ -2,7 +2,7 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('menu item options');
+        generateDropdownOptions('file type options');
 
         if($('#file-extension-form').length){
             fileExtensionForm();
@@ -16,13 +16,10 @@ function fileExtensionForm(){
             file_extension_name: {
                 required: true
             },
-            file_extension_description: {
+            file_extension: {
                 required: true
             },
-            menu_item_id: {
-                required: true
-            },
-            order_sequence: {
+            file_type_id: {
                 required: true
             }
         },
@@ -30,14 +27,11 @@ function fileExtensionForm(){
             file_extension_name: {
                 required: 'Enter the display name'
             },
-            file_extension_description: {
-                required: 'Enter the description'
+            file_extension: {
+                required: 'Enter the file extension'
             },
-            menu_item_id: {
-                required: 'Select the default page'
-            },
-            order_sequence: {
-                required: 'Enter the order sequence'
+            file_type_id: {
+                required: 'Select the file type'
             }
         },
         errorPlacement: function(error, element) {
@@ -95,17 +89,17 @@ function fileExtensionForm(){
 
 function generateDropdownOptions(type){
     switch (type) {
-        case 'menu item options':
+        case 'file type options':
             
             $.ajax({
-                url: 'apps/settings/menu-item/view/_menu_item_generation.php',
+                url: 'apps/settings/file-type/view/_file_type_generation.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {
                     type : type
                 },
                 success: function(response) {
-                    $('#menu_item_id').select2({
+                    $('#file_type_id').select2({
                         data: response
                     }).on('change', function (e) {
                         $(this).valid()

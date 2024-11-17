@@ -10,10 +10,6 @@
             appModuleForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get app module details');
-        });
-
         $(document).on('click','#delete-app-module',function() {
             const app_module_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

@@ -1,7 +1,9 @@
 (function($) {
     'use strict';
 
-    $(function() {
+    $(function() {        
+        generateDropdownOptions('file type options');
+
         if($('#file-extension-table').length){
             fileExtensionTable('#file-extension-table');
         }
@@ -143,6 +145,16 @@
             var length = $(this).val(); 
             table.page.len(length).draw();
         });
+
+        $(document).on('click','#apply-filter',function() {
+            fileExtensionTable('#file-extension-table');
+        });
+
+        $(document).on('click', '#reset-filter', function() {
+            $('#file_type_filter').val(null).trigger('change');
+            
+            fileExtensionTable('#file-extension-table');
+        });
     });
 })(jQuery);
 
@@ -151,16 +163,19 @@ function fileExtensionTable(datatable_name) {
 
     const type = 'file extension table';
     const page_id = $('#page-id').val();
+    const file_type_filter = $('#file_type_filter').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
 
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'APP_MODULE_NAME' }
+        { data: 'FILE_EXTENSION' },
+        { data: 'FILE_TYPE' }
     ];
 
     const columnDefs = [
         { width: '5%', bSortable: false, targets: 0, responsivePriority: 1 },
-        { width: 'auto', targets: 1, responsivePriority: 2 }
+        { width: 'auto', targets: 1, responsivePriority: 2 },
+        { width: 'auto', targets: 2, responsivePriority: 3 }
     ];
 
     const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
@@ -173,7 +188,8 @@ function fileExtensionTable(datatable_name) {
             data: {
                 type: type,
                 page_id: page_id,
-                page_link: page_link
+                page_link: page_link,
+                file_type_filter: file_type_filter
             },
             dataSrc: '',
             error: function(xhr, status, error) {
@@ -206,4 +222,29 @@ function fileExtensionTable(datatable_name) {
 
     destroyDatatable(datatable_name);
     $(datatable_name).dataTable(settings);
+}
+
+function generateDropdownOptions(type){
+    switch (type) {
+        case 'file type options':
+            
+            $.ajax({
+                url: 'apps/settings/file-type/view/_file_type_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type,
+                    multiple : 1
+                },
+                success: function(response) {
+                    $('#file_type_filter').select2({
+                        data: response
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+    }
 }
