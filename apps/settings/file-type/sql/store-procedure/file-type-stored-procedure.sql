@@ -37,10 +37,10 @@ BEGIN
         
         SET p_new_file_type_id = LAST_INSERT_ID();
     ELSE
-        /*UPDATE file_extension
+        UPDATE file_extension
         SET file_type_name = p_file_type_name,
             last_log_by = p_last_log_by
-        WHERE file_type_id = p_file_type_id;*/
+        WHERE file_type_id = p_file_type_id;
 
         UPDATE file_type
         SET file_type_name = p_file_type_name,
@@ -69,7 +69,7 @@ BEGIN
 
     START TRANSACTION;
 
-    /*DELETE FROM file_extension WHERE file_type_id = p_file_type_id;*/
+    DELETE FROM file_extension WHERE file_type_id = p_file_type_id;
     DELETE FROM file_type WHERE file_type_id = p_file_type_id;
 
     COMMIT;

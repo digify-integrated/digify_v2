@@ -70,6 +70,7 @@ BEGIN
 
     START TRANSACTION;
 
+    DELETE FROM upload_setting_file_extension WHERE file_extension_id = p_file_extension_id;
     DELETE FROM file_extension WHERE file_extension_id = p_file_extension_id;
 
     COMMIT;

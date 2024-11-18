@@ -26,7 +26,7 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: 'components/upload-setting/controller/upload-setting-controller.php',
+                        url: 'apps/settings/upload-setting/controller/upload-setting-controller.php',
                         dataType: 'json',
                         data: {
                             upload_setting_id : upload_setting_id, 
@@ -52,11 +52,7 @@
                             }
                         },
                         error: function(xhr, status, error) {
-                            var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                            if (xhr.responseText) {
-                                fullErrorMessage += `, Response: ${xhr.responseText}`;
-                            }
-                            showErrorDialog(fullErrorMessage);
+                            handleSystemError(xhr, status, error);
                         }
                     });
                     return false;
@@ -91,7 +87,7 @@
                     if (result.value) {
                         $.ajax({
                             type: 'POST',
-                            url: 'components/upload-setting/controller/upload-setting-controller.php',
+                            url: 'apps/settings/upload-setting/controller/upload-setting-controller.php',
                             dataType: 'json',
                             data: {
                                 upload_setting_id: upload_setting_id,
@@ -113,11 +109,7 @@
                                 }
                             },
                             error: function(xhr, status, error) {
-                                var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                                if (xhr.responseText) {
-                                    fullErrorMessage += `, Response: ${xhr.responseText}`;
-                                }
-                                showErrorDialog(fullErrorMessage);
+                                handleSystemError(xhr, status, error);
                             },
                             complete: function(){
                                 toggleHideActionDropdown();
@@ -133,80 +125,87 @@
             }
         });
 
+        $(document).on('click','#export-data',function() {
+            generateExportColumns('upload_setting');
+        });
+
+        $(document).on('click','#submit-export',function() {
+            exportData('upload_setting');
+        });
+
         $('#datatable-search').on('keyup', function () {
             var table = $('#upload-setting-table').DataTable();
             table.search(this.value).draw();
         });
+
+        $('#datatable-length').on('change', function() {
+            var table = $('#upload-setting-table').DataTable();
+            var length = $(this).val(); 
+            table.page.len(length).draw();
+        });
     });
 })(jQuery);
 
-function uploadSettingTable(datatable_name, buttons = false, show_all = false){
+function uploadSettingTable(datatable_name) {
     toggleHideActionDropdown();
 
     const type = 'upload setting table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
 
-    var settings;
-
-    const column = [ 
-        { 'data' : 'CHECK_BOX' },
-        { 'data' : 'UPLOAD_SETTING' },
-        { 'data' : 'MAX_FILE_SIZE' },
-        { 'data' : 'ACTION' }
+    const columns = [ 
+        { data: 'CHECK_BOX' },
+        { data: 'UPLOAD_SETTING_NAME' },
+        { data: 'MAX_FILE_SIZE' }
     ];
 
-    const column_definition = [
-        { 'width': '1%','bSortable': false, 'aTargets': 0 },
-        { 'width': 'auto', 'aTargets': 1 },
-        { 'width': 'auto', 'aTargets': 2 },
-        { 'width': '15%','bSortable': false, 'aTargets': 3 }
+    const columnDefs = [
+        { width: '5%', bSortable: false, targets: 0, responsivePriority: 1 },
+        { width: 'auto', targets: 1, responsivePriority: 2 },
+        { width: 'auto', targets: 2, responsivePriority: 3 }
     ];
 
-    const length_menu = show_all ? [[-1], ['All']] : [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']];
+    const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
 
-    settings = {
-        'ajax': { 
-            'url' : 'components/upload-setting/view/_upload_setting_generation.php',
-            'method' : 'POST',
-            'dataType': 'json',
-            'data': {
-                'type' : type,
-                'page_id' : page_id,
-                'page_link' : page_link
+    const settings = {
+        ajax: { 
+            url: 'apps/settings/upload-setting/view/_upload_setting_generation.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                type: type,
+                page_id: page_id,
+                page_link: page_link
             },
-            'dataSrc' : '',
-            'error': function(xhr, status, error) {
-                var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                if (xhr.responseText) {
-                    fullErrorMessage += `, Response: ${xhr.responseText}`;
-                }
-                showErrorDialog(fullErrorMessage);
+            dataSrc: '',
+            error: function(xhr, status, error) {
+                handleSystemError(xhr, status, error);
             }
         },
-        'dom': 'Brtip',
-        'lengthChange': false,
-        'order': [[ 1, 'asc' ]],
-        'columns' : column,
-        'fnDrawCallback': function( oSettings ) {
+        lengthChange: false,
+        order: [[1, 'asc']],
+        columns: columns,
+        columnDefs: columnDefs,
+        lengthMenu: lengthMenu,
+        autoWidth: false,
+        language: {
+            emptyTable: 'No data found',
+            sLengthMenu: '_MENU_',
+            info: '_START_ - _END_ of _TOTAL_ items',
+            loadingRecords: 'Just a moment while we fetch your data...'
+        },
+        fnDrawCallback: function(oSettings) {
             readjustDatatableColumn();
-        },
-        'columnDefs': column_definition,
-        'lengthMenu': length_menu,
-        'language': {
-            'emptyTable': 'No data found',
-            'searchPlaceholder': 'Search...',
-            'search': '',
-            'loadingRecords': 'Just a moment while we fetch your data...'
-        },
+
+            $(`${datatable_name} tbody`).on('click', 'tr td:nth-child(n+2)', function () {
+                const rowData = $(datatable_name).DataTable().row($(this).closest('tr')).data();
+                if (rowData && rowData.LINK) {
+                    window.location.href = rowData.LINK;
+                }
+            });
+        }
     };
 
-    if (buttons) {
-        settings.dom = 'Bfrtip';
-        settings.buttons = ['csv', 'excel', 'pdf'];
-    }
-
     destroyDatatable(datatable_name);
-
     $(datatable_name).dataTable(settings);
 }

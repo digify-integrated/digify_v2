@@ -1,35 +1,23 @@
 <?php
-require_once '../../global/config/session.php';
-require_once '../../global/config/config.php';
-require_once '../../global/model/database-model.php';
-require_once '../../global/model/system-model.php';
-require_once '../../upload-setting/model/upload-setting-model.php';
-require_once '../../global/model/security-model.php';
-require_once '../../global/model/global-model.php';
+require('../../../../components/configurations/session.php');
+require('../../../../components/configurations/config.php');
+require('../../../../components/model/database-model.php');
+require('../../../../components/model/system-model.php');
+require('../../../../components/model/security-model.php');
+require('../../../../apps/settings/authentication/model/authentication-model.php');
 
 $databaseModel = new DatabaseModel();
 $systemModel = new SystemModel();
-$uploadSettingModel = new UploadSettingModel($databaseModel);
 $securityModel = new SecurityModel();
-$globalModel = new GlobalModel($databaseModel, $securityModel);
+$authenticationModel = new AuthenticationModel($databaseModel, $securityModel);
 
 if(isset($_POST['type']) && !empty($_POST['type'])){
-    $type = htmlspecialchars($_POST['type'], ENT_QUOTES, 'UTF-8');
+    $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
     $pageID = isset($_POST['page_id']) ? $_POST['page_id'] : null;
     $pageLink = isset($_POST['page_link']) ? $_POST['page_link'] : null;
     $response = [];
     
     switch ($type) {
-        # -------------------------------------------------------------
-        #
-        # Type: upload setting table
-        # Description:
-        # Generates the upload setting table.
-        #
-        # Parameters: None
-        #
-        # Returns: Array
-        #
         # -------------------------------------------------------------
         case 'upload setting table':
             $sql = $databaseModel->getConnection()->prepare('CALL generateUploadSettingTable()');
@@ -37,41 +25,28 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
             $sql->closeCursor();
 
-            $uploadSettingDeleteAccess = $globalModel->checkAccessRights($userID, $pageID, 'delete');
-
             foreach ($options as $row) {
                 $uploadSettingID = $row['upload_setting_id'];
                 $uploadSettingName = $row['upload_setting_name'];
-                $description = $row['upload_setting_description'];
+                $uploadSettingDescription = $row['upload_setting_description'];
                 $maxFileSize = $row['max_file_size'];
 
                 $uploadSettingIDEncrypted = $securityModel->encryptData($uploadSettingID);
 
-                $deleteButton = '';
-                if($uploadSettingDeleteAccess['total'] > 0){
-                    $deleteButton = '<a href="javascript:void(0);" class="text-danger ms-3 delete-upload-setting" data-upload-setting-id="' . $uploadSettingID . '" title="Delete Menu Item">
-                                        <i class="ti ti-trash fs-5"></i>
-                                    </a>';
-                }
-
                 $response[] = [
-                    'CHECK_BOX' => '<input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $uploadSettingID .'">',
-                    'UPLOAD_SETTING' => '<div class="d-flex align-items-center">
-                                                <div class="ms-3">
-                                                    <div class="user-meta-info">
-                                                        <h6 class="user-name mb-0">'. $uploadSettingName .'</h6>
-                                                        <small>'. $description .'</small>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>',
+                    'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $uploadSettingID .'">
+                                    </div>',
+                    'UPLOAD_SETTING_NAME' => '<div class="d-flex align-items-center">
+                                    <div>
+                                        <div class="user-meta-info">
+                                            <h6 class="mb-0">'. $uploadSettingName .'</h6>
+                                            <small class="text-wrap fs-7 text-gray-500">'. $uploadSettingDescription .'</small>
+                                        </div>
+                                    </div>
+                                </div>',
                     'MAX_FILE_SIZE' => $maxFileSize . ' kb',
-                    'ACTION' => '<div class="action-btn">
-                                    <a href="'. $pageLink .'&id='. $uploadSettingIDEncrypted .'" class="text-info" title="View Details">
-                                        <i class="ti ti-eye fs-5"></i>
-                                    </a>
-                                   '. $deleteButton .'
-                                </div>'
+                    'LINK' => $pageLink .'&id='. $uploadSettingIDEncrypted
                 ];
             }
 

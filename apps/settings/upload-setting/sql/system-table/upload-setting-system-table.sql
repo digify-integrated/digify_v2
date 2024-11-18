@@ -36,6 +36,8 @@ CREATE TABLE upload_setting_file_extension(
 	date_assigned DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_log_by INT UNSIGNED DEFAULT 1,
+    FOREIGN KEY (upload_setting_id) REFERENCES upload_setting(upload_setting_id),
+    FOREIGN KEY (file_extension_id) REFERENCES file_extension(file_extension_id),
     FOREIGN KEY (last_log_by) REFERENCES user_account(user_account_id)
 );
 

@@ -1,5 +1,86 @@
 DELIMITER //
 
+/* Check Stored Procedure */
+
+DROP PROCEDURE IF EXISTS checkUploadSettingExist//
+CREATE PROCEDURE checkUploadSettingExist(
+    IN p_upload_setting_id INT
+)
+BEGIN
+	SELECT COUNT(*) AS total
+    FROM upload_setting
+    WHERE upload_setting_id = p_upload_setting_id;
+END //
+
+/* ----------------------------------------------------------------------------------------------------------------------------- */
+
+/* Save Stored Procedure */
+
+DROP PROCEDURE IF EXISTS saveUploadSetting//
+CREATE PROCEDURE saveUploadSetting(
+    IN p_upload_setting_id INT, 
+    IN p_upload_setting_name VARCHAR(100), 
+    IN p_upload_setting_description VARCHAR(200), 
+    IN p_max_file_size DOUBLE, 
+    IN p_last_log_by INT, 
+    OUT p_new_upload_setting_id INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_upload_setting_id IS NULL OR NOT EXISTS (SELECT 1 FROM upload_setting WHERE upload_setting_id = p_upload_setting_id) THEN
+        INSERT INTO upload_setting (upload_setting_name, upload_setting_description, max_file_size, last_log_by) 
+        VALUES(p_upload_setting_name, p_upload_setting_description, p_max_file_size, p_last_log_by);
+        
+        SET p_new_upload_setting_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE upload_setting_file_extension
+        SET upload_setting_name = p_upload_setting_name,
+            last_log_by = p_last_log_by
+        WHERE upload_setting_id = p_upload_setting_id;
+
+        UPDATE upload_setting
+        SET upload_setting_name = p_upload_setting_name,
+        	upload_setting_description = p_upload_setting_description,
+        	max_file_size = p_max_file_size,
+            last_log_by = p_last_log_by
+        WHERE upload_setting_id = p_upload_setting_id;
+
+        SET p_new_upload_setting_id = p_upload_setting_id;
+    END IF;
+
+    COMMIT;
+END //
+
+/* ----------------------------------------------------------------------------------------------------------------------------- */
+
+/* Delete Stored Procedure */
+
+DROP PROCEDURE IF EXISTS deleteUploadSetting//
+CREATE PROCEDURE deleteUploadSetting(
+    IN p_upload_setting_id INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM upload_setting_file_extension WHERE upload_setting_id = p_upload_setting_id;
+    DELETE FROM upload_setting WHERE upload_setting_id = p_upload_setting_id;
+
+    COMMIT;
+END //
+
+/* ----------------------------------------------------------------------------------------------------------------------------- */
+
 /* Get Stored Procedure */
 
 DROP PROCEDURE IF EXISTS getUploadSetting//
@@ -18,6 +99,18 @@ CREATE PROCEDURE getUploadSettingFileExtension(
 BEGIN
 	SELECT * FROM upload_setting_file_extension
 	WHERE upload_setting_id = p_upload_setting_id;
+END //
+
+/* ----------------------------------------------------------------------------------------------------------------------------- */
+
+/* Generate Stored Procedure */
+
+DROP PROCEDURE IF EXISTS generateUploadSettingTable//
+CREATE PROCEDURE generateUploadSettingTable()
+BEGIN
+	SELECT upload_setting_id, upload_setting_name, upload_setting_description, max_file_size
+    FROM upload_setting 
+    ORDER BY upload_setting_id;
 END //
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

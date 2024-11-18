@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 17, 2024 at 08:42 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Nov 18, 2024 at 10:10 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -336,6 +336,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkSystemActionExist` (IN `p_syst
     WHERE system_action_id = p_system_action_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkUploadSettingExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkUploadSettingExist` (IN `p_upload_setting_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM upload_setting
+    WHERE upload_setting_id = p_upload_setting_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkUserAccountEmailExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkUserAccountEmailExist` (IN `p_user_account_id` INT, IN `p_email` VARCHAR(255))   BEGIN
 	SELECT COUNT(*) AS total
@@ -622,6 +629,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteSystemAction` (IN `p_system_a
 
     DELETE FROM role_system_action_permission WHERE system_action_id = p_system_action_id;
     DELETE FROM system_action WHERE system_action_id = p_system_action_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteUploadSetting`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteUploadSetting` (IN `p_upload_setting_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM upload_setting_file_extension WHERE upload_setting_id = p_upload_setting_id;
+    DELETE FROM upload_setting WHERE upload_setting_id = p_upload_setting_id;
 
     COMMIT;
 END$$
@@ -1120,6 +1142,13 @@ END$$
 DROP PROCEDURE IF EXISTS `generateTables`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateTables` (IN `p_database_name` VARCHAR(255))   BEGIN
 	SELECT table_name FROM information_schema.tables WHERE table_schema = p_database_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateUploadSettingTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateUploadSettingTable` ()   BEGIN
+	SELECT upload_setting_id, upload_setting_name, upload_setting_description, max_file_size
+    FROM upload_setting 
+    ORDER BY upload_setting_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateUserAccountLoginSession`$$
@@ -1910,6 +1939,39 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveSystemAction` (IN `p_system_act
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveUploadSetting`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveUploadSetting` (IN `p_upload_setting_id` INT, IN `p_upload_setting_name` VARCHAR(100), IN `p_upload_setting_description` VARCHAR(200), IN `p_max_file_size` DOUBLE, IN `p_last_log_by` INT, OUT `p_new_upload_setting_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_upload_setting_id IS NULL OR NOT EXISTS (SELECT 1 FROM upload_setting WHERE upload_setting_id = p_upload_setting_id) THEN
+        INSERT INTO upload_setting (upload_setting_name, upload_setting_description, max_file_size, last_log_by) 
+        VALUES(p_upload_setting_name, p_upload_setting_description, p_max_file_size, p_last_log_by);
+        
+        SET p_new_upload_setting_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE upload_setting_file_extension
+        SET upload_setting_name = p_upload_setting_name,
+            last_log_by = p_last_log_by
+        WHERE upload_setting_id = p_upload_setting_id;
+
+        UPDATE upload_setting
+        SET upload_setting_name = p_upload_setting_name,
+        	upload_setting_description = p_upload_setting_description,
+        	max_file_size = p_max_file_size,
+            last_log_by = p_last_log_by
+        WHERE upload_setting_id = p_upload_setting_id;
+
+        SET p_new_upload_setting_id = p_upload_setting_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `updateAccountLock`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateAccountLock` (IN `p_user_account_id` INT, IN `p_locked` VARCHAR(255), IN `p_account_lock_duration` VARCHAR(255))   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -2572,7 +2634,10 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (226, 'file_extension', 125, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
 (227, 'file_extension', 126, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
 (228, 'file_extension', 127, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
-(229, 'file_extension', 128, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48');
+(229, 'file_extension', 128, 'File extension created.', 1, '2024-11-17 14:59:48', '2024-11-17 14:59:48'),
+(230, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-17 12:52:56 -> 2024-11-18 12:07:42<br/>', 2, '2024-11-18 12:07:42', '2024-11-18 12:07:42'),
+(231, 'upload_setting', 6, 'Upload setting created.', 2, '2024-11-18 17:00:10', '2024-11-18 17:00:10'),
+(232, 'upload_setting', 6, 'Upload setting changed.<br/><br/>Upload Setting Name: asdasd -> asdasdasd<br/>Upload Setting Description: asdasd -> asdasdasdasdas<br/>Max File Size: 123 -> 123123123<br/>', 2, '2024-11-18 17:00:14', '2024-11-18 17:00:14');
 
 -- --------------------------------------------------------
 
@@ -3230,7 +3295,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (16, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-13 11:24:08'),
 (17, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-14 08:50:03'),
 (18, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-15 08:50:55'),
-(19, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-17 12:52:56');
+(19, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-17 12:52:56'),
+(20, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-18 12:07:42');
 
 -- --------------------------------------------------------
 
@@ -3340,7 +3406,8 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (16, 'Currency', 'currency.php', '', 1, 'Settings', 12, 'Localization', 'currency', 3, '2024-11-14 12:16:32', 2),
 (17, 'Data Classification', '', 'ki-outline ki-file-up', 1, 'Settings', 11, 'Configurations', '', 4, '2024-11-15 16:41:47', 2),
 (18, 'File Type', 'file-type.php', '', 1, 'Settings', 17, 'Data Classification', 'file_type', 6, '2024-11-15 16:42:51', 2),
-(19, 'File Extension', 'file-extension.php', '', 1, 'Settings', 17, 'Data Classification', 'file_extension', 6, '2024-11-15 16:43:31', 2);
+(19, 'File Extension', 'file-extension.php', '', 1, 'Settings', 17, 'Data Classification', 'file_extension', 6, '2024-11-15 16:43:31', 2),
+(20, 'Upload Setting', 'upload-setting.php', 'ki-outline ki-exit-up', 1, 'Settings', 2, 'Settings', 'upload_setting', 21, '2024-11-18 14:42:34', 2);
 
 -- --------------------------------------------------------
 
@@ -3661,7 +3728,8 @@ INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `me
 (25, 1, 'Administrator', 16, 'Currency', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:16:35', '2024-11-14 12:16:35', 2),
 (26, 1, 'Administrator', 17, 'Data Classification', 1, 0, 0, 0, 0, 0, 0, '2024-11-15 16:41:51', '2024-11-15 16:41:51', 2),
 (27, 1, 'Administrator', 18, 'File Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-15 16:42:56', '2024-11-15 16:42:56', 2),
-(28, 1, 'Administrator', 19, 'File Extension', 1, 1, 1, 1, 1, 1, 1, '2024-11-15 16:43:35', '2024-11-15 16:43:35', 2);
+(28, 1, 'Administrator', 19, 'File Extension', 1, 1, 1, 1, 1, 1, 1, '2024-11-15 16:43:35', '2024-11-15 16:43:35', 2),
+(29, 1, 'Administrator', 20, 'Upload Setting', 1, 1, 1, 1, 1, 1, 1, '2024-11-18 14:42:39', '2024-11-18 14:42:39', 2);
 
 -- --------------------------------------------------------
 
@@ -3922,11 +3990,11 @@ CREATE TABLE `upload_setting` (
 --
 
 INSERT INTO `upload_setting` (`upload_setting_id`, `upload_setting_name`, `upload_setting_description`, `max_file_size`, `created_date`, `last_log_by`) VALUES
-(1, 'App Logo', 'Sets the upload setting when uploading app logo.', 800, '2024-11-15 15:37:13', 1),
-(2, 'Internal Notes Attachment', 'Sets the upload setting when uploading internal notes attachement.', 800, '2024-11-15 15:37:13', 1),
-(3, 'Import File', 'Sets the upload setting when importing data.', 800, '2024-11-15 15:37:13', 2),
-(4, 'User Account Profile Picture', 'Sets the upload setting when uploading user account profile picture.', 800, '2024-11-15 15:37:13', 1),
-(5, 'Company Logo', 'Sets the upload setting when uploading company logo.', 800, '2024-11-15 15:37:13', 1);
+(1, 'App Logo', 'Sets the upload setting when uploading app logo.', 800, '2024-11-18 17:01:34', 1),
+(2, 'Internal Notes Attachment', 'Sets the upload setting when uploading internal notes attachement.', 800, '2024-11-18 17:01:34', 1),
+(3, 'Import File', 'Sets the upload setting when importing data.', 800, '2024-11-18 17:01:34', 2),
+(4, 'User Account Profile Picture', 'Sets the upload setting when uploading user account profile picture.', 800, '2024-11-18 17:01:34', 1),
+(5, 'Company Logo', 'Sets the upload setting when uploading company logo.', 800, '2024-11-18 17:01:34', 1);
 
 -- --------------------------------------------------------
 
@@ -3952,27 +4020,27 @@ CREATE TABLE `upload_setting_file_extension` (
 --
 
 INSERT INTO `upload_setting_file_extension` (`upload_setting_file_extension_id`, `upload_setting_id`, `upload_setting_name`, `file_extension_id`, `file_extension_name`, `file_extension`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'App Logo', 63, 'PNG', 'png', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(2, 1, 'App Logo', 61, 'JPG', 'jpg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(3, 1, 'App Logo', 62, 'JPEG', 'jpeg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(4, 2, 'Internal Notes Attachment', 63, 'PNG', 'png', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(5, 2, 'Internal Notes Attachment', 61, 'JPG', 'jpg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(6, 2, 'Internal Notes Attachment', 62, 'JPEG', 'jpeg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(7, 2, 'Internal Notes Attachment', 127, 'PDF', 'pdf', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(8, 2, 'Internal Notes Attachment', 125, 'DOC', 'doc', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(9, 2, 'Internal Notes Attachment', 125, 'DOCX', 'docx', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(10, 2, 'Internal Notes Attachment', 130, 'TXT', 'txt', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(11, 2, 'Internal Notes Attachment', 92, 'XLS', 'xls', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(12, 2, 'Internal Notes Attachment', 94, 'XLSX', 'xlsx', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(13, 2, 'Internal Notes Attachment', 89, 'PPT', 'ppt', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(14, 2, 'Internal Notes Attachment', 90, 'PPTX', 'pptx', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(15, 3, 'Import File', 25, 'CSV', 'csv', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(16, 4, 'User Account Profile Picture', 63, 'PNG', 'png', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(17, 4, 'User Account Profile Picture', 61, 'JPG', 'jpg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(18, 4, 'User Account Profile Picture', 62, 'JPEG', 'jpeg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(19, 5, 'Company Logo', 63, 'PNG', 'png', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(20, 5, 'Company Logo', 61, 'JPG', 'jpg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1),
-(21, 5, 'Company Logo', 62, 'JPEG', 'jpeg', '2024-11-15 15:37:13', '2024-11-15 15:37:13', 1);
+(1, 1, 'App Logo', 63, 'PNG', 'png', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(2, 1, 'App Logo', 61, 'JPG', 'jpg', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(3, 1, 'App Logo', 62, 'JPEG', 'jpeg', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(4, 2, 'Internal Notes Attachment', 63, 'PNG', 'png', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(5, 2, 'Internal Notes Attachment', 61, 'JPG', 'jpg', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(6, 2, 'Internal Notes Attachment', 62, 'JPEG', 'jpeg', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(7, 2, 'Internal Notes Attachment', 127, 'PDF', 'pdf', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(8, 2, 'Internal Notes Attachment', 125, 'DOC', 'doc', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(9, 2, 'Internal Notes Attachment', 125, 'DOCX', 'docx', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(10, 2, 'Internal Notes Attachment', 130, 'TXT', 'txt', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(11, 2, 'Internal Notes Attachment', 92, 'XLS', 'xls', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(12, 2, 'Internal Notes Attachment', 94, 'XLSX', 'xlsx', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(13, 2, 'Internal Notes Attachment', 89, 'PPT', 'ppt', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(14, 2, 'Internal Notes Attachment', 90, 'PPTX', 'pptx', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(15, 3, 'Import File', 25, 'CSV', 'csv', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(16, 4, 'User Account Profile Picture', 63, 'PNG', 'png', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(17, 4, 'User Account Profile Picture', 61, 'JPG', 'jpg', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(18, 4, 'User Account Profile Picture', 62, 'JPEG', 'jpeg', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(19, 5, 'Company Logo', 63, 'PNG', 'png', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(20, 5, 'Company Logo', 61, 'JPG', 'jpg', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1),
+(21, 5, 'Company Logo', 62, 'JPEG', 'jpeg', '2024-11-18 17:01:34', '2024-11-18 17:01:34', 1);
 
 -- --------------------------------------------------------
 
@@ -4017,7 +4085,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-17 12:52:56', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'XWUnFX7sqv3WwQq%2B2HYEm%2FbSCGWQ4wIFcsTbDk1Zd%2B0%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-18 12:07:42', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', '%2F3cXm4VixxcLzlTl2J67HoPY3adn89Zpxjj3Qdp6ER4%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -4350,7 +4418,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=230;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=233;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -4398,7 +4466,7 @@ ALTER TABLE `file_type`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -4410,7 +4478,7 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`
@@ -4452,7 +4520,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`
@@ -4672,7 +4740,9 @@ ALTER TABLE `upload_setting`
 -- Constraints for table `upload_setting_file_extension`
 --
 ALTER TABLE `upload_setting_file_extension`
-  ADD CONSTRAINT `upload_setting_file_extension_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+  ADD CONSTRAINT `upload_setting_file_extension_ibfk_1` FOREIGN KEY (`upload_setting_id`) REFERENCES `upload_setting` (`upload_setting_id`),
+  ADD CONSTRAINT `upload_setting_file_extension_ibfk_2` FOREIGN KEY (`file_extension_id`) REFERENCES `file_extension` (`file_extension_id`),
+  ADD CONSTRAINT `upload_setting_file_extension_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `user_account`
