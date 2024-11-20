@@ -1,5 +1,6 @@
 /* Security Setting Table */
 
+DROP TABLE IF EXISTS security_setting;
 CREATE TABLE security_setting(
 	security_setting_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	security_setting_name VARCHAR(100) NOT NULL,
@@ -18,6 +19,5 @@ INSERT INTO security_setting (security_setting_name, value, last_log_by) VALUES 
 INSERT INTO security_setting (security_setting_name, value, last_log_by) VALUES ('Session Timeout Duration', 240, '1');
 INSERT INTO security_setting (security_setting_name, value, last_log_by) VALUES ('OTP Duration', 5, '1');
 INSERT INTO security_setting (security_setting_name, value, last_log_by) VALUES ('Reset Password Token Duration', 10, '1');
-INSERT INTO security_setting (security_setting_name, value, last_log_by) VALUES ('Registration Verification Token Duration', 180, '1');
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

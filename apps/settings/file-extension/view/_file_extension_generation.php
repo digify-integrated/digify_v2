@@ -71,7 +71,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $response[] = [
                     'id' => $row['file_extension_id'],
-                    'text' => $row['file_extension_name']
+                    'text' => $row['file_extension_name'] . ' (.' . $row['file_extension'] . ')'
                 ];
             }
 

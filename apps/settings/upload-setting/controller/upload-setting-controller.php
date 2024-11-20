@@ -7,23 +7,26 @@ require_once '../../../../components/model/security-model.php';
 require_once '../../../../components/model/system-model.php';
 require_once '../../authentication/model/authentication-model.php';
 require_once '../../upload-setting/model/upload-setting-model.php';
+require_once '../../file-extension/model/file-extension-model.php';
 require_once '../../security-setting/model/security-setting-model.php';
 
 require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new UploadSettingController(new UploadSettingModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SecurityModel(), new SystemModel());
+$controller = new UploadSettingController(new UploadSettingModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new FileExtensionModel(new DatabaseModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
 class UploadSettingController {
     private $uploadSettingModel;
+    private $fileExtensionModel;
     private $authenticationModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(UploadSettingModel $uploadSettingModel, AuthenticationModel $authenticationModel, SecurityModel $securityModel, SystemModel $systemModel) {
+    public function __construct(UploadSettingModel $uploadSettingModel, AuthenticationModel $authenticationModel, FileExtensionModel $fileExtensionModel, SecurityModel $securityModel, SystemModel $systemModel) {
         $this->uploadSettingModel = $uploadSettingModel;
+        $this->fileExtensionModel = $fileExtensionModel;
         $this->authenticationModel = $authenticationModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
@@ -106,8 +109,14 @@ class UploadSettingController {
                 case 'update upload setting':
                     $this->updateUploadSetting();
                     break;
+                case 'save upload setting file extension':
+                    $this->saveUploadSettingFileExtension();
+                    break;
                 case 'get upload setting details':
                     $this->getUploadSettingDetails();
+                    break;
+                case 'get upload setting file extension details':
+                    $this->getUploadSettingFileExtensionDetails();
                     break;
                 case 'delete upload setting':
                     $this->deleteUploadSetting();
@@ -201,6 +210,61 @@ class UploadSettingController {
             'success' => true,
             'title' => 'Save Upload Setting',
             'message' => 'The upload setting has been saved successfully.',
+            'messageType' => 'success'
+        ];
+        
+        echo json_encode($response);
+        exit;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    #   Save methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function saveUploadSettingFileExtension() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+        
+        $userID = $_SESSION['user_account_id'];
+        $uploadSettingID = filter_input(INPUT_POST, 'upload_setting_id', FILTER_VALIDATE_INT);
+        $allowedFileExtensions = $_POST['allowed_file_extension'] ?? [];
+    
+        $checkUploadSettingExist = $this->uploadSettingModel->checkUploadSettingExist($uploadSettingID);
+        $total = $checkUploadSettingExist['total'] ?? 0;
+
+        if($total === 0){
+            $response = [
+                'success' => false,
+                'notExist' => true,
+                'title' => 'Save Upload Setting File Extension',
+                'message' => 'The upload setting does not exist.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+
+        $this->uploadSettingModel->deleteUploadSettingFileExtension($uploadSettingID);
+
+        $uploadSettingDetails = $this->uploadSettingModel->getUploadSetting($uploadSettingID);
+        $uploadSettingName = $uploadSettingDetails['upload_setting_name'];
+
+        foreach ($allowedFileExtensions as $fileExtensionID) {
+            $fileExtensionDetails = $this->fileExtensionModel->getFileExtension($fileExtensionID);
+            $fileExtensionName = $fileExtensionDetails['file_extension_name'];
+            $fileExtension = $fileExtensionDetails['file_extension'];
+
+            $this->uploadSettingModel->insertUploadSettingFileExtension($uploadSettingID, $uploadSettingName, $fileExtensionID, $fileExtensionName, $fileExtension, $userID);
+        }       
+            
+        $response = [
+            'success' => true,
+            'title' => 'Save Upload Setting File Extension',
+            'message' => 'The upload setting file extension has been saved successfully.',
             'messageType' => 'success'
         ];
         
@@ -419,6 +483,50 @@ class UploadSettingController {
             'uploadSettingName' => $uploadSettingDetails['upload_setting_name'] ?? null,
             'uploadSettingDescription' => $uploadSettingDetails['upload_setting_description'] ?? null,
             'maxFileSize' => $uploadSettingDetails['max_file_size'] ?? null
+        ];
+
+        echo json_encode($response);
+        exit;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function getUploadSettingFileExtensionDetails() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return;
+        }
+    
+        $userID = $_SESSION['user_account_id'];
+        $uploadSettingID = filter_input(INPUT_POST, 'upload_setting_id', FILTER_VALIDATE_INT);
+
+        $checkUploadSettingExist = $this->uploadSettingModel->checkUploadSettingExist($uploadSettingID);
+        $total = $checkUploadSettingExist['total'] ?? 0;
+
+        if($total === 0){
+            $response = [
+                'success' => false,
+                'notExist' => true,
+                'title' => 'Get Upload Setting File Extension Details',
+                'message' => 'The upload setting does not exist.',
+                'messageType' => 'error'
+            ];
+            
+            echo json_encode($response);
+            exit;
+        }
+
+        $uploadSettingDetails = $this->uploadSettingModel->getUploadSettingFileExtension($uploadSettingID);
+
+        $fileExtensions = [];
+        foreach ($uploadSettingDetails as $row) {
+            if (isset($row['file_extension_id'])) {
+                $fileExtensions[] = $row['file_extension_id'];
+            }
+        }
+
+        $response = [
+            'success' => true,
+            'allowedFileExtension' => $fileExtensions
         ];
 
         echo json_encode($response);

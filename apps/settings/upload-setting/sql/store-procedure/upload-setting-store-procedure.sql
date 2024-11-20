@@ -59,6 +59,33 @@ END //
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 
+/* Save Stored Procedure */
+
+DROP PROCEDURE IF EXISTS insertUploadSettingFileExtension//
+CREATE PROCEDURE insertUploadSettingFileExtension(
+    IN p_upload_setting_id INT, 
+    IN p_upload_setting_name VARCHAR(100), 
+    IN p_file_extension_id INT, 
+    IN p_file_extension_name VARCHAR(100), 
+    IN p_file_extension VARCHAR(10), 
+    IN p_last_log_by INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO upload_setting_file_extension (upload_setting_id, upload_setting_name, file_extension_id, file_extension_name, file_extension, last_log_by) 
+    VALUES(p_upload_setting_id, p_upload_setting_name, p_file_extension_id, p_file_extension_name, p_file_extension, p_last_log_by);
+
+    COMMIT;
+END //
+
+/* ----------------------------------------------------------------------------------------------------------------------------- */
+
 /* Delete Stored Procedure */
 
 DROP PROCEDURE IF EXISTS deleteUploadSetting//
@@ -75,6 +102,23 @@ BEGIN
 
     DELETE FROM upload_setting_file_extension WHERE upload_setting_id = p_upload_setting_id;
     DELETE FROM upload_setting WHERE upload_setting_id = p_upload_setting_id;
+
+    COMMIT;
+END //
+
+DROP PROCEDURE IF EXISTS deleteUploadSettingFileExtension//
+CREATE PROCEDURE deleteUploadSettingFileExtension(
+    IN p_upload_setting_id INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM upload_setting_file_extension WHERE upload_setting_id = p_upload_setting_id;
 
     COMMIT;
 END //

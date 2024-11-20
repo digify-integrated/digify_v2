@@ -24,7 +24,7 @@ CREATE TRIGGER security_setting_trigger_insert
 AFTER INSERT ON security_setting
 FOR EACH ROW
 BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Security Setting created.';
+    DECLARE audit_log TEXT DEFAULT 'Security setting created.';
 
     INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
     VALUES ('security_setting', NEW.security_setting_id, audit_log, NEW.last_log_by, NOW());

@@ -46,12 +46,39 @@ class UploadSettingModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    #   Save methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function insertUploadSettingFileExtension($p_upload_setting_id, $p_upload_setting_name, $p_file_extension_id, $p_file_extension_name, $p_file_extension, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL insertUploadSettingFileExtension(:p_upload_setting_id, :p_upload_setting_name, :p_file_extension_id, :p_file_extension_name, :p_file_extension, :p_last_log_by)');
+        $stmt->bindValue(':p_upload_setting_id', $p_upload_setting_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_upload_setting_name', $p_upload_setting_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_file_extension_id', $p_file_extension_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_file_extension_name', $p_file_extension_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_file_extension', $p_file_extension, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Delete methods
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
     public function deleteUploadSetting($p_upload_setting_id) {
         $stmt = $this->db->getConnection()->prepare('CALL deleteUploadSetting(:p_upload_setting_id)');
+        $stmt->bindValue(':p_upload_setting_id', $p_upload_setting_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function deleteUploadSettingFileExtension($p_upload_setting_id) {
+        $stmt = $this->db->getConnection()->prepare('CALL deleteUploadSettingFileExtension(:p_upload_setting_id)');
         $stmt->bindValue(':p_upload_setting_id', $p_upload_setting_id, PDO::PARAM_INT);
         $stmt->execute();
         $stmt->closeCursor();
@@ -78,7 +105,7 @@ class UploadSettingModel {
         $stmt = $this->db->getConnection()->prepare('CALL getUploadSettingFileExtension(:p_upload_setting_id)');
         $stmt->bindValue(':p_upload_setting_id', $p_upload_setting_id, PDO::PARAM_INT);
         $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
         return $result;
     }

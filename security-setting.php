@@ -1,0 +1,53 @@
+<?php
+    require('components/view/_required_php.php');
+    require('components/view/_page_details.php');
+?>
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-bs-theme="light" data-color-theme="Blue_Theme" data-layout="vertical">
+
+<head>
+    <?php require_once('components/view/_head_meta_tags.php'); ?>
+    <?php require_once('components/view/_head_stylesheet.php'); ?>
+    <link href="./assets/plugins/datatables/datatables.bundle.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<?php 
+    require_once('components/view/_theme_script.php');
+?>
+
+<body id="kt_app_body" data-kt-app-header-fixed-mobile="true" data-kt-app-toolbar-enabled="true"  class="app-default" data-kt-app-page-loading-enabled="true" data-kt-app-page-loading="on">
+    <?php 
+        require_once('components/view/_preloader.php');
+    ?>
+    <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+        <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+            <?php 
+                require_once('components/view/_header.php');
+            ?>
+            <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+                <?php 
+                    require_once('components/view/_breadcrumbs_generic.php');
+                ?>
+                <div class="app-container container-xxl">
+                    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+                        <div class="d-flex flex-column flex-column-fluid">
+                            <div id="kt_app_content" class="app-content flex-column-fluid">
+                                <?php 
+                                    require_once('apps/settings/security-setting/view/_security_setting.php');
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php 
+        require_once('components/view/_error_modal.php');
+        require_once('components/view/_required_js.php');        
+    ?>
+    <script src="./assets/plugins/datatables/datatables.bundle.js"></script>
+    <script src="./apps/settings/security-setting/js/security-setting.js?v=<?php echo rand(); ?>"></script>
+</body>
+
+</html>
