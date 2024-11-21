@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 20, 2024 at 10:23 AM
+-- Generation Time: Nov 21, 2024 at 10:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -2251,6 +2251,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateRoleSystemActionPermission` (
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `updateSecuritySetting`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateSecuritySetting` (IN `p_security_setting_id` INT, IN `p_value` VARCHAR(2000), IN `p_last_log_by` INT)   BEGIN
+ 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE security_setting
+    SET value = p_value,
+        last_log_by = p_last_log_by
+    WHERE security_setting_id = p_security_setting_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `updateTwoFactorAuthenticationStatus`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateTwoFactorAuthenticationStatus` (IN `p_user_account_id` INT, IN `p_two_factor_auth` VARCHAR(255), IN `p_last_log_by` INT)   BEGIN
     UPDATE user_account
@@ -2667,7 +2684,8 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (230, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-17 12:52:56 -> 2024-11-18 12:07:42<br/>', 2, '2024-11-18 12:07:42', '2024-11-18 12:07:42'),
 (231, 'upload_setting', 6, 'Upload setting created.', 2, '2024-11-18 17:00:10', '2024-11-18 17:00:10'),
 (232, 'upload_setting', 6, 'Upload setting changed.<br/><br/>Upload Setting Name: asdasd -> asdasdasd<br/>Upload Setting Description: asdasd -> asdasdasdasdas<br/>Max File Size: 123 -> 123123123<br/>', 2, '2024-11-18 17:00:14', '2024-11-18 17:00:14'),
-(233, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-18 12:07:42 -> 2024-11-20 13:24:32<br/>', 2, '2024-11-20 13:24:32', '2024-11-20 13:24:32');
+(233, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-18 12:07:42 -> 2024-11-20 13:24:32<br/>', 2, '2024-11-20 13:24:32', '2024-11-20 13:24:32'),
+(234, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-20 13:24:32 -> 2024-11-21 14:08:58<br/>', 2, '2024-11-21 14:08:58', '2024-11-21 14:08:58');
 
 -- --------------------------------------------------------
 
@@ -3327,7 +3345,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (18, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-15 08:50:55'),
 (19, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-17 12:52:56'),
 (20, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-18 12:07:42'),
-(21, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-20 13:24:32');
+(21, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-20 13:24:32'),
+(22, 2, 'Manila, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-21 14:08:58');
 
 -- --------------------------------------------------------
 
@@ -4118,7 +4137,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-20 13:24:32', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', '33oEhHubN4FiSd7xgVTjYR8nHiA3jKnDPxEgBVEdivo%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-21 14:08:58', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'cfPI9RV9mv3SUV0MAtTiMi%2B7Gtch8MGimWM8wmnyYhA%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -4451,7 +4470,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=234;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=235;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -4499,7 +4518,7 @@ ALTER TABLE `file_type`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `menu_group`

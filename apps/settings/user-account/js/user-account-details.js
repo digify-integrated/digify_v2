@@ -149,44 +149,9 @@
             generateDropdownOptions('user account role dual listbox options');
         });
 
-        $(document).on('click', '#change_full_name_button', function() {
-            toggleFullNameSections();
-        });
-        
-        $(document).on('click', '#update_full_name_cancel', function() {
-            toggleFullNameSections();
-        });
-    
-        $(document).on('click', '#change_username_button', function() {
-            toggleUsernameSections();
-        });
-        
-        $(document).on('click', '#update_username_cancel', function() {
-            toggleUsernameSections();
-        });
-    
-        $(document).on('click', '#change_email_button', function() {
-            toggleEmailSections();
-        });
-        
-        $(document).on('click', '#update_email_cancel', function() {
-            toggleEmailSections();
-        });
-    
-        $(document).on('click', '#change_phone_button', function() {
-            togglePhoneSections();
-        });
-        
-        $(document).on('click', '#update_phone_cancel', function() {
-            togglePhoneSections();
-        });
-        
-        $(document).on('click', '#change_password_button', function() {
-            togglePasswordSections();
-        });
-        
-        $(document).on('click', '#update_password_cancel', function() {
-            togglePasswordSections();
+        $(document).on('click', '[data-toggle-section]', function () {
+            const section = $(this).data('toggle-section');
+            toggleSection(section);
         });
 
         $(document).on('click','#activate-user-account',function() {
@@ -569,7 +534,7 @@ function updateFullNameForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update full name';
+            const transaction = 'update acccount settings full name';
           
             $.ajax({
                 type: 'POST',
@@ -582,8 +547,8 @@ function updateFullNameForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
-                        toggleFullNameSections();
+                        displayDetails('get account settings details');
+                        toggleSection('change_full_name');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -604,7 +569,6 @@ function updateFullNameForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('update_full_name_submit');
-                    logNotes('user_account', user_account_id);
                 }
             });
         
@@ -641,7 +605,7 @@ function updateUsernameForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update username';
+            const transaction = 'update acccount settings username';
           
             $.ajax({
                 type: 'POST',
@@ -654,8 +618,8 @@ function updateUsernameForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
-                        toggleUsernameSections();
+                        displayDetails('get account settings details');
+                        toggleSection('change_username');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -676,7 +640,6 @@ function updateUsernameForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('update_username_submit');
-                    logNotes('user_account', user_account_id);
                 }
             });
         
@@ -713,7 +676,7 @@ function updateEmailForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update email';
+            const transaction = 'update acccount settings email';
           
             $.ajax({
                 type: 'POST',
@@ -726,8 +689,8 @@ function updateEmailForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
-                        toggleEmailSections();
+                        displayDetails('get account settings details');
+                        toggleSection('change_email');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -748,7 +711,6 @@ function updateEmailForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('update_email_submit');
-                    logNotes('user_account', user_account_id);
                 }
             });
         
@@ -785,7 +747,7 @@ function updatePhoneForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update phone';
+            const transaction = 'update acccount settings phone';
           
             $.ajax({
                 type: 'POST',
@@ -798,8 +760,8 @@ function updatePhoneForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
-                        togglePhoneSections();
+                        displayDetails('get account settings details');
+                        toggleSection('change_phone');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -820,7 +782,6 @@ function updatePhoneForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('update_phone_submit');
-                    logNotes('user_account', user_account_id);
                 }
             });
         
@@ -858,7 +819,7 @@ function updatePasswordForm(){
         submitHandler: function(form) {
             const user_account_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update password';
+            const transaction = 'update acccount settings password';
           
             $.ajax({
                 type: 'POST',
@@ -871,8 +832,8 @@ function updatePasswordForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get user account details');
-                        togglePasswordSections();
+                        displayDetails('get account settings details');                        
+                        toggleSection('change_password');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -1095,88 +1056,11 @@ function displayDetails(transaction){
     }
 }
 
-function toggleFullNameSections() {
-    $('#change_full_name_button').toggleClass('d-none');
-    $('#change_full_name').toggleClass('d-none');
-    $('#change_full_name_edit').toggleClass('d-none');
+function toggleSection(section) {
+    $(`#${section}_button`).toggleClass('d-none');
+    $(`#${section}`).toggleClass('d-none');
+    $(`#${section}_edit`).toggleClass('d-none');
 
-    resetForm('update-full-name-form');
-}
-
-function toggleUsernameSections() {
-    $('#change_username_button').toggleClass('d-none');
-    $('#change_username').toggleClass('d-none');
-    $('#change_username_edit').toggleClass('d-none');
-    
-    resetForm('update-username-form');
-}
-
-function toggleEmailSections() {
-    $('#change_email_button').toggleClass('d-none');
-    $('#change_email').toggleClass('d-none');
-    $('#change_email_edit').toggleClass('d-none');
-
-    resetForm('update-email-form');
-}
-
-function togglePhoneSections() {
-    $('#change_phone_button').toggleClass('d-none');
-    $('#change_phone').toggleClass('d-none');
-    $('#change_phone_edit').toggleClass('d-none');
-
-    resetForm('update-phone-form');
-}
-    
-function togglePasswordSections() {
-    $('#change_password_button').toggleClass('d-none');
-    $('#change_password').toggleClass('d-none');
-    $('#change_password_edit').toggleClass('d-none');
-
-    resetForm('update-password-form');
-}
-
-function generateDropdownOptions(type){
-    switch (type) {
-        case 'user account role dual listbox options':
-            var user_account_id = $('#details-id').text();
-        
-            $.ajax({
-                url: 'apps/settings/role/view/_role_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type,
-                    user_account_id : user_account_id
-                },
-                success: function(response) {
-                    var select = document.getElementById('role_id');
-        
-                    select.options.length = 0;
-        
-                    response.forEach(function(opt) {
-                        var option = new Option(opt.text, opt.id);
-                        select.appendChild(option);
-                    });
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                },
-                complete: function(){
-                    if($('#role_id').length){
-                        $('#role_id').bootstrapDualListbox({
-                            nonSelectedListLabel: 'Non-selected',
-                            selectedListLabel: 'Selected',
-                            preserveSelectionOnMove: 'moved',
-                            moveOnSelect: false,
-                            helperSelectNamePostfix: false
-                        });
-        
-                        $('#role_id').bootstrapDualListbox('refresh', true);
-        
-                        initializeDualListBoxIcon();
-                    }
-                }
-            });
-            break;
-    }
+    const formName = section.replace(/^change_/, '').replace(/_/g, '-');
+    resetForm(`update-${formName}-form`);
 }

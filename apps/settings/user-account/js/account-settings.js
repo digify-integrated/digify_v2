@@ -28,44 +28,9 @@
             loginSessionTable('#login-session-table');
         }
 
-        $(document).on('click', '#change_full_name_button', function() {
-            toggleFullNameSections();
-        });
-        
-        $(document).on('click', '#update_full_name_cancel', function() {
-            toggleFullNameSections();
-        });
-    
-        $(document).on('click', '#change_username_button', function() {
-            toggleUsernameSections();
-        });
-        
-        $(document).on('click', '#update_username_cancel', function() {
-            toggleUsernameSections();
-        });
-    
-        $(document).on('click', '#change_email_button', function() {
-            toggleEmailSections();
-        });
-        
-        $(document).on('click', '#update_email_cancel', function() {
-            toggleEmailSections();
-        });
-    
-        $(document).on('click', '#change_phone_button', function() {
-            togglePhoneSections();
-        });
-        
-        $(document).on('click', '#update_phone_cancel', function() {
-            togglePhoneSections();
-        });
-        
-        $(document).on('click', '#change_password_button', function() {
-            togglePasswordSections();
-        });
-        
-        $(document).on('click', '#update_password_cancel', function() {
-            togglePasswordSections();
+        $(document).on('click', '[data-toggle-section]', function () {
+            const section = $(this).data('toggle-section');
+            toggleSection(section);
         });
 
         $(document).on('change','#profile_picture',function() {
@@ -194,7 +159,7 @@ function updateFullNameForm(){
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
                         displayDetails('get account settings details');
-                        toggleFullNameSections();
+                        toggleSection('change_full_name');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -265,7 +230,7 @@ function updateUsernameForm(){
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
                         displayDetails('get account settings details');
-                        toggleUsernameSections();
+                        toggleSection('change_username');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -336,7 +301,7 @@ function updateEmailForm(){
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
                         displayDetails('get account settings details');
-                        toggleEmailSections();
+                        toggleSection('change_email');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -407,7 +372,7 @@ function updatePhoneForm(){
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
                         displayDetails('get account settings details');
-                        togglePhoneSections();
+                        toggleSection('change_phone');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -442,11 +407,19 @@ function updatePasswordForm(){
             new_password: {
                 required: true,
                 password_strength: true
+            },
+            confirm_password: {
+                required: true,
+                equalTo: '#new_password'
             }
           },
         messages: {
             new_password: {
                 required: 'Enter the new password'
+            },
+            confirm_password: {
+                required: 'Enter the confirm password',
+                equalTo: 'The passwords you entered do not match'
             }
         },
         errorPlacement: function(error, element) {
@@ -478,8 +451,8 @@ function updatePasswordForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get account settings details');
-                        togglePasswordSections();
+                        displayDetails('get account settings details');                        
+                        toggleSection('change_password');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -616,42 +589,11 @@ function displayDetails(transaction){
     }
 }
 
-function toggleFullNameSections() {
-    $('#change_full_name_button').toggleClass('d-none');
-    $('#change_full_name').toggleClass('d-none');
-    $('#change_full_name_edit').toggleClass('d-none');
+function toggleSection(section) {
+    $(`#${section}_button`).toggleClass('d-none');
+    $(`#${section}`).toggleClass('d-none');
+    $(`#${section}_edit`).toggleClass('d-none');
 
-    resetForm('update-full-name-form');
-}
-
-function toggleUsernameSections() {
-    $('#change_username_button').toggleClass('d-none');
-    $('#change_username').toggleClass('d-none');
-    $('#change_username_edit').toggleClass('d-none');
-    
-    resetForm('update-username-form');
-}
-
-function toggleEmailSections() {
-    $('#change_email_button').toggleClass('d-none');
-    $('#change_email').toggleClass('d-none');
-    $('#change_email_edit').toggleClass('d-none');
-
-    resetForm('update-email-form');
-}
-
-function togglePhoneSections() {
-    $('#change_phone_button').toggleClass('d-none');
-    $('#change_phone').toggleClass('d-none');
-    $('#change_phone_edit').toggleClass('d-none');
-
-    resetForm('update-phone-form');
-}
-    
-function togglePasswordSections() {
-    $('#change_password_button').toggleClass('d-none');
-    $('#change_password').toggleClass('d-none');
-    $('#change_password_edit').toggleClass('d-none');
-
-    resetForm('update-password-form');
+    const formName = section.replace(/^change_/, '').replace(/_/g, '-');
+    resetForm(`update-${formName}-form`);
 }

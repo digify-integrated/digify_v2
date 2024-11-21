@@ -108,19 +108,22 @@
                                             <div class="col-lg-12 mb-4 mb-lg-0">
                                                 <div class="fv-row mb-0 fv-plugins-icon-container">
                                                     <label for="full_name" class="form-label fs-6 fw-bold mb-3">Enter New Full Name</label>
-                                                    <input type="text" class="form-control" maxlength="300" id="full_name" name="full_name" autocomplete="off">
+                                                    <input type="text" class="form-control" maxlength="300" id="full_name" name="full_name" autocomplete="off" <?php echo $disabled; ?>>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="d-flex">
-                                            <button id="update_full_name_submit" form="update-full-name-form" type="submit" class="btn btn-primary me-2 px-6">Update Full Name</button>
-                                            <button id="update_full_name_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary  px-6">Cancel</button>
-                                        </div>
+                                        
+                                        <?php
+                                            echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                                    <button id="update_full_name_submit" form="update-full-name-form" type="submit" class="btn btn-primary me-2 px-6">Update Full Name</button>
+                                                                                    <button id="update_full_name_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary  px-6" data-toggle-section="change_full_name">Cancel</button>
+                                                                                </div>' : '';
+                                        ?>
                                     </form>
                                 </div>
 
                                 <?php
-                                    echo ($writeAccess['total'] > 0) ? '<div id="change_full_name_button" class="ms-auto">
+                                    echo ($writeAccess['total'] > 0) ? '<div id="change_full_name_button" class="ms-auto" data-toggle-section="change_full_name">
                                                                             <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
                                                                         </div>' : '';
                                 ?>
@@ -140,19 +143,22 @@
                                             <div class="col-lg-12 mb-4 mb-lg-0">
                                                 <div class="fv-row mb-0 fv-plugins-icon-container">
                                                     <label for="username" class="form-label fs-6 fw-bold mb-3">Enter New Username</label>
-                                                    <input type="text" class="form-control" id="username" name="username" autocomplete="off">
+                                                    <input type="text" class="form-control" id="username" name="username" autocomplete="off" <?php echo $disabled; ?>>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="d-flex">
-                                            <button id="update_username_submit" form="update-username-form" type="submit" class="btn btn-primary me-2 px-6">Update Username</button>
-                                            <button id="update_username_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
-                                        </div>
+                                        
+                                        <?php
+                                            echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                                    <button id="update_username_submit" form="update-username-form" type="submit" class="btn btn-primary me-2 px-6">Update Username</button>
+                                                                                    <button id="update_username_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6" data-toggle-section="change_username">Cancel</button>
+                                                                                </div>' : '';
+                                        ?>
                                     </form>
                                 </div>
                                         
                                 <?php
-                                    echo ($writeAccess['total'] > 0) ? '<div id="change_username_button" class="ms-auto">
+                                    echo ($writeAccess['total'] > 0) ? '<div id="change_username_button" class="ms-auto" data-toggle-section="change_username">
                                                                             <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
                                                                         </div>' : '';
                                 ?>
@@ -172,19 +178,22 @@
                                             <div class="col-lg-12 mb-4 mb-lg-0">
                                                 <div class="fv-row mb-0 fv-plugins-icon-container">
                                                     <label for="email" class="form-label fs-6 fw-bold mb-3">Enter New Email Address</label>
-                                                    <input type="email" class="form-control" id="email" name="email" autocomplete="off">
+                                                    <input type="email" class="form-control" id="email" name="email" autocomplete="off" <?php echo $disabled; ?>>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="d-flex">
-                                            <button id="update_email_submit" form="update-email-form" type="submit" class="btn btn-primary me-2 px-6">Update Email</button>
-                                            <button id="update_email_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
-                                        </div>
+                                        
+                                        <?php
+                                            echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                                    <button id="update_email_submit" form="update-email-form" type="submit" class="btn btn-primary me-2 px-6">Update Email</button>
+                                                                                    <button id="update_email_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6" data-toggle-section="change_email">Cancel</button>
+                                                                                </div>' : '';
+                                        ?>
                                     </form>
                                 </div>
 
                                 <?php
-                                    echo ($writeAccess['total'] > 0) ? '<div id="change_email_button" class="ms-auto">
+                                    echo ($writeAccess['total'] > 0) ? '<div id="change_email_button" class="ms-auto" data-toggle-section="change_email">
                                                                             <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
                                                                         </div>' : '';
                                 ?>
@@ -204,19 +213,22 @@
                                             <div class="col-lg-12 mb-4 mb-lg-0">
                                                 <div class="fv-row mb-0 fv-plugins-icon-container">
                                                     <label for="phone" class="form-label fs-6 fw-bold mb-3">Enter New Phone</label>
-                                                    <input type="text" class="form-control" id="phone" name="phone" autocomplete="off">
+                                                    <input type="text" class="form-control" id="phone" name="phone" autocomplete="off" <?php echo $disabled; ?>>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="d-flex">
-                                            <button id="update_phone_submit" form="update-phone-form" type="submit" class="btn btn-primary me-2 px-6">Update Phone</button>
-                                            <button id="update_phone_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
-                                        </div>
+
+                                        <?php
+                                            echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                                    <button id="update_phone_submit" form="update-phone-form" type="submit" class="btn btn-primary me-2 px-6">Update Phone</button>
+                                                                                    <button id="update_phone_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6" data-toggle-section="change_phone">Cancel</button>
+                                                                                </div>' : '';
+                                        ?>
                                     </form>
                                 </div>
                                         
                                 <?php
-                                    echo ($writeAccess['total'] > 0) ? '<div id="change_phone_button" class="ms-auto">
+                                    echo ($writeAccess['total'] > 0) ? '<div id="change_phone_button" class="ms-auto" data-toggle-section="change_phone">
                                                                             <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
                                                                         </div>' : '';
                                 ?>
@@ -233,11 +245,22 @@
                                 <div id="change_password_edit" class="flex-row-fluid d-none">
                                     <form id="update-password-form">
                                         <div class="row mb-1">
-                                            <div class="col-lg-12">
+                                            <div class="col-lg-6">
                                                 <div class="fv-row mb-0 fv-plugins-icon-container">
                                                     <label for="new_password" class="form-label fs-6 fw-bold mb-3">New Password</label>
                                                     <div class="input-group">
-                                                        <input type="password" class="form-control" name="new_password" id="new_password">
+                                                        <input type="password" class="form-control" name="new_password" id="new_password" <?php echo $disabled; ?>>
+                                                        <button class="btn btn-light bg-transparent password-addon" type="button">
+                                                            <i class="ki-outline ki-eye-slash fs-2 p-0"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="fv-row mb-0 fv-plugins-icon-container">
+                                                    <label for="confirm_password" class="form-label fs-6 fw-bold mb-3">Confirm Password</label>
+                                                    <div class="input-group">
+                                                        <input type="password" class="form-control" name="confirm_password" id="confirm_password" <?php echo $disabled; ?>>
                                                         <button class="btn btn-light bg-transparent password-addon" type="button">
                                                             <i class="ki-outline ki-eye-slash fs-2 p-0"></i>
                                                         </button>
@@ -246,15 +269,17 @@
                                             </div>
                                         </div>
 
-                                        <div class="d-flex mt-5">
-                                            <button id="update_password_submit" form="update-password-form" type="submit" class="btn btn-primary me-2 px-6">Update Password</button>
-                                            <button id="update_password_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6">Cancel</button>
-                                        </div>
+                                        <?php
+                                            echo ($writeAccess['total'] > 0) ? '<div class="d-flex mt-5">
+                                                                                    <button id="update_password_submit" form="update-password-form" type="submit" class="btn btn-primary me-2 px-6">Update Password</button>
+                                                                                    <button id="update_password_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary px-6" data-toggle-section="change_password">Cancel</button>
+                                                                                </div>' : '';
+                                        ?>
                                     </form>
                                 </div>
                                         
                                 <?php
-                                    echo ($writeAccess['total'] > 0) ? '<div id="change_password_button" class="ms-auto">
+                                    echo ($writeAccess['total'] > 0) ? '<div id="change_password_button" class="ms-auto" data-toggle-section="change_password">
                                                                             <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
                                                                         </div>' : '';
                                 ?>
