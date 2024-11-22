@@ -1,5 +1,6 @@
 /* Email Setting Table */
 
+DROP TABLE IF EXISTS email_setting;
 CREATE TABLE email_setting(
 	email_setting_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	email_setting_name VARCHAR(100) NOT NULL,

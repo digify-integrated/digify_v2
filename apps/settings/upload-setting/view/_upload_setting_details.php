@@ -1,4 +1,3 @@
-
 <div class="d-flex flex-column flex-lg-row">
     <div class="d-flex flex-column gap-7 gap-lg-10 w-100 mb-7 me-lg-10">
         <div class="card card-flush">

@@ -1,49 +1,61 @@
-<div class="card card-body">
-    <div class="row">
-        <div class="col-md-4 col-xl-3">
-            <div class="position-relative">
-                <input type="text" class="form-control product-search ps-5" id="datatable-search" placeholder="Search..." />
-                <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y fs-6 text-dark ms-3"></i>
-            </div>
+<div class="card mb-6">
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <?php require('./components/view/_datatable_search.php') ?>
         </div>
-        <div class="col-md-8 col-xl-9 text-end d-flex justify-content-md-end justify-content-center mt-3 mt-md-0">
-            <div class="card-actions cursor-pointer ms-auto d-flex button-group">
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
                 <?php
-                    echo $deleteAccess['total'] > 0 ? '<button type="button" class="btn btn-dark dropdown-toggle action-dropdown mb-0 d-none" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
-                                                        <ul class="dropdown-menu dropdown-menu-end">
-                                                            <li><button class="dropdown-item" type="button" id="delete-email-setting">Delete Email Setting</button></li>
-                                                        </ul>' : '';
+                    if ($deleteAccess['total'] > 0 || $exportAccess['total'] > 0) {
+                        $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown action-dropdown me-30d-none" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        Actions
+                                        <i class="ki-outline ki-down fs-5 ms-1"></i>
+                                    </a>
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-60px, 539px);" data-popper-placement="bottom-end">';
                     
-                    echo $createAccess['total'] > 0 ? '<a href="'. $pageLink .'&new" class="btn btn-success d-flex align-items-center mb-0">Create</a>' : '';
+                        if ($exportAccess['total'] > 0) {
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" data-bs-toggle="modal" id="export-data" data-bs-target="#export-modal">
+                                                Export
+                                            </a>
+                                        </div>';
+                        }
+                    
+                        if ($deleteAccess['total'] > 0) {
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="delete-email-setting">
+                                                Delete
+                                            </a>
+                                        </div>';
+                        }
+                    
+                        $action .= '</div>';
+                    
+                        echo $action;
+                    }
                 ?>
             </div>
         </div>
     </div>
-</div>
-
-<div class="datatables">
-    <div class="row">
-        <div class="col-12">
-            <div class="card mb-0">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="email-setting-table" class="table align-middle text-nowrap w-100 mb-4">
-                            <thead class="text-dark">
-                                <tr>
-                                    <th class="all">
-                                        <div class="form-check">
-                                            <input class="form-check-input" id="datatable-checkbox" type="checkbox">
-                                        </div>
-                                    </th>
-                                    <th>Email Setting</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <div class="card-body pt-9">
+        <div class="table-responsive">
+            <table class="table align-middle cursor-pointer table-row-dashed fs-6 gy-5" id="email-setting-table">
+                <thead>
+                    <tr class="text-start text-gray-800 fw-bold fs-7 text-uppercase gs-0">
+                        <th>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                <input class="form-check-input" id="datatable-checkbox" type="checkbox">
+                            </div>
+                        </th>
+                        <th>Email Setting</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-semibold text-gray-800"></tbody>
+            </table>
         </div>
     </div>
 </div>
+
+<?php
+    $exportAccess['total'] > 0 ? require('./components/view/_export_modal.php') : '';
+?>

@@ -524,3 +524,14 @@ function getDeviceInfo() {
 
     return `${browser} - ${device}`;
 }
+
+function initializeTinyMCE(tiny_mce_id){
+    var options = {selector: "#" + tiny_mce_id, height : "250", license_key: 'GPL2+'};
+
+    if (KTThemeMode.getMode() === "dark") {
+        options["skin"] = "oxide-dark";
+        options["content_css"] = "dark";
+    }
+
+    tinymce.init(options);
+}

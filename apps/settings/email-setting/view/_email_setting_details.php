@@ -1,178 +1,173 @@
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <h5 class="card-title mb-0">Email Setting</h5>
-                <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-                    <button type="button" class="btn btn-dark dropdown-toggle mb-0" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <?php
-                            echo $createAccess['total'] > 0 ? '<li><a class="dropdown-item" href="'. $pageLink .'&new">Create Email Setting</a></li>' : '';
-                            echo $deleteAccess['total'] > 0 ? '<li><button class="dropdown-item" type="button" id="delete-email-setting">Delete Email Setting</button></li>' : '';
-                        ?>
-                    </ul>
+<div class="card mb-10">
+    <div class="card-header border-0">
+        <div class="card-title m-0">
+            <h3 class="fw-bold m-0">Email Setting Details</h3>
+        </div>
+        <?php
+            if ($deleteAccess['total'] > 0) {
+                $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown align-self-center" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        Actions
+                                        <i class="ki-outline ki-down fs-5 ms-1"></i>
+                                    </a>
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-60px, 539px);" data-popper-placement="bottom-end">';
+                    
+                if ($deleteAccess['total'] > 0) {
+                    $action .= '<div class="menu-item px-3">
+                                    <a href="javascript:void(0);" class="menu-link px-3" id="delete-email-setting">
+                                        Delete
+                                    </a>
+                                </div>';
+                }
+                        
+                $action .= '</div>';
+                        
+                echo $action;
+            }
+        ?>
+    </div>
+    <div class="card-body">
+        <form id="email-setting-form" method="post" action="#">
+            <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="email_setting_name">
+                            <span class="required">Display Name</span>
+                        </label>
+
+                        <input type="text" class="form-control" id="email_setting_name" name="email_setting_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                    </div>
                 </div>
-                <?php
-                    echo $writeAccess['total'] > 0 ? '<div class="card-actions cursor-pointer ms-auto d-flex button-group">
-                                                        <button class="btn btn-info mb-0 px-4" data-bs-toggle="modal" id="edit-details" data-bs-target="#email-setting-modal" id="edit-details">Edit</button>
-                                                    </div>' : '';
-                ?>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-6 mb-3">
-                        <p class="mb-1 fs-2">Display Name</p>
-                        <h6 class="fw-semibold mb-0" id="email_setting_name_summary">--</h6>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <p class="mb-1 fs-2">Description</p>
-                        <h6 class="fw-semibold mb-0" id="email_setting_description_summary">--</h6>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <p class="mb-1 fs-2">Host</p>
-                        <h6 class="fw-semibold mb-0" id="mail_host_summary">--</h6>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <p class="mb-1 fs-2">Port</p>
-                        <h6 class="fw-semibold mb-0" id="port_summary">--</h6>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <p class="mb-1 fs-2">Username</p>
-                        <h6 class="fw-semibold mb-0" id="mail_username_summary">--</h6>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <p class="mb-1 fs-2">Mail From Name</p>
-                        <h6 class="fw-semibold mb-0" id="mail_from_name_summary">--</h6>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <p class="mb-1 fs-2">Mail Encryption</p>
-                        <h6 class="fw-semibold mb-0" id="mail_encryption_summary">--</h6>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <p class="mb-1 fs-2">SMTP Authentication</p>
-                        <h6 class="fw-semibold mb-0" id="smtp_auth_summary">--</h6>
-                    </div>
-                    <div class="col-lg-6 mb-0">
-                        <p class="mb-1 fs-2">SMTP Auto TLS</p>
-                        <h6 class="fw-semibold mb-0" id="smtp_auto_tls_summary">--</h6>
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="menu_item_id">
+                            <span class="required">Description</span>
+                        </label>
+
+                        <input type="text" class="form-control" id="email_setting_description" name="email_setting_description" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
                     </div>
                 </div>
             </div>
-        </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="mail_host">
+                            <span class="required">Host</span>
+                        </label>
+                        
+                        <input type="text" class="form-control" id="mail_host" name="mail_host" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="port">
+                            <span class="required">Port</span>
+                        </label>
+                        
+                        <input type="text" class="form-control" id="port" name="port" maxlength="10" autocomplete="off" <?php echo $disabled ?>>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="mail_username">
+                            <span class="required">Email Username</span>
+                        </label>
+                        
+                        <input type="text" class="form-control" id="mail_username" name="mail_username" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="mail_password">
+                            <span class="required">Email Password</span>
+                        </label>
+                        
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="mail_password" id="mail_password" <?php echo $disabled ?>>
+                            <button class="btn btn-light bg-transparent password-addon" type="button">
+                                <i class="ki-outline ki-eye-slash fs-2 p-0"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="mail_from_name">
+                            <span class="required">Mail From Name</span>
+                        </label>
+                        
+                        <input type="text" class="form-control" id="mail_from_name" name="mail_from_name" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="mail_from_email">
+                            <span class="required">Mail From Email</span>
+                        </label>
+                        
+                        <input type="text" class="form-control" id="mail_from_email" name="mail_from_email" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="mail_encryption">
+                            <span class="required">Mail Encryption</span>
+                        </label>
+                        
+                        <select id="mail_encryption" name="mail_encryption" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>>
+                            <option value="none">None</option>
+                            <option value="ssl">SSL</option>
+                            <option value="starttls">Start TLS</option>
+                            <option value="tls">TLS</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="smtp_auth">
+                            <span class="required">SMTP Authentication</span>
+                        </label>
+                        
+                        <select id="smtp_auth" name="smtp_auth" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="smtp_auto_tls">
+                            <span class="required">SMTP Auto TLS</span>
+                        </label>
+                        
+                        <select id="smtp_auto_tls" name="smtp_auto_tls" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
+
+    <?php
+        echo ($writeAccess['total'] > 0) ? ' <div class="card-footer d-flex justify-content-end py-6 px-9">
+                                                <button type="button" id="discard-create" class="btn btn-light btn-active-light-primary me-2">Discard</button>
+                                                <button type="submit" form="email-setting-form" class="btn btn-primary" id="submit-data">Save</button>
+                                            </div>' : '';
+    ?>
 </div>
 
-<div id="email-setting-modal" class="modal fade" tabindex="-1" aria-labelledby="email-setting-modal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Edit Email Setting Details</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="email-setting-form" method="post" action="#">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="email_setting_name">Display Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="email_setting_name" name="email_setting_name" maxlength="100" autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="email_setting_description">Description <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="email_setting_description" name="email_setting_description" maxlength="200" autocomplete="off">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="mail_host">Host <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="mail_host" name="mail_host" maxlength="100" autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="port">Port <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="port" name="port" maxlength="10" autocomplete="off">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="mail_username">Email Username <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="mail_username" name="mail_username" maxlength="200" autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="mail_password">Email Password <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="mail_password" name="mail_password">
-                                    <button class="btn btn-dark rounded-end d-flex align-items-center password-addon" type="button">
-                                        <i class="ti ti-eye"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="mail_from_name">Mail From Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="mail_from_name" name="mail_from_name" maxlength="200" autocomplete="off">
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="mail_from_email">Mail From Email <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="mail_from_email" name="mail_from_email" maxlength="200" autocomplete="off">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="mail_encryption">Mail Encryption <span class="text-danger">*</span></label>
-                                <select class="form-control" id="mail_encryption" name="mail_encryption">
-                                    <option value="none">None</option>
-                                    <option value="ssl">SSL</option>
-                                    <option value="starttls">Start TLS</option>
-                                    <option value="tls">TLS</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="smtp_auth">SMTP Authentication <span class="text-danger">*</span></label>
-                                <select class="form-control" id="smtp_auth" name="smtp_auth">
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="smtp_auto_tls">SMTP Auto TLS <span class="text-danger">*</span></label>
-                                <select class="form-control" id="smtp_auto_tls" name="smtp_auto_tls">
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="email-setting-form" class="btn btn-success" id="submit-data">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<?php require_once('components/global/view/_internal_log_notes.php'); ?>
+<?php require_once('components/view/_log_notes_modal.php'); ?>

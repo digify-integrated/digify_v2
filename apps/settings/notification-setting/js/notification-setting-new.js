@@ -27,25 +27,17 @@ function notificationSettingForm(){
             }
         },
         errorPlacement: function(error, element) {
-            showNotification('Attention Required: Error Found', error, 'error', 2000);
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
         },
         highlight: function(element) {
-            var inputElement = $(element);
-            if (inputElement.hasClass('select2-hidden-accessible')) {
-                inputElement.next().find('.select2-selection').addClass('is-invalid');
-            }
-            else {
-                inputElement.addClass('is-invalid');
-            }
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
         },
         unhighlight: function(element) {
-            var inputElement = $(element);
-            if (inputElement.hasClass('select2-hidden-accessible')) {
-                inputElement.next().find('.select2-selection').removeClass('is-invalid');
-            }
-            else {
-                inputElement.removeClass('is-invalid');
-            }
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
             const transaction = 'add notification setting';
@@ -53,7 +45,7 @@ function notificationSettingForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'components/notification-setting/controller/notification-setting-controller.php',
+                url: 'apps/settings/notification-setting/controller/notification-setting-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -75,11 +67,7 @@ function notificationSettingForm(){
                     }
                 },
                 error: function(xhr, status, error) {
-                    var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                    if (xhr.responseText) {
-                        fullErrorMessage += `, Response: ${xhr.responseText}`;
-                    }
-                    showErrorDialog(fullErrorMessage);
+                    handleSystemError(xhr, status, error);
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');

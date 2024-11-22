@@ -1,5 +1,6 @@
 DELIMITER //
 
+DROP TRIGGER IF EXISTS upload_setting_trigger_update//
 CREATE TRIGGER upload_setting_trigger_update
 AFTER UPDATE ON upload_setting
 FOR EACH ROW
@@ -24,6 +25,7 @@ BEGIN
     END IF;
 END //
 
+DROP TRIGGER IF EXISTS upload_setting_trigger_insert//
 CREATE TRIGGER upload_setting_trigger_insert
 AFTER INSERT ON upload_setting
 FOR EACH ROW
@@ -34,6 +36,7 @@ BEGIN
     VALUES ('upload_setting', NEW.upload_setting_id, audit_log, NEW.last_log_by, NOW());
 END //
 
+DROP TRIGGER IF EXISTS upload_setting_file_extension_update//
 CREATE TRIGGER upload_setting_file_extension_update
 AFTER UPDATE ON upload_setting_file_extension
 FOR EACH ROW
@@ -58,6 +61,7 @@ BEGIN
     END IF;
 END //
 
+DROP TRIGGER IF EXISTS upload_setting_file_extension_trigger_insert//
 CREATE TRIGGER upload_setting_file_extension_trigger_insert
 AFTER INSERT ON upload_setting_file_extension
 FOR EACH ROW

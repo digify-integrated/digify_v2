@@ -26,7 +26,7 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: 'components/email-setting/controller/email-setting-controller.php',
+                        url: 'apps/settings/email-setting/controller/email-setting-controller.php',
                         dataType: 'json',
                         data: {
                             email_setting_id : email_setting_id, 
@@ -52,11 +52,7 @@
                             }
                         },
                         error: function(xhr, status, error) {
-                            var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                            if (xhr.responseText) {
-                                fullErrorMessage += `, Response: ${xhr.responseText}`;
-                            }
-                            showErrorDialog(fullErrorMessage);
+                            handleSystemError(xhr, status, error);
                         }
                     });
                     return false;
@@ -91,7 +87,7 @@
                     if (result.value) {
                         $.ajax({
                             type: 'POST',
-                            url: 'components/email-setting/controller/email-setting-controller.php',
+                            url: 'apps/settings/email-setting/controller/email-setting-controller.php',
                             dataType: 'json',
                             data: {
                                 email_setting_id: email_setting_id,
@@ -113,11 +109,7 @@
                                 }
                             },
                             error: function(xhr, status, error) {
-                                var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                                if (xhr.responseText) {
-                                    fullErrorMessage += `, Response: ${xhr.responseText}`;
-                                }
-                                showErrorDialog(fullErrorMessage);
+                                handleSystemError(xhr, status, error);
                             },
                             complete: function(){
                                 toggleHideActionDropdown();
@@ -133,78 +125,85 @@
             }
         });
 
+        $(document).on('click','#export-data',function() {
+            generateExportColumns('email_setting');
+        });
+
+        $(document).on('click','#submit-export',function() {
+            exportData('email_setting');
+        });
+
         $('#datatable-search').on('keyup', function () {
             var table = $('#email-setting-table').DataTable();
             table.search(this.value).draw();
         });
+
+        $('#datatable-length').on('change', function() {
+            var table = $('#email-setting-table').DataTable();
+            var length = $(this).val(); 
+            table.page.len(length).draw();
+        });
     });
 })(jQuery);
 
-function emailSettingTable(datatable_name, buttons = false, show_all = false){
+function emailSettingTable(datatable_name) {
     toggleHideActionDropdown();
 
     const type = 'email setting table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
 
-    var settings;
-
-    const column = [ 
-        { 'data' : 'CHECK_BOX' },
-        { 'data' : 'EMAIL_SETTING' },
-        { 'data' : 'ACTION' }
+    const columns = [ 
+        { data: 'CHECK_BOX' },
+        { data: 'EMAIL_SETTING_NAME' }
     ];
 
-    const column_definition = [
-        { 'width': '1%','bSortable': false, 'aTargets': 0 },
-        { 'width': 'auto', 'aTargets': 1 },
-        { 'width': '15%','bSortable': false, 'aTargets': 2 }
+    const columnDefs = [
+        { width: '5%', bSortable: false, targets: 0, responsivePriority: 1 },
+        { width: 'auto', targets: 1, responsivePriority: 2 }
     ];
 
-    const length_menu = show_all ? [[-1], ['All']] : [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']];
+    const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
 
-    settings = {
-        'ajax': { 
-            'url' : 'components/email-setting/view/_email_setting_generation.php',
-            'method' : 'POST',
-            'dataType': 'json',
-            'data': {
-                'type' : type,
-                'page_id' : page_id,
-                'page_link' : page_link
+    const settings = {
+        ajax: { 
+            url: 'apps/settings/email-setting/view/_email_setting_generation.php',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                type: type,
+                page_id: page_id,
+                page_link: page_link
             },
-            'dataSrc' : '',
-            'error': function(xhr, status, error) {
-                var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                if (xhr.responseText) {
-                    fullErrorMessage += `, Response: ${xhr.responseText}`;
-                }
-                showErrorDialog(fullErrorMessage);
+            dataSrc: '',
+            error: function(xhr, status, error) {
+                handleSystemError(xhr, status, error);
             }
         },
-        'dom': 'Brtip',
-        'lengthChange': false,
-        'order': [[ 1, 'asc' ]],
-        'columns' : column,
-        'fnDrawCallback': function( oSettings ) {
+        lengthChange: false,
+        order: [[1, 'asc']],
+        columns: columns,
+        columnDefs: columnDefs,
+        lengthMenu: lengthMenu,
+        autoWidth: false,
+        language: {
+            emptyTable: 'No data found',
+            sLengthMenu: '_MENU_',
+            info: '_START_ - _END_ of _TOTAL_ items',
+            loadingRecords: 'Just a moment while we fetch your data...'
+        },
+        fnDrawCallback: function(oSettings) {
             readjustDatatableColumn();
-        },
-        'columnDefs': column_definition,
-        'lengthMenu': length_menu,
-        'language': {
-            'emptyTable': 'No data found',
-            'searchPlaceholder': 'Search...',
-            'search': '',
-            'loadingRecords': 'Just a moment while we fetch your data...'
-        },
+
+            $(`${datatable_name} tbody`).on('click', 'tr td:nth-child(n+2)', function () {
+                const rowData = $(datatable_name).DataTable().row($(this).closest('tr')).data();
+                if (rowData && rowData.LINK) {
+                    window.location.href = rowData.LINK;
+                }
+            });
+        }
     };
 
-    if (buttons) {
-        settings.dom = 'Bfrtip';
-        settings.buttons = ['csv', 'excel', 'pdf'];
-    }
-
     destroyDatatable(datatable_name);
-
     $(datatable_name).dataTable(settings);
 }

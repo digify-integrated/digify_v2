@@ -70,7 +70,7 @@ function updateMaxFailedLoginForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/settings/system-setting/controller/system-setting-controller.php',
+                url: 'apps/settings/security-setting/controller/security-setting-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -140,7 +140,7 @@ function updateMaxFailedOTPForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/settings/system-setting/controller/system-setting-controller.php',
+                url: 'apps/settings/security-setting/controller/security-setting-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -210,7 +210,7 @@ function updateDefaultForgotPasswordLinkForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/settings/system-setting/controller/system-setting-controller.php',
+                url: 'apps/settings/security-setting/controller/security-setting-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -280,7 +280,7 @@ function updatePasswordExpiryDurationForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/settings/system-setting/controller/system-setting-controller.php',
+                url: 'apps/settings/security-setting/controller/security-setting-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -350,7 +350,7 @@ function updateSessionTimeoutDurationForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/settings/system-setting/controller/system-setting-controller.php',
+                url: 'apps/settings/security-setting/controller/security-setting-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -420,7 +420,7 @@ function updateOTPDurationForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/settings/system-setting/controller/system-setting-controller.php',
+                url: 'apps/settings/security-setting/controller/security-setting-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -490,7 +490,7 @@ function updateResetPasswordTokenDurationForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'apps/settings/system-setting/controller/system-setting-controller.php',
+                url: 'apps/settings/security-setting/controller/security-setting-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {

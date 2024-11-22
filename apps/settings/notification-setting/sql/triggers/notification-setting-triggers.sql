@@ -19,7 +19,7 @@ BEGIN
     END IF;
 
     IF NEW.email_notification <> OLD.email_notification THEN
-        SET audit_log = CONCAT(audit_log, "Email Notification: ", OLD.email_notification, " -> ", NEW.email_notification, "<br/>");
+        SET audit_log = CONCAT(audit_log, "Notification Notification: ", OLD.email_notification, " -> ", NEW.email_notification, "<br/>");
     END IF;
 
     IF NEW.sms_notification <> OLD.sms_notification THEN
@@ -46,21 +46,21 @@ CREATE TRIGGER notification_setting_email_template_trigger_update
 AFTER UPDATE ON notification_setting_email_template
 FOR EACH ROW
 BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Email notification template changed.<br/><br/>';
+    DECLARE audit_log TEXT DEFAULT 'Notification notification template changed.<br/><br/>';
 
     IF NEW.email_notification_subject <> OLD.email_notification_subject THEN
-        SET audit_log = CONCAT(audit_log, "Email Notification Subject: ", OLD.email_notification_subject, " -> ", NEW.email_notification_subject, "<br/>");
+        SET audit_log = CONCAT(audit_log, "Notification Notification Subject: ", OLD.email_notification_subject, " -> ", NEW.email_notification_subject, "<br/>");
     END IF;
 
     IF NEW.email_notification_body <> OLD.email_notification_body THEN
-        SET audit_log = CONCAT(audit_log, "Email Notification Body: ", OLD.email_notification_body, " -> ", NEW.email_notification_body, "<br/>");
+        SET audit_log = CONCAT(audit_log, "Notification Notification Body: ", OLD.email_notification_body, " -> ", NEW.email_notification_body, "<br/>");
     END IF;
 
     IF NEW.email_setting_name <> OLD.email_setting_name THEN
-        SET audit_log = CONCAT(audit_log, "Email Setting Name: ", OLD.email_setting_name, " -> ", NEW.email_setting_name, "<br/>");
+        SET audit_log = CONCAT(audit_log, "Notification Setting Name: ", OLD.email_setting_name, " -> ", NEW.email_setting_name, "<br/>");
     END IF;
 
-    IF audit_log <> 'Email notification template changed.<br/><br/>' THEN
+    IF audit_log <> 'Notification notification template changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('notification_setting_email_template', NEW.notification_setting_id, audit_log, NEW.last_log_by, NOW());
     END IF;
@@ -70,7 +70,7 @@ CREATE TRIGGER notification_setting_email_template_trigger_insert
 AFTER INSERT ON notification_setting_email_template
 FOR EACH ROW
 BEGIN
-    DECLARE audit_log TEXT DEFAULT 'Email notification template created.';
+    DECLARE audit_log TEXT DEFAULT 'Notification notification template created.';
 
     INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
     VALUES ('notification_setting_email_template', NEW.notification_setting_id, audit_log, NEW.last_log_by, NOW());

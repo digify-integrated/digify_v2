@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 21, 2024 at 10:32 AM
+-- Generation Time: Nov 22, 2024 at 10:25 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -234,6 +234,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCurrencyExist` (IN `p_currency
     WHERE currency_id = p_currency_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkEmailSettingExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkEmailSettingExist` (IN `p_email_setting_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM email_setting
+    WHERE email_setting_id = p_email_setting_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkFileExtensionExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkFileExtensionExist` (IN `p_file_extension_id` INT)   BEGIN
 	SELECT COUNT(*) AS total
@@ -269,6 +276,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkMenuItemExist` (IN `p_menu_ite
 	SELECT COUNT(*) AS total
     FROM menu_item
     WHERE menu_item_id = p_menu_item_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkNotificationSettingExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkNotificationSettingExist` (IN `p_notification_setting_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM notification_setting
+    WHERE notification_setting_id = p_notification_setting_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkRoleExist`$$
@@ -457,6 +471,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCurrency` (IN `p_currency_id`
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteEmailSetting`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteEmailSetting` (IN `p_email_setting_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM email_setting WHERE email_setting_id = p_email_setting_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `deleteFileExtension`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteFileExtension` (IN `p_file_extension_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -511,6 +539,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteMenuItem` (IN `p_menu_item_id
 
     DELETE FROM role_permission WHERE menu_item_id = p_menu_item_id;
     DELETE FROM menu_item WHERE menu_item_id = p_menu_item_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteNotificationSetting`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteNotificationSetting` (IN `p_notification_setting_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM notification_setting_email_template WHERE notification_setting_id = p_notification_setting_id;
+    DELETE FROM notification_setting_system_template WHERE notification_setting_id = p_notification_setting_id;
+    DELETE FROM notification_setting_sms_template WHERE notification_setting_id = p_notification_setting_id;
+    DELETE FROM notification_setting WHERE notification_setting_id = p_notification_setting_id;
 
     COMMIT;
 END$$
@@ -830,6 +875,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCurrencyTable` ()   BEGIN
     ORDER BY currency_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateEmailSettingTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmailSettingTable` ()   BEGIN
+	SELECT email_setting_id, email_setting_name, email_setting_description
+    FROM email_setting 
+    ORDER BY email_setting_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateExportOption`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateExportOption` (IN `p_databasename` VARCHAR(500), IN `p_table_name` VARCHAR(500))   BEGIN
     SELECT column_name 
@@ -980,6 +1032,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateMenuItemTable` (IN `p_filte
     PREPARE stmt FROM query;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateNotificationSettingTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateNotificationSettingTable` ()   BEGIN
+	SELECT notification_setting_id, notification_setting_name, notification_setting_description
+    FROM notification_setting 
+    ORDER BY notification_setting_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateRoleAssignedMenuItemTable`$$
@@ -1242,7 +1301,7 @@ END$$
 DROP PROCEDURE IF EXISTS `getEmailSetting`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmailSetting` (IN `p_email_setting_id` INT)   BEGIN
 	SELECT * FROM email_setting
-    WHERE email_setting_id = p_email_setting_id;
+	WHERE email_setting_id = p_email_setting_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getFileExtension`$$
@@ -1282,6 +1341,12 @@ DROP PROCEDURE IF EXISTS `getMenuItem`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getMenuItem` (IN `p_menu_item_id` INT)   BEGIN
 	SELECT * FROM menu_item
 	WHERE menu_item_id = p_menu_item_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getNotificationSetting`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getNotificationSetting` (IN `p_notification_setting_id` INT)   BEGIN
+	SELECT * FROM notification_setting
+	WHERE notification_setting_id = p_notification_setting_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getPasswordHistory`$$
@@ -1634,6 +1699,42 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCurrency` (IN `p_currency_id` I
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveEmailSetting`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveEmailSetting` (IN `p_email_setting_id` INT, IN `p_email_setting_name` VARCHAR(100), IN `p_email_setting_description` VARCHAR(200), IN `p_mail_host` VARCHAR(100), IN `p_port` VARCHAR(100), IN `p_smtp_auth` INT(1), IN `p_smtp_auto_tls` INT(1), IN `p_mail_username` VARCHAR(200), IN `p_mail_password` VARCHAR(250), IN `p_mail_encryption` VARCHAR(20), IN `p_mail_from_name` VARCHAR(200), IN `p_mail_from_email` VARCHAR(200), IN `p_last_log_by` INT, OUT `p_new_email_setting_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_email_setting_id IS NULL OR NOT EXISTS (SELECT 1 FROM email_setting WHERE email_setting_id = p_email_setting_id) THEN
+        INSERT INTO email_setting (email_setting_name, email_setting_description, mail_host, port, smtp_auth, smtp_auto_tls, mail_username, mail_password, mail_encryption, mail_from_name, mail_from_email, last_log_by) 
+        VALUES(p_email_setting_name, p_email_setting_description, p_mail_host, p_port, p_smtp_auth, p_smtp_auto_tls, p_mail_username, p_mail_password, p_mail_encryption, p_mail_from_name, p_mail_from_email, p_last_log_by);
+        
+        SET p_new_email_setting_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE email_setting
+        SET email_setting_name = p_email_setting_name,
+        	email_setting_description = p_email_setting_description,
+        	mail_host = p_mail_host,
+        	port = p_port,
+        	smtp_auth = p_smtp_auth,
+        	smtp_auto_tls = p_smtp_auto_tls,
+        	mail_username = p_mail_username,
+        	mail_password = p_mail_password,
+        	mail_encryption = p_mail_encryption,
+        	mail_from_name = p_mail_from_name,
+        	mail_from_email = p_mail_from_email,
+            last_log_by = p_last_log_by
+        WHERE email_setting_id = p_email_setting_id;
+
+        SET p_new_email_setting_id = p_email_setting_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveFileExtension`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveFileExtension` (IN `p_file_extension_id` INT, IN `p_file_extension_name` VARCHAR(100), IN `p_file_extension` VARCHAR(10), IN `p_file_type_id` INT, IN `p_file_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_file_extension_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -1782,6 +1883,33 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveMenuItem` (IN `p_menu_item_id` 
         WHERE menu_item_id = p_menu_item_id;
 
         SET p_new_menu_item_id = p_menu_item_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveNotificationSetting`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveNotificationSetting` (IN `p_notification_setting_id` INT, IN `p_notification_setting_name` VARCHAR(100), IN `p_notification_setting_description` VARCHAR(200), IN `p_last_log_by` INT, OUT `p_new_notification_setting_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_notification_setting_id IS NULL OR NOT EXISTS (SELECT 1 FROM notification_setting WHERE notification_setting_id = p_notification_setting_id) THEN
+        INSERT INTO notification_setting (notification_setting_name, notification_setting_description, last_log_by) 
+        VALUES(p_notification_setting_name, p_notification_setting_description, p_last_log_by);
+        
+        SET p_new_notification_setting_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE notification_setting
+        SET notification_setting_name = p_notification_setting_name,
+        	notification_setting_description = p_notification_setting_description,
+            last_log_by = p_last_log_by
+        WHERE notification_setting_id = p_notification_setting_id;
+
+        SET p_new_notification_setting_id = p_notification_setting_id;
     END IF;
 
     COMMIT;
@@ -2685,7 +2813,19 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (231, 'upload_setting', 6, 'Upload setting created.', 2, '2024-11-18 17:00:10', '2024-11-18 17:00:10'),
 (232, 'upload_setting', 6, 'Upload setting changed.<br/><br/>Upload Setting Name: asdasd -> asdasdasd<br/>Upload Setting Description: asdasd -> asdasdasdasdas<br/>Max File Size: 123 -> 123123123<br/>', 2, '2024-11-18 17:00:14', '2024-11-18 17:00:14'),
 (233, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-18 12:07:42 -> 2024-11-20 13:24:32<br/>', 2, '2024-11-20 13:24:32', '2024-11-20 13:24:32'),
-(234, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-20 13:24:32 -> 2024-11-21 14:08:58<br/>', 2, '2024-11-21 14:08:58', '2024-11-21 14:08:58');
+(234, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-20 13:24:32 -> 2024-11-21 14:08:58<br/>', 2, '2024-11-21 14:08:58', '2024-11-21 14:08:58'),
+(235, 'security_setting', 6, 'Security setting changed.<br/><br/>Value: 5 -> 6<br/>', 2, '2024-11-22 09:17:27', '2024-11-22 09:17:27'),
+(236, 'security_setting', 6, 'Security setting changed.<br/><br/>Value: 6 -> 5<br/>', 2, '2024-11-22 09:17:29', '2024-11-22 09:17:29'),
+(237, 'security_setting', 3, 'Security setting changed.<br/><br/>Value: http://localhost/digify/password-reset.php?id= -> http://localhost/digify_v2/password-reset.php?id=<br/>', 2, '2024-11-22 09:18:16', '2024-11-22 09:18:16'),
+(238, 'email_setting', 1, 'Email setting changed.<br/><br/>Email Setting Description: \r\nEmail setting for security emails. -> Email setting for security emails.<br/>SMTP Authentication: 1 -> 0<br/>Mail From Name: cgmi-noreply@christianmotors.ph -> 1<br/>Mail From Email: cgmi-noreply@christianmotors.ph -> 0<br/>', 2, '2024-11-22 12:20:27', '2024-11-22 12:20:27'),
+(239, 'email_setting', 1, 'Email setting changed.<br/><br/>Email Setting Name: Security Email Setting -> Security Email Settings<br/>', 2, '2024-11-22 12:20:30', '2024-11-22 12:20:30'),
+(240, 'email_setting', 1, 'Email setting changed.<br/><br/>Email Setting Name: Security Email Settings -> Security Email Setting<br/>', 2, '2024-11-22 12:20:32', '2024-11-22 12:20:32'),
+(241, 'email_setting', 1, 'Email setting changed.<br/><br/>Email Setting Description: \r\nEmail setting for security emails. -> Email setting for security emails.<br/>Mail From Name: cgmi-noreply@christianmotors.ph -> cgmi-noreply@christianmotors.phs<br/>Mail From Email: cgmi-noreply@christianmotors.ph -> cgmi-noreply@christianmotors.phs<br/>', 2, '2024-11-22 12:22:30', '2024-11-22 12:22:30'),
+(242, 'email_setting', 1, 'Email setting changed.<br/><br/>Mail From Name: cgmi-noreply@christianmotors.phs -> cgmi-noreply@christianmotors.ph<br/>Mail From Email: cgmi-noreply@christianmotors.phs -> cgmi-noreply@christianmotors.ph<br/>', 2, '2024-11-22 12:22:41', '2024-11-22 12:22:41'),
+(243, 'email_setting', 2, 'Email setting created.', 2, '2024-11-22 12:27:01', '2024-11-22 12:27:01'),
+(244, 'email_setting', 2, 'Email setting changed.<br/><br/>Email Setting Name: test -> testtest<br/>Email Setting Description: test -> testtest<br/>Host: test -> testtest<br/>Port: test -> testtest<br/>SMTP Authentication: 0 -> 1<br/>SMTP Auto TLS: 0 -> 1<br/>Mail Username: test -> testtest<br/>Mail Encryption: none -> ssl<br/>Mail From Name: test -> testtest<br/>Mail From Email: test -> testtest<br/>', 2, '2024-11-22 12:27:18', '2024-11-22 12:27:18'),
+(245, 'email_setting', 1, 'Email setting created.', 2, '2024-11-22 12:28:32', '2024-11-22 12:28:32'),
+(246, 'notification_setting', 4, 'Notification setting created.', 2, '2024-11-22 15:29:03', '2024-11-22 15:29:03');
 
 -- --------------------------------------------------------
 
@@ -3010,7 +3150,7 @@ CREATE TABLE `email_setting` (
 --
 
 INSERT INTO `email_setting` (`email_setting_id`, `email_setting_name`, `email_setting_description`, `mail_host`, `port`, `smtp_auth`, `smtp_auto_tls`, `mail_username`, `mail_password`, `mail_encryption`, `mail_from_name`, `mail_from_email`, `created_date`, `last_log_by`) VALUES
-(1, 'Security Email Setting', '\r\nEmail setting for security emails.', 'smtp.hostinger.com', '465', 1, 0, 'cgmi-noreply@christianmotors.ph', 'UsDpF0dYRC6M9v0tT3MHq%2BlrRJu01%2Fb95Dq%2BAeCfu2Y%3D', 'ssl', 'cgmi-noreply@christianmotors.ph', 'cgmi-noreply@christianmotors.ph', '2024-10-13 16:15:22', 1);
+(1, 'Security Email Setting', 'Email setting for security emails.', 'smtp.hostinger.com', '465', 1, 0, 'cgmi-noreply@christianmotors.ph', 'ZQ9hTsv10HUdptkRyJqyc8xICLKW9GsU9WPOxXzTE5U%3D', 'ssl', 'cgmi-noreply@christianmotors.ph', 'cgmi-noreply@christianmotors.ph', '2024-11-22 12:22:26', 2);
 
 --
 -- Triggers `email_setting`
@@ -3458,7 +3598,9 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (18, 'File Type', 'file-type.php', '', 1, 'Settings', 17, 'Data Classification', 'file_type', 6, '2024-11-15 16:42:51', 2),
 (19, 'File Extension', 'file-extension.php', '', 1, 'Settings', 17, 'Data Classification', 'file_extension', 6, '2024-11-15 16:43:31', 2),
 (20, 'Upload Setting', 'upload-setting.php', 'ki-outline ki-exit-up', 1, 'Settings', 2, 'Settings', 'upload_setting', 21, '2024-11-18 14:42:34', 2),
-(21, 'Security Setting', 'security-setting.php', 'ki-outline ki-lock', 1, 'Settings', 2, 'Settings', 'security_setting', 19, '2024-11-20 16:48:34', 2);
+(21, 'Security Setting', 'security-setting.php', 'ki-outline ki-lock', 1, 'Settings', 2, 'Settings', 'security_setting', 19, '2024-11-20 16:48:34', 2),
+(22, 'Email Setting', 'email-setting.php', 'ki-outline ki-sms', 1, 'Settings', 2, 'Settings', 'email_setting', 5, '2024-11-22 10:39:27', 2),
+(23, 'Notification Setting', 'notification-setting.php', 'ki-outline ki-notification', 1, 'Settings', 2, 'Settings', 'notification_setting', 14, '2024-11-22 14:29:29', 2);
 
 -- --------------------------------------------------------
 
@@ -3485,7 +3627,8 @@ CREATE TABLE `notification_setting` (
 INSERT INTO `notification_setting` (`notification_setting_id`, `notification_setting_name`, `notification_setting_description`, `system_notification`, `email_notification`, `sms_notification`, `created_date`, `last_log_by`) VALUES
 (1, 'Login OTP', 'Notification setting for Login OTP received by the users.', 0, 1, 0, '2024-10-13 16:15:08', 1),
 (2, 'Forgot Password', 'Notification setting when the user initiates forgot password.', 0, 1, 0, '2024-10-13 16:15:08', 1),
-(3, 'Registration Verification', 'Notification setting when the user sign-up for an account.', 0, 1, 0, '2024-10-13 16:15:08', 1);
+(3, 'Registration Verification', 'Notification setting when the user sign-up for an account.', 0, 1, 0, '2024-10-13 16:15:08', 1),
+(4, 'test', 'test', 1, 0, 0, '2024-11-22 15:29:03', 2);
 
 --
 -- Triggers `notification_setting`
@@ -3781,7 +3924,9 @@ INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `me
 (27, 1, 'Administrator', 18, 'File Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-15 16:42:56', '2024-11-15 16:42:56', 2),
 (28, 1, 'Administrator', 19, 'File Extension', 1, 1, 1, 1, 1, 1, 1, '2024-11-15 16:43:35', '2024-11-15 16:43:35', 2),
 (29, 1, 'Administrator', 20, 'Upload Setting', 1, 1, 1, 1, 1, 1, 1, '2024-11-18 14:42:39', '2024-11-18 14:42:39', 2),
-(30, 1, 'Administrator', 21, 'Security Setting', 1, 1, 0, 0, 0, 0, 1, '2024-11-20 16:48:41', '2024-11-20 16:48:41', 2);
+(30, 1, 'Administrator', 21, 'Security Setting', 1, 1, 0, 0, 0, 0, 1, '2024-11-20 16:48:41', '2024-11-20 16:48:41', 2),
+(31, 1, 'Administrator', 22, 'Email Setting', 1, 1, 1, 1, 1, 1, 1, '2024-11-22 10:39:32', '2024-11-22 10:39:32', 2),
+(32, 1, 'Administrator', 23, 'Notification Setting', 1, 1, 1, 1, 1, 1, 1, '2024-11-22 14:29:34', '2024-11-22 14:29:34', 2);
 
 -- --------------------------------------------------------
 
@@ -3869,10 +4014,10 @@ CREATE TABLE `security_setting` (
 INSERT INTO `security_setting` (`security_setting_id`, `security_setting_name`, `value`, `created_date`, `last_log_by`) VALUES
 (1, 'Max Failed Login Attempt', '5', '2024-10-13 16:13:00', 1),
 (2, 'Max Failed OTP Attempt', '5', '2024-10-13 16:13:00', 1),
-(3, 'Default Forgot Password Link', 'http://localhost/digify/password-reset.php?id=', '2024-10-13 16:13:00', 1),
+(3, 'Default Forgot Password Link', 'http://localhost/digify_v2/password-reset.php?id=', '2024-10-13 16:13:00', 2),
 (4, 'Password Expiry Duration', '180', '2024-10-13 16:13:00', 1),
 (5, 'Session Timeout Duration', '240', '2024-10-13 16:13:00', 1),
-(6, 'OTP Duration', '5', '2024-10-13 16:13:00', 1),
+(6, 'OTP Duration', '5', '2024-10-13 16:13:00', 2),
 (7, 'Reset Password Token Duration', '10', '2024-10-13 16:13:00', 1),
 (8, 'Registration Verification Token Duration', '180', '2024-10-13 16:13:00', 1);
 
@@ -4470,7 +4615,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=235;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=247;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -4500,7 +4645,7 @@ ALTER TABLE `currency`
 -- AUTO_INCREMENT for table `email_setting`
 --
 ALTER TABLE `email_setting`
-  MODIFY `email_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `email_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `file_extension`
@@ -4530,13 +4675,13 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`
 --
 ALTER TABLE `notification_setting`
-  MODIFY `notification_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `notification_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `notification_setting_email_template`
@@ -4572,7 +4717,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`

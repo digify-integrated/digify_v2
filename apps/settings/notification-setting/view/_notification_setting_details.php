@@ -1,285 +1,243 @@
-<div class="row">
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <h5 class="card-title mb-0">Notification Setting</h5>
-                <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-                    <button type="button" class="btn btn-dark dropdown-toggle mb-0" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <?php
-                            echo $createAccess['total'] > 0 ? '<li><a class="dropdown-item" href="'. $pageLink .'&new">Create Notification Setting</a></li>' : '';
-                            echo $deleteAccess['total'] > 0 ? '<li><button class="dropdown-item" type="button" id="delete-notification-setting">Delete Notification Setting</button></li>' : '';
-                        ?>
-                    </ul>
-                    <?php
-                        echo $writeAccess['total'] > 0 ? '<button class="btn btn-info mb-0 px-4" data-bs-toggle="modal" id="edit-details" data-bs-target="#notification-setting-modal">Edit</button>' : '';
-                    ?>
+<div class="d-flex flex-column flex-lg-row">
+    <div class="d-flex flex-column gap-7 gap-lg-10 w-100 mb-7 me-lg-10">
+        <div class="card card-flush">
+            <div class="card-header border-0">
+                <div class="card-title m-0">
+                    <h3 class="fw-bold m-0">Notification Setting Details</h3>
                 </div>
+                <?php
+                    if ($deleteAccess['total'] > 0 || $exportAccess['total'] > 0) {
+                        $action = '<a href="#" class="btn btn-light-primary btn-flex btn-center btn-active-light-primary show menu-dropdown align-self-center" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                        Actions
+                                        <i class="ki-outline ki-down fs-5 ms-1"></i>
+                                    </a>
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true" style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate(-60px, 539px);" data-popper-placement="bottom-end">';
+                    
+                        if ($deleteAccess['total'] > 0) {
+                            $action .= '<div class="menu-item px-3">
+                                            <a href="javascript:void(0);" class="menu-link px-3" id="delete-notification-setting">
+                                                Delete
+                                            </a>
+                                        </div>';
+                        }
+                    
+                        $action .= '</div>';
+                    
+                        echo $action;
+                    }
+                ?>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-12 mb-3">
-                        <p class="mb-1 fs-2">Display Name</p>
-                        <h6 class="fw-semibold mb-0" id="notification_setting_name_summary">--</h6>
-                    </div>
-                    <div class="col-lg-12 mb-0">
-                        <p class="mb-1 fs-2">Description</p>
-                        <h6 class="fw-semibold mb-0" id="notification_setting_description_summary">--</h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <h5 class="card-title mb-0">Notification Channel</h5>
-            </div>
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="text-bg-light rounded-1 p-6 d-flex align-items-center justify-content-center">
-                            <i class="ti ti-bell-ringing text-dark d-block fs-7" width="22" height="22"></i>
-                        </div>
-                        <div>
-                            <h5 class="fs-4 fw-semibold">System Notification</h5>
-                        </div>
-                    </div>
-                    <div class="form-check form-switch mb-0">
-                        <?php
-                            $checkboxAttributes = ($writeAccess['total'] > 0) ? '' : 'disabled';
 
-                            echo '<input class="form-check-input" type="checkbox" role="switch" id="system-notification" ' . $checkboxAttributes . '>';
-                        ?>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="text-bg-light rounded-1 p-6 d-flex align-items-center justify-content-center">
-                            <i class="ti ti-mail text-dark d-block fs-7" width="22" height="22"></i>
-                        </div>
-                        <div>
-                            <h5 class="fs-4 fw-semibold">Email Notification</h5>
-                        </div>
-                    </div>
-                    <div class="form-check form-switch mb-0">
-                        <?php
-                            $checkboxAttributes = ($writeAccess['total'] > 0) ? '' : 'disabled';
-                                                    
-                            echo '<input class="form-check-input" type="checkbox" role="switch" id="email-notification" ' . $checkboxAttributes . '>';
-                        ?>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center justify-content-between mb-0">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="text-bg-light rounded-1 p-6 d-flex align-items-center justify-content-center">
-                            <i class="ti ti-device-mobile text-dark d-block fs-7" width="22" height="22"></i>
-                        </div>
-                        <div>
-                            <h5 class="fs-4 fw-semibold">SMS Notification</h5>
-                        </div>
-                    </div>
-                    <div class="form-check form-switch mb-0">
-                        <?php
-                            $checkboxAttributes = ($writeAccess['total'] > 0) ? '' : 'disabled';
-                                                        
-                            echo '<input class="form-check-input" type="checkbox" role="switch" id="sms-notification" ' . $checkboxAttributes . '>';
-                        ?>
-                    </div>
-                </div>
-            </div>
-        </div>        
-    </div>
-    <div class="col-lg-6">
-        <div class="card border shadow-none">
-            <div class="card-body p-4">
-                <h4 class="card-title">System Notification Template</h4>
-                <p class="card-subtitle">Configure the system notification template:</p>
-                <div class="d-flex align-items-center justify-content-between mt-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div>
-                            <h5 class="fs-4 fw-semibold" id="system_notification_title_preview">Title</h5>
-                            <p class="mb-3" id="system_notification_message_preview">Message</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <?php
-                        echo $writeAccess['total'] > 0 ? '<button class="btn btn-info" data-bs-toggle="modal" id="edit-system-notification-template-details" data-bs-target="#system-notification-template-modal">Edit</button>' : '';
-                    ?>
-                    <button class="btn btn-warning" id="view-system-notification-template-log-notes" data-bs-toggle="offcanvas" data-bs-target="#log-notes-offcanvas" aria-controls="log-notes-offcanvas">View Log Notes</button>
-                </div>
-            </div>
-        </div>
-        <div class="card border shadow-none">
-            <div class="card-body p-4">
-                <h4 class="card-title">Email Notification Template</h4>
-                <p class="card-subtitle">Configure the email notification template:</p>
-                <div class="d-flex align-items-center justify-content-between mt-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div>
-                            <h5 class="fs-4 fw-semibold" id="email_notification_subject_preview">Subject</h5>
-                            <p class="mb-3" id="email_notification_body_preview">Body</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <?php
-                        echo $writeAccess['total'] > 0 ? '<button class="btn btn-info" data-bs-toggle="modal" id="edit-email-notification-template-details" data-bs-target="#email-notification-template-modal">Edit</button>' : '';
-                    ?>
-                    <button class="btn btn-warning" id="view-email-notification-template-log-notes" data-bs-toggle="offcanvas" data-bs-target="#log-notes-offcanvas" aria-controls="log-notes-offcanvas">View Log Notes</button>
-                </div>
-            </div>
-        </div>
-        <div class="card border shadow-none">
-            <div class="card-body p-4">
-                <h4 class="card-title">SMS Notification Template</h4>
-                <p class="card-subtitle">Configure the SMS notification template:</p>
-                <div class="d-flex align-items-center justify-content-between mt-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div>
-                            <p class="mb-3" id="sms_notification_message_preview">Message</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <?php
-                        echo $writeAccess['total'] > 0 ? '<button class="btn btn-info" data-bs-toggle="modal" id="edit-sms-notification-template-details" data-bs-target="#sms-notification-template-modal">Edit</button>' : '';
-                    ?>
-                    <button class="btn btn-warning" id="view-sms-notification-template-log-notes" data-bs-toggle="offcanvas" data-bs-target="#log-notes-offcanvas" aria-controls="log-notes-offcanvas">View Log Notes</button>
-                </div>
-            </div>
-        </div>
-    </div>
- </div>
+            <form id="notification-setting-form" class="form" method="post" action="#">
+                <div class="card-body border-top p-9">
+                    <div class="fv-row mb-4">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="notification_setting_name">
+                            <span class="required">Display Name</span>
+                        </label>
 
-<div id="notification-setting-modal" class="modal fade" tabindex="-1" aria-labelledby="notification-setting-modal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Edit Notification Setting Details</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <input type="text" class="form-control" id="notification_setting_name" name="notification_setting_name" maxlength="100" autocomplete="off">
+                    </div>
+                    <div class="fv-row mb-4">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="notification_setting_description">
+                            <span class="required">Description</span>
+                        </label>
+
+                        <input type="text" class="form-control" id="notification_setting_description" name="notification_setting_description" maxlength="200" autocomplete="off">
+                    </div>
+                </div>
+
+                <?php
+                    echo ($writeAccess['total'] > 0) ? '<div class="card-footer d-flex justify-content-end py-6 px-9">
+                                                            <button type="button" id="discard-create" class="btn btn-light btn-active-light-primary me-2">Discard</button>
+                                                            <button type="submit" form="notification-setting-form" class="btn btn-primary" id="submit-data">Save Changes</button>
+                                                        </div>' : '';
+                ?>
+            </form>
+        </div>
+
+        <div class="card card-flush">
+            <div class="card-header border-0">
+                <div class="card-title m-0">
+                    <h3 class="fw-bold m-0">System Notification Template</h3>
+                </div>
             </div>
-            <div class="modal-body">
-                <form id="notification-setting-form" method="post" action="#">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="notification_setting_name">Display Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="notification_setting_name" name="notification_setting_name" maxlength="100" autocomplete="off">
+
+            <div class="card-body border-top p-9">
+                <div class="d-flex flex-wrap align-items-center">
+                    <div id="change_system_notification_template">
+                        <div class="fw-semibold text-gray-600" id="system_notification_template_summary"></div>
+                    </div>
+                                        
+                    <div id="change_system_notification_template_edit" class="flex-row-fluid d-none">
+                        <form id="update-system-notification-template-form">
+                            <div class="row mb-6">
+                                <div class="col-lg-12 mb-4 mb-lg-0">
+                                    <div class="fv-row mb-0 fv-plugins-icon-container">
+                                        <textarea class="form-control" id="system_notification_template" name="system_notification_template" maxlength="500" rows="3" <?php echo $disabled ?>></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                                        
+                            <?php
+                                echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                        <button id="update_full_name_submit" form="update-system-notification-template-form" type="submit" class="btn btn-primary me-2 px-6">Update System Notification Template</button>
+                                                                        <button id="update_full_name_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary  px-6" data-toggle-section="change_system_notification_template">Cancel</button>
+                                                                    </div>' : '';
+                            ?>
+                        </form>
+                    </div>
+
+                    <?php
+                        echo ($writeAccess['total'] > 0) ? '<div id="change_system_notification_template_button" class="ms-auto" data-toggle-section="change_system_notification_template">
+                                                                <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
+                                                            </div>' : '';
+                    ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-flush">
+            <div class="card-header border-0">
+                <div class="card-title m-0">
+                    <h3 class="fw-bold m-0">Email Notification Template</h3>
+                </div>
+            </div>
+
+            <div class="card-body border-top p-9">
+                <div class="d-flex flex-wrap align-items-center">
+                    <div id="change_email_notification_template">
+                        <div class="fw-semibold text-gray-600" id="email_notification_template_summary"></div>
+                    </div>
+                                        
+                    <div id="change_email_notification_template_edit" class="flex-row-fluid d-none">
+                        <form id="update-email-notification-template-form">
+                            <div class="row mb-6">
+                                <div class="col-lg-12 mb-4 mb-lg-0">
+                                    <div class="fv-row mb-0 fv-plugins-icon-container">
+                                        <textarea id="email_notification_template_tinymce" name="email_notification_template_tinymce" class="tox-target"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                                        
+                            <?php
+                                echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                        <button id="update_full_name_submit" form="update-email-notification-template-form" type="submit" class="btn btn-primary me-2 px-6">Update Email Notification Template</button>
+                                                                        <button id="update_full_name_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary  px-6" data-toggle-section="change_email_notification_template">Cancel</button>
+                                                                    </div>' : '';
+                            ?>
+                        </form>
+                    </div>
+
+                    <?php
+                        echo ($writeAccess['total'] > 0) ? '<div id="change_email_notification_template_button" class="ms-auto" data-toggle-section="change_email_notification_template">
+                                                                <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
+                                                            </div>' : '';
+                    ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-flush">
+            <div class="card-header border-0">
+                <div class="card-title m-0">
+                    <h3 class="fw-bold m-0">SMS Notification Template</h3>
+                </div>
+            </div>
+
+            <div class="card-body border-top p-9">
+                <div class="d-flex flex-wrap align-items-center">
+                    <div id="change_sms_notification_template">
+                        <div class="fw-semibold text-gray-600" id="sms_notification_template_summary"></div>
+                    </div>
+                                        
+                    <div id="change_sms_notification_template_edit" class="flex-row-fluid d-none">
+                        <form id="update-sms-notification-template-form">
+                            <div class="row mb-6">
+                                <div class="col-lg-12 mb-4 mb-lg-0">
+                                    <div class="fv-row mb-0 fv-plugins-icon-container">
+                                        <textarea class="form-control" id="sms_notification_template" name="sms_notification_template" maxlength="500" rows="3" <?php echo $disabled ?>></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                                        
+                            <?php
+                                echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                        <button id="update_full_name_submit" form="update-sms-notification-template-form" type="submit" class="btn btn-primary me-2 px-6">Update SMS Notification Template</button>
+                                                                        <button id="update_full_name_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary  px-6" data-toggle-section="change_sms_notification_template">Cancel</button>
+                                                                    </div>' : '';
+                            ?>
+                        </form>
+                    </div>
+
+                    <?php
+                        echo ($writeAccess['total'] > 0) ? '<div id="change_sms_notification_template_button" class="ms-auto" data-toggle-section="change_sms_notification_template">
+                                                                <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
+                                                            </div>' : '';
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-500px">
+        <div class="card card-flush">
+            <div class="card-header border-0">
+                <div class="card-title m-0">
+                    <h3 class="fw-bold m-0">Notification Channel</h3>
+                </div>
+            </div>
+            <div>
+                <div class="card-body border-top p-9">
+                    <div class="py-2">
+                        <div class="d-flex flex-stack">
+                            <div class="d-flex">
+                                <div class="d-flex flex-column">
+                                    <label class="fs-5 text-gray-900 fw-bold" for="system-notification">System Notification</label>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <div class="form-check form-check-solid form-check-custom form-switch">
+                                    <input class="form-check-input w-45px h-30px" type="checkbox" id="system-notification">
+                                    <label class="form-check-label" for="system-notification"></label>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-6">
-                            <div class="mb-3">
-                                <label class="form-label" for="notification_setting_description">Description <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="notification_setting_description" name="notification_setting_description" maxlength="200" autocomplete="off">
+
+                        <div class="separator separator-dashed my-5"></div>
+
+                        <div class="d-flex flex-stack">
+                            <div class="d-flex">
+                                <div class="d-flex flex-column">
+                                    <label class="fs-5 text-gray-900 fw-bold" for="email-notification">Email Notification</label>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <div class="form-check form-check-solid form-check-custom form-switch">
+                                    <input class="form-check-input w-45px h-30px" type="checkbox" id="email-notification">
+                                    <label class="form-check-label" for="email-notification"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="separator separator-dashed my-5"></div>
+
+                        <div class="d-flex flex-stack">
+                            <div class="d-flex">
+                                <div class="d-flex flex-column">
+                                    <label class="fs-5 text-gray-900 fw-bold" for="sms-notification">SMS Notification</label>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <div class="form-check form-check-solid form-check-custom form-switch">
+                                    <input class="form-check-input w-45px h-30px" type="checkbox" id="sms-notification">
+                                    <label class="form-check-label" for="sms-notification"></label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="notification-setting-form" class="btn btn-success" id="submit-data">Save changes</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div id="system-notification-template-modal" class="modal fade" tabindex="-1" aria-labelledby="system-notification-template-modal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Edit System Notification Template</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="system-notification-template-form" method="post" action="#">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="system_notification_title">Notification Title <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="system_notification_title" name="system_notification_title" maxlength="200" autocomplete="off">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="system_notification_message">Notification Message <span class="text-danger">*</span></label>
-                                <textarea class="form-control maxlength" id="system_notification_message" name="system_notification_message" maxlength="500" rows="4"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="system-notification-template-form" class="btn btn-success" id="system-notification-template-submit-data">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="email-notification-template-modal" class="modal fade" tabindex="-1" aria-labelledby="email-notification-template-modal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-xl">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Edit Email Notification Template</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="email-notification-template-form" method="post" action="#">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="email_notification_subject">Email Subject <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control maxlength" id="email_notification_subject" name="email_notification_subject" maxlength="200" autocomplete="off">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="email_notification_body">Email Body <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="email_notification_body"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="email-notification-template-form" class="btn btn-success" id="email-notification-template-submit-data">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="sms-notification-template-modal" class="modal fade" tabindex="-1" aria-labelledby="sms-notification-template-modal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-8">Edit SMS Notification Template</h5>
-                <button type="button" class="btn-close fs-2" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="sms-notification-template-form" method="post" action="#">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="sms_notification_message">Notification Message <span class="text-danger">*</span></label>
-                                <textarea class="form-control maxlength" id="sms_notification_message" name="sms_notification_message" maxlength="500" rows="4"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="sms-notification-template-form" class="btn btn-success" id="sms-notification-template-submit-data">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<?php require_once('components/global/view/_log_notes_offcanvas.php'); ?>
-<?php require_once('components/global/view/_internal_log_notes.php'); ?>
+<?php require_once('components/view/_log_notes_modal.php'); ?>

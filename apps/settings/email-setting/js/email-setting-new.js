@@ -14,6 +14,9 @@ function emailSettingForm(){
             email_setting_name: {
                 required: true
             },
+            email_setting_description: {
+                required: true
+            },
             mail_host: {
                 required: true
             },
@@ -31,14 +34,14 @@ function emailSettingForm(){
             },
             mail_from_email: {
                 required: true
-            },
-            email_setting_description: {
-                required: true
             }
         },
         messages: {
             email_setting_name: {
                 required: 'Enter the display name'
+            },
+            email_setting_description: {
+                required: 'Enter the description'
             },
             mail_host: {
                 required: 'Enter the host'
@@ -47,41 +50,30 @@ function emailSettingForm(){
                 required: 'Enter the port'
             },
             mail_username: {
-                required: 'Enter the mail username'
+                required: 'Enter the email username'
             },
             mail_password: {
-                required: 'Enter the mail password'
+                required: 'Enter the email password'
             },
             mail_from_name: {
                 required: 'Enter the mail from name'
             },
             mail_from_email: {
                 required: 'Enter the mail from email'
-            },
-            email_setting_description: {
-                required: 'Enter the description'
             }
         },
         errorPlacement: function(error, element) {
-            showNotification('Attention Required: Error Found', error, 'error', 2000);
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
         },
         highlight: function(element) {
-            var inputElement = $(element);
-            if (inputElement.hasClass('select2-hidden-accessible')) {
-                inputElement.next().find('.select2-selection').addClass('is-invalid');
-            }
-            else {
-                inputElement.addClass('is-invalid');
-            }
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
         },
         unhighlight: function(element) {
-            var inputElement = $(element);
-            if (inputElement.hasClass('select2-hidden-accessible')) {
-                inputElement.next().find('.select2-selection').removeClass('is-invalid');
-            }
-            else {
-                inputElement.removeClass('is-invalid');
-            }
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
             const transaction = 'add email setting';
@@ -89,7 +81,7 @@ function emailSettingForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'components/email-setting/controller/email-setting-controller.php',
+                url: 'apps/settings/email-setting/controller/email-setting-controller.php',
                 data: $(form).serialize() + '&transaction=' + transaction,
                 dataType: 'json',
                 beforeSend: function() {
@@ -111,11 +103,7 @@ function emailSettingForm(){
                     }
                 },
                 error: function(xhr, status, error) {
-                    var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                    if (xhr.responseText) {
-                        fullErrorMessage += `, Response: ${xhr.responseText}`;
-                    }
-                    showErrorDialog(fullErrorMessage);
+                    handleSystemError(xhr, status, error);
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');

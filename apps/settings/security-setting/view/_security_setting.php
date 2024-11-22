@@ -2,7 +2,7 @@
     $disabled = $writeAccess['total'] > 0 ? '' : 'disabled';
 ?>
 <div class="card mb-5 mb-xl-10">
-    <div class="card-header border-0" role="button">
+    <div class="card-header border-0">
         <div class="card-title m-0">
             <h3 class="fw-bold m-0">Security Setting</h3>
         </div>

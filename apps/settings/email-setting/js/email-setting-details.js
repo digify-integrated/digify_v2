@@ -8,13 +8,9 @@
             emailSettingForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get email setting details');
-        });
-
         $(document).on('click','#delete-email-setting',function() {
             const email_setting_id = $('#details-id').text();
-            const page_link = document.getElementById('page-link').getAttribute('href');
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
             const transaction = 'delete email setting';
     
             Swal.fire({
@@ -33,7 +29,7 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: 'components/email-setting/controller/email-setting-controller.php',
+                        url: 'apps/settings/email-setting/controller/email-setting-controller.php',
                         dataType: 'json',
                         data: {
                             email_setting_id : email_setting_id, 
@@ -59,11 +55,7 @@
                             }
                         },
                         error: function(xhr, status, error) {
-                            var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                            if (xhr.responseText) {
-                                fullErrorMessage += `, Response: ${xhr.responseText}`;
-                            }
-                            showErrorDialog(fullErrorMessage);
+                            handleSystemError(xhr, status, error);
                         }
                     });
                     return false;
@@ -71,23 +63,11 @@
             });
         });
 
-        if($('#log-notes-main').length){
+        $(document).on('click','#log-notes-main',function() {
             const email_setting_id = $('#details-id').text();
 
-            logNotesMain('email_setting', email_setting_id);
-        }
-
-        if($('#internal-notes').length){
-            const email_setting_id = $('#details-id').text();
-
-            internalNotes('email_setting', email_setting_id);
-        }
-
-        if($('#internal-notes-form').length){
-            const email_setting_id = $('#details-id').text();
-
-            internalNotesForm('email_setting', email_setting_id);
-        }
+            logNotes('email_setting', email_setting_id);
+        });
     });
 })(jQuery);
 
@@ -97,6 +77,9 @@ function emailSettingForm(){
             email_setting_name: {
                 required: true
             },
+            email_setting_description: {
+                required: true
+            },
             mail_host: {
                 required: true
             },
@@ -114,14 +97,14 @@ function emailSettingForm(){
             },
             mail_from_email: {
                 required: true
-            },
-            email_setting_description: {
-                required: true
             }
         },
         messages: {
             email_setting_name: {
                 required: 'Enter the display name'
+            },
+            email_setting_description: {
+                required: 'Enter the description'
             },
             mail_host: {
                 required: 'Enter the host'
@@ -130,41 +113,30 @@ function emailSettingForm(){
                 required: 'Enter the port'
             },
             mail_username: {
-                required: 'Enter the mail username'
+                required: 'Enter the email username'
             },
             mail_password: {
-                required: 'Enter the mail password'
+                required: 'Enter the email password'
             },
             mail_from_name: {
                 required: 'Enter the mail from name'
             },
             mail_from_email: {
                 required: 'Enter the mail from email'
-            },
-            email_setting_description: {
-                required: 'Enter the description'
             }
         },
         errorPlacement: function(error, element) {
-            showNotification('Attention Required: Error Found', error, 'error', 2000);
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
         },
         highlight: function(element) {
-            var inputElement = $(element);
-            if (inputElement.hasClass('select2-hidden-accessible')) {
-                inputElement.next().find('.select2-selection').addClass('is-invalid');
-            }
-            else {
-                inputElement.addClass('is-invalid');
-            }
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
         },
         unhighlight: function(element) {
-            var inputElement = $(element);
-            if (inputElement.hasClass('select2-hidden-accessible')) {
-                inputElement.next().find('.select2-selection').removeClass('is-invalid');
-            }
-            else {
-                inputElement.removeClass('is-invalid');
-            }
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
             const email_setting_id = $('#details-id').text();
@@ -173,8 +145,8 @@ function emailSettingForm(){
           
             $.ajax({
                 type: 'POST',
-                url: 'components/email-setting/controller/email-setting-controller.php',
-                data: $(form).serialize() + '&transaction=' + transaction + '&email_setting_id=' + email_setting_id,
+                url: 'apps/settings/email-setting/controller/email-setting-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&email_setting_id=' + encodeURIComponent(email_setting_id),
                 dataType: 'json',
                 beforeSend: function() {
                     disableFormSubmitButton('submit-data');
@@ -182,8 +154,6 @@ function emailSettingForm(){
                 success: function (response) {
                     if (response.success) {
                         showNotification(response.title, response.message, response.messageType);
-                        displayDetails('get email setting details');
-                        $('#email-setting-modal').modal('hide');
                     }
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -200,11 +170,7 @@ function emailSettingForm(){
                     }
                 },
                 error: function(xhr, status, error) {
-                    var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                    if (xhr.responseText) {
-                        fullErrorMessage += `, Response: ${xhr.responseText}`;
-                    }
-                    showErrorDialog(fullErrorMessage);
+                    handleSystemError(xhr, status, error);
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
@@ -221,10 +187,10 @@ function displayDetails(transaction){
     switch (transaction) {
         case 'get email setting details':
             var email_setting_id = $('#details-id').text();
-            const page_link = document.getElementById('page-link').getAttribute('href');
+            var page_link = document.getElementById('page-link').getAttribute('href'); 
             
             $.ajax({
-                url: 'components/email-setting/controller/email-setting-controller.php',
+                url: 'apps/settings/email-setting/controller/email-setting-controller.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {
@@ -232,7 +198,7 @@ function displayDetails(transaction){
                     transaction : transaction
                 },
                 beforeSend: function(){
-                    resetModalForm('email-setting-form');
+                    resetForm('email-setting-form');
                 },
                 success: function(response) {
                     if (response.success) {
@@ -244,20 +210,10 @@ function displayDetails(transaction){
                         $('#mail_password').val(response.mailPassword);
                         $('#mail_from_name').val(response.mailFromName);
                         $('#mail_from_email').val(response.mailFromEmail);
-                        $('#mail_encryption').val(response.mailEncryption);
-                        $('#smtp_auth').val(response.smtpAuth);
-                        $('#smtp_auto_tls').val(response.smtpAutoTLS);
-                        
-                        $('#email_setting_name_summary').text(response.emailSettingName);
-                        $('#email_setting_description_summary').text(response.emailSettingDescription);
-                        $('#mail_host_summary').text(response.mailHost);
-                        $('#port_summary').text(response.port);
-                        $('#mail_username_summary').text(response.mailUsername);
-                        $('#mail_from_name_summary').text(response.mailFromName);
-                        $('#mail_from_email_summary').text(response.mailFromEmail);
-                        $('#mail_encryption_summary').text(response.mailEncryption);
-                        $('#smtp_auth_summary').text(response.smtpAuthSummary);
-                        $('#smtp_auto_tls_summary').text(response.smtpAutoTLSSummary);
+
+                        $('#mail_encryption').val(response.mailEncryption).trigger('change');
+                        $('#smtp_auth').val(response.smtpAuth).trigger('change');
+                        $('#smtp_auto_tls').val(response.smtpAutoTLS).trigger('change');
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
@@ -274,11 +230,7 @@ function displayDetails(transaction){
                     }
                 },
                 error: function(xhr, status, error) {
-                    var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                    if (xhr.responseText) {
-                        fullErrorMessage += `, Response: ${xhr.responseText}`;
-                    }
-                    showErrorDialog(fullErrorMessage);
+                    handleSystemError(xhr, status, error);
                 }
             });
             break;

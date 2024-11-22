@@ -1,5 +1,6 @@
 DELIMITER //
 
+DROP TRIGGER IF EXISTS email_setting_trigger_update//
 CREATE TRIGGER email_setting_trigger_update
 AFTER UPDATE ON email_setting
 FOR EACH ROW
@@ -52,6 +53,7 @@ BEGIN
     END IF;
 END //
 
+DROP TRIGGER IF EXISTS email_setting_trigger_insert//
 CREATE TRIGGER email_setting_trigger_insert
 AFTER INSERT ON email_setting
 FOR EACH ROW
