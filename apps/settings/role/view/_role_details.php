@@ -36,14 +36,14 @@
                     <span class="required">Display Name</span>
                 </label>
 
-                <input type="text" class="form-control" id="role_name" name="role_name" maxlength="100" autocomplete="off">
+                <input type="text" class="form-control" id="role_name" name="role_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
             </div>
             <div class="fv-row mb-4">
                 <label class="fs-6 fw-semibold form-label mt-3" for="role_description">
                     <span class="required">Description</span>
                 </label>
 
-                <textarea class="form-control" id="role_description" name="role_description" maxlength="200" rows="3"></textarea>
+                <textarea class="form-control" id="role_description" name="role_description" maxlength="200" rows="3" <?php echo $disabled; ?>></textarea>
             </div>
         </form>
     </div>

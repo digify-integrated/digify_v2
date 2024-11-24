@@ -32,7 +32,7 @@
                     <span class="required">Display Name</span>
                 </label>
 
-                <input type="text" class="form-control" id="file_type_name" name="file_type_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                <input type="text" class="form-control" id="file_type_name" name="file_type_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
             </div>
         </form>
     </div>

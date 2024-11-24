@@ -34,7 +34,7 @@
                             <span class="required">Display Name</span>
                         </label>
 
-                        <input type="text" class="form-control" id="email_setting_name" name="email_setting_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="email_setting_name" name="email_setting_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
                 <div class="col">
@@ -43,7 +43,7 @@
                             <span class="required">Description</span>
                         </label>
 
-                        <input type="text" class="form-control" id="email_setting_description" name="email_setting_description" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="email_setting_description" name="email_setting_description" maxlength="200" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                             <span class="required">Host</span>
                         </label>
                         
-                        <input type="text" class="form-control" id="mail_host" name="mail_host" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="mail_host" name="mail_host" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
                 <div class="col">
@@ -64,7 +64,7 @@
                             <span class="required">Port</span>
                         </label>
                         
-                        <input type="text" class="form-control" id="port" name="port" maxlength="10" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="port" name="port" maxlength="10" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
                             <span class="required">Email Username</span>
                         </label>
                         
-                        <input type="text" class="form-control" id="mail_username" name="mail_username" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="mail_username" name="mail_username" maxlength="200" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
                 <div class="col">
@@ -86,7 +86,7 @@
                         </label>
                         
                         <div class="input-group">
-                            <input type="password" class="form-control" name="mail_password" id="mail_password" <?php echo $disabled ?>>
+                            <input type="password" class="form-control" name="mail_password" id="mail_password" <?php echo $disabled; ?>>
                             <button class="btn btn-light bg-transparent password-addon" type="button">
                                 <i class="ki-outline ki-eye-slash fs-2 p-0"></i>
                             </button>
@@ -102,7 +102,7 @@
                             <span class="required">Mail From Name</span>
                         </label>
                         
-                        <input type="text" class="form-control" id="mail_from_name" name="mail_from_name" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="mail_from_name" name="mail_from_name" maxlength="200" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
                 <div class="col">
@@ -111,7 +111,7 @@
                             <span class="required">Mail From Email</span>
                         </label>
                         
-                        <input type="text" class="form-control" id="mail_from_email" name="mail_from_email" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="mail_from_email" name="mail_from_email" maxlength="200" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                             <span class="required">Mail Encryption</span>
                         </label>
                         
-                        <select id="mail_encryption" name="mail_encryption" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>>
+                        <select id="mail_encryption" name="mail_encryption" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>>
                             <option value="none">None</option>
                             <option value="ssl">SSL</option>
                             <option value="starttls">Start TLS</option>
@@ -137,7 +137,7 @@
                             <span class="required">SMTP Authentication</span>
                         </label>
                         
-                        <select id="smtp_auth" name="smtp_auth" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>>
+                        <select id="smtp_auth" name="smtp_auth" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>>
                             <option value="0">No</option>
                             <option value="1">Yes</option>
                         </select>
@@ -152,7 +152,7 @@
                             <span class="required">SMTP Auto TLS</span>
                         </label>
                         
-                        <select id="smtp_auto_tls" name="smtp_auto_tls" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>>
+                        <select id="smtp_auto_tls" name="smtp_auto_tls" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>>
                             <option value="0">No</option>
                             <option value="1">Yes</option>
                         </select>

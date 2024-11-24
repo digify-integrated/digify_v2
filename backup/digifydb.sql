@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 22, 2024 at 10:25 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Nov 24, 2024 at 12:42 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -875,6 +875,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCurrencyTable` ()   BEGIN
     ORDER BY currency_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateEmailSettingOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmailSettingOptions` ()   BEGIN
+	SELECT email_setting_id, email_setting_name 
+    FROM email_setting 
+    ORDER BY email_setting_name;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateEmailSettingTable`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmailSettingTable` ()   BEGIN
 	SELECT email_setting_id, email_setting_name, email_setting_description
@@ -1346,6 +1353,24 @@ END$$
 DROP PROCEDURE IF EXISTS `getNotificationSetting`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getNotificationSetting` (IN `p_notification_setting_id` INT)   BEGIN
 	SELECT * FROM notification_setting
+	WHERE notification_setting_id = p_notification_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getNotificationSettingEmailTemplate`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getNotificationSettingEmailTemplate` (IN `p_notification_setting_id` INT)   BEGIN
+	SELECT * FROM notification_setting_email_template
+	WHERE notification_setting_id = p_notification_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getNotificationSettingSMSTemplate`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getNotificationSettingSMSTemplate` (IN `p_notification_setting_id` INT)   BEGIN
+	SELECT * FROM notification_setting_sms_template
+	WHERE notification_setting_id = p_notification_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getNotificationSettingSystemTemplate`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getNotificationSettingSystemTemplate` (IN `p_notification_setting_id` INT)   BEGIN
+	SELECT * FROM notification_setting_system_template
 	WHERE notification_setting_id = p_notification_setting_id;
 END$$
 
@@ -2180,6 +2205,31 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateCompanyLogo` (IN `p_company_i
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `updateEmailNotificationTemplate`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmailNotificationTemplate` (IN `p_notification_setting_id` INT, IN `p_email_notification_subject` VARCHAR(200), IN `p_email_notification_body` LONGTEXT, IN `p_email_setting_id` INT, IN `p_email_setting_name` VARCHAR(100), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_notification_setting_id IS NULL OR NOT EXISTS (SELECT 1 FROM notification_setting_email_template WHERE notification_setting_id = p_notification_setting_id) THEN
+        INSERT INTO notification_setting_email_template (notification_setting_id, email_notification_subject, email_notification_body, email_setting_id, email_setting_name, last_log_by) 
+        VALUES(p_notification_setting_id, p_email_notification_subject, p_email_notification_body, p_email_setting_id, p_email_setting_name, p_last_log_by);
+    ELSE
+        UPDATE notification_setting_email_template
+        SET email_notification_subject = p_email_notification_subject,
+        	email_notification_body = p_email_notification_body,
+        	email_setting_id = p_email_setting_id,
+        	email_setting_name = p_email_setting_name,
+            last_log_by = p_last_log_by
+        WHERE notification_setting_id = p_notification_setting_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `updateFailedOTPAttempts`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateFailedOTPAttempts` (IN `p_user_account_id` INT, IN `p_failed_otp_attempts` VARCHAR(255))   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -2236,6 +2286,35 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateMultipleLoginSessionsStatus` 
     SET multiple_session = p_multiple_session,
         last_log_by = p_last_log_by
     WHERE user_account_id = p_user_account_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateNotificationChannel`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateNotificationChannel` (IN `p_notification_setting_id` INT, IN `p_notification_channel` VARCHAR(10), IN `p_notification_channel_value` INT(1), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_notification_channel = 'system' THEN
+        UPDATE notification_setting
+        SET system_notification = p_notification_channel_value,
+            last_log_by = p_last_log_by
+        WHERE notification_setting_id = p_notification_setting_id;
+    ELSEIF p_notification_channel = 'email' THEN
+        UPDATE notification_setting
+        SET email_notification = p_notification_channel_value,
+            last_log_by = p_last_log_by
+        WHERE notification_setting_id = p_notification_setting_id;
+    ELSE
+        UPDATE notification_setting
+        SET sms_notification = p_notification_channel_value,
+            last_log_by = p_last_log_by
+        WHERE notification_setting_id = p_notification_setting_id;
+    END IF;
+
+    COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `updateOTP`$$
@@ -2392,6 +2471,51 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateSecuritySetting` (IN `p_secur
     SET value = p_value,
         last_log_by = p_last_log_by
     WHERE security_setting_id = p_security_setting_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateSMSNotificationTemplate`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateSMSNotificationTemplate` (IN `p_notification_setting_id` INT, IN `p_sms_notification_message` VARCHAR(500), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_notification_setting_id IS NULL OR NOT EXISTS (SELECT 1 FROM notification_setting_sms_template WHERE notification_setting_id = p_notification_setting_id) THEN
+        INSERT INTO notification_setting_sms_template (notification_setting_id, sms_notification_message, last_log_by) 
+        VALUES(p_notification_setting_id, p_sms_notification_message, p_last_log_by);
+    ELSE
+        UPDATE notification_setting_sms_template
+        SET sms_notification_message = p_sms_notification_message,
+            last_log_by = p_last_log_by
+        WHERE notification_setting_id = p_notification_setting_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateSystemNotificationTemplate`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateSystemNotificationTemplate` (IN `p_notification_setting_id` INT, IN `p_system_notification_title` VARCHAR(200), IN `p_system_notification_message` VARCHAR(200), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_notification_setting_id IS NULL OR NOT EXISTS (SELECT 1 FROM notification_setting_system_template WHERE notification_setting_id = p_notification_setting_id) THEN
+        INSERT INTO notification_setting_system_template (notification_setting_id, system_notification_title, system_notification_message, last_log_by) 
+        VALUES(p_notification_setting_id, p_system_notification_title, p_system_notification_message, p_last_log_by);
+    ELSE
+        UPDATE notification_setting_system_template
+        SET system_notification_title = p_system_notification_title,
+        	system_notification_message = p_system_notification_message,
+            last_log_by = p_last_log_by
+        WHERE notification_setting_id = p_notification_setting_id;
+    END IF;
 
     COMMIT;
 END$$
@@ -2825,7 +2949,23 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (243, 'email_setting', 2, 'Email setting created.', 2, '2024-11-22 12:27:01', '2024-11-22 12:27:01'),
 (244, 'email_setting', 2, 'Email setting changed.<br/><br/>Email Setting Name: test -> testtest<br/>Email Setting Description: test -> testtest<br/>Host: test -> testtest<br/>Port: test -> testtest<br/>SMTP Authentication: 0 -> 1<br/>SMTP Auto TLS: 0 -> 1<br/>Mail Username: test -> testtest<br/>Mail Encryption: none -> ssl<br/>Mail From Name: test -> testtest<br/>Mail From Email: test -> testtest<br/>', 2, '2024-11-22 12:27:18', '2024-11-22 12:27:18'),
 (245, 'email_setting', 1, 'Email setting created.', 2, '2024-11-22 12:28:32', '2024-11-22 12:28:32'),
-(246, 'notification_setting', 4, 'Notification setting created.', 2, '2024-11-22 15:29:03', '2024-11-22 15:29:03');
+(246, 'notification_setting', 4, 'Notification setting created.', 2, '2024-11-22 15:29:03', '2024-11-22 15:29:03'),
+(247, 'notification_setting', 4, 'Notification setting changed.<br/><br/>Notification Setting Name: test -> test2<br/>Notification Setting Description: test -> test2<br/>', 2, '2024-11-23 16:21:56', '2024-11-23 16:21:56'),
+(248, 'notification_setting', 4, 'Notification setting changed.<br/><br/>Email Notification: 0 -> 1<br/>', 2, '2024-11-23 17:58:27', '2024-11-23 17:58:27'),
+(249, 'notification_setting', 4, 'Notification setting changed.<br/><br/>SMS Notification: 0 -> 1<br/>', 2, '2024-11-23 17:58:28', '2024-11-23 17:58:28'),
+(250, 'notification_setting', 4, 'Notification setting changed.<br/><br/>Email Notification: 1 -> 0<br/>', 2, '2024-11-23 18:07:31', '2024-11-23 18:07:31'),
+(251, 'notification_setting', 4, 'Notification setting changed.<br/><br/>Email Notification: 0 -> 1<br/>', 2, '2024-11-23 18:07:38', '2024-11-23 18:07:38'),
+(252, 'notification_setting', 4, 'Notification setting changed.<br/><br/>Email Notification: 1 -> 0<br/>', 2, '2024-11-23 18:13:42', '2024-11-23 18:13:42'),
+(253, 'notification_setting', 4, 'Notification setting changed.<br/><br/>Email Notification: 0 -> 1<br/>', 2, '2024-11-23 18:14:45', '2024-11-23 18:14:45'),
+(254, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-21 14:08:58 -> 2024-11-24 13:26:06<br/>', 2, '2024-11-24 13:26:06', '2024-11-24 13:26:06'),
+(255, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-24 13:26:06 -> 2024-11-24 17:44:11<br/>', 2, '2024-11-24 17:44:11', '2024-11-24 17:44:11'),
+(256, 'notification_setting_sms_template', 4, 'SMS notification template created.', 2, '2024-11-24 19:35:16', '2024-11-24 19:35:16'),
+(257, 'notification_setting_email_template', 4, 'Email notification template created.', 2, '2024-11-24 19:35:28', '2024-11-24 19:35:28'),
+(258, 'notification_setting_system_template', 4, 'System notification template created.', 2, '2024-11-24 19:36:08', '2024-11-24 19:36:08'),
+(259, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: asdasdasd -> asdasdasdasdasd<br/>', 2, '2024-11-24 19:39:06', '2024-11-24 19:39:06'),
+(260, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: asdasdasdasdasd -> <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:40:51', '2024-11-24 19:40:51'),
+(261, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasd</strong></span></em></p> -> <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasdasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:41:08', '2024-11-24 19:41:08'),
+(262, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasdasdasdasd</strong></span></em></p> -> <p><em><span style=\"text-decoration: underline;\"><strong>aasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:41:20', '2024-11-24 19:41:20');
 
 -- --------------------------------------------------------
 
@@ -3486,7 +3626,9 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (19, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-17 12:52:56'),
 (20, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-18 12:07:42'),
 (21, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-20 13:24:32'),
-(22, 2, 'Manila, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-21 14:08:58');
+(22, 2, 'Manila, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-21 14:08:58'),
+(23, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-24 13:26:06'),
+(24, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-24 17:44:11');
 
 -- --------------------------------------------------------
 
@@ -3628,7 +3770,7 @@ INSERT INTO `notification_setting` (`notification_setting_id`, `notification_set
 (1, 'Login OTP', 'Notification setting for Login OTP received by the users.', 0, 1, 0, '2024-10-13 16:15:08', 1),
 (2, 'Forgot Password', 'Notification setting when the user initiates forgot password.', 0, 1, 0, '2024-10-13 16:15:08', 1),
 (3, 'Registration Verification', 'Notification setting when the user sign-up for an account.', 0, 1, 0, '2024-10-13 16:15:08', 1),
-(4, 'test', 'test', 1, 0, 0, '2024-11-22 15:29:03', 2);
+(4, 'test2', 'test2', 1, 1, 1, '2024-11-22 15:29:03', 2);
 
 --
 -- Triggers `notification_setting`
@@ -3701,7 +3843,8 @@ CREATE TABLE `notification_setting_email_template` (
 INSERT INTO `notification_setting_email_template` (`notification_setting_email_id`, `notification_setting_id`, `email_notification_subject`, `email_notification_body`, `email_setting_id`, `email_setting_name`, `created_date`, `last_log_by`) VALUES
 (1, 1, 'Login OTP - Secure Access to Your Account', '<p>To ensure the security of your account, we have generated a unique One-Time Password (OTP) for you to use during the login process. Please use the following OTP to access your account:</p>\n<p><br>OTP: <strong>#{OTP_CODE}</strong></p>\n<p><br>Please note that this OTP is valid for &nbsp;<strong>#{OTP_CODE_VALIDITY}</strong>. Once you have logged in successfully, we recommend enabling two-factor authentication for an added layer of security.<br>If you did not initiate this login or believe it was sent to you in error, please disregard this email and delete it immediately. Your account\'s security remains our utmost priority.</p>\n<p>Note: This is an automatically generated email. Please do not reply to this address.</p>', 1, 'Security Email Setting', '2024-10-13 16:15:08', 1),
 (2, 2, 'Password Reset Request - Action Required', '<p>We received a request to reset your password. To proceed with the password reset, please follow the steps below:</p>\n<ol>\n<li>\n<p>Click on the following link to reset your password:&nbsp; <strong><a href=\"#{RESET_LINK}\">Password Reset Link</a></strong></p>\n</li>\n<li>\n<p>If you did not request this password reset, please ignore this email. Your account remains secure.</p>\n</li>\n</ol>\n<p>Please note that this link is time-sensitive and will expire after <strong>#{RESET_LINK_VALIDITY}</strong>. If you do not reset your password within this timeframe, you may need to request another password reset.</p>\n<p><br>If you did not initiate this password reset request or believe it was sent to you in error, please disregard this email and delete it immediately. Your account\'s security remains our utmost priority.<br><br>Note: This is an automatically generated email. Please do not reply to this address.</p>', 1, 'Security Email Setting', '2024-10-13 16:15:08', 1),
-(3, 3, 'Sign Up Verification - Action Required', '<p>Thank you for registering! To complete your registration, please verify your email address by clicking the link below:</p>\n<p><a href=\"#{REGISTRATION_VERIFICATION_LINK}\">Click to verify your account</a></p>\n<p>Important: This link is time-sensitive and will expire after #{REGISTRATION_VERIFICATION_VALIDITY}. If you do not verify your email within this timeframe, you may need to request another verification link.</p>\n<p>If you did not register for an account with us, please ignore this email. Your account will not be activated.</p>\n<p>Note: This is an automatically generated email. Please do not reply to this address.</p>', 1, 'Security Email Setting', '2024-10-13 16:15:08', 1);
+(3, 3, 'Sign Up Verification - Action Required', '<p>Thank you for registering! To complete your registration, please verify your email address by clicking the link below:</p>\n<p><a href=\"#{REGISTRATION_VERIFICATION_LINK}\">Click to verify your account</a></p>\n<p>Important: This link is time-sensitive and will expire after #{REGISTRATION_VERIFICATION_VALIDITY}. If you do not verify your email within this timeframe, you may need to request another verification link.</p>\n<p>If you did not register for an account with us, please ignore this email. Your account will not be activated.</p>\n<p>Note: This is an automatically generated email. Please do not reply to this address.</p>', 1, 'Security Email Setting', '2024-10-13 16:15:08', 1),
+(4, 4, 'asdasdasd', '<p><em><span style=\"text-decoration: underline;\"><strong>aasdasdasd</strong></span></em></p>', 1, 'Security Email Setting', '2024-11-24 19:35:28', 2);
 
 --
 -- Triggers `notification_setting_email_template`
@@ -3757,6 +3900,13 @@ CREATE TABLE `notification_setting_sms_template` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Dumping data for table `notification_setting_sms_template`
+--
+
+INSERT INTO `notification_setting_sms_template` (`notification_setting_sms_id`, `notification_setting_id`, `sms_notification_message`, `created_date`, `last_log_by`) VALUES
+(1, 4, 'asdasd', '2024-11-24 19:35:16', 2);
+
+--
 -- Triggers `notification_setting_sms_template`
 --
 DROP TRIGGER IF EXISTS `notification_setting_sms_template_trigger_insert`;
@@ -3801,6 +3951,13 @@ CREATE TABLE `notification_setting_system_template` (
   `created_date` datetime NOT NULL DEFAULT current_timestamp(),
   `last_log_by` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `notification_setting_system_template`
+--
+
+INSERT INTO `notification_setting_system_template` (`notification_setting_system_id`, `notification_setting_id`, `system_notification_title`, `system_notification_message`, `created_date`, `last_log_by`) VALUES
+(1, 4, 'asdasdas', 'asdasd', '2024-11-24 19:36:08', 2);
 
 --
 -- Triggers `notification_setting_system_template`
@@ -4282,7 +4439,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-21 14:08:58', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'cfPI9RV9mv3SUV0MAtTiMi%2B7Gtch8MGimWM8wmnyYhA%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-24 17:44:11', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'pFZbKtYP%2BHRx%2BgZj%2F7L5JPVwZUU%2BG9hqtHN1BYltzaA%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -4615,7 +4772,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=247;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=263;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -4663,7 +4820,7 @@ ALTER TABLE `file_type`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -4687,19 +4844,19 @@ ALTER TABLE `notification_setting`
 -- AUTO_INCREMENT for table `notification_setting_email_template`
 --
 ALTER TABLE `notification_setting_email_template`
-  MODIFY `notification_setting_email_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `notification_setting_email_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `notification_setting_sms_template`
 --
 ALTER TABLE `notification_setting_sms_template`
-  MODIFY `notification_setting_sms_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `notification_setting_sms_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `notification_setting_system_template`
 --
 ALTER TABLE `notification_setting_system_template`
-  MODIFY `notification_setting_system_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `notification_setting_system_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `password_history`
@@ -4932,14 +5089,6 @@ ALTER TABLE `state`
 --
 ALTER TABLE `upload_setting`
   ADD CONSTRAINT `upload_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `upload_setting_file_extension`
---
-ALTER TABLE `upload_setting_file_extension`
-  ADD CONSTRAINT `upload_setting_file_extension_ibfk_1` FOREIGN KEY (`upload_setting_id`) REFERENCES `upload_setting` (`upload_setting_id`),
-  ADD CONSTRAINT `upload_setting_file_extension_ibfk_2` FOREIGN KEY (`file_extension_id`) REFERENCES `file_extension` (`file_extension_id`),
-  ADD CONSTRAINT `upload_setting_file_extension_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `user_account`

@@ -35,7 +35,7 @@
                             <span class="required">Display Name</span>
                         </label>
 
-                        <input type="text" class="form-control" id="upload_setting_name" name="upload_setting_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="upload_setting_name" name="upload_setting_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                     <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
                         <div class="col">
@@ -44,7 +44,7 @@
                                     <span class="required">Description</span>
                                 </label>
 
-                                <input type="text" class="form-control" id="upload_setting_description" name="upload_setting_description" maxlength="200" autocomplete="off" <?php echo $disabled ?>>
+                                <input type="text" class="form-control" id="upload_setting_description" name="upload_setting_description" maxlength="200" autocomplete="off" <?php echo $disabled; ?>>
                             </div>
 
                         </div>
@@ -56,7 +56,7 @@
                                 </label>
                                 
                                 <div class="input-group mb-5">
-                                    <input type="number" class="form-control" id="max_file_size" name="max_file_size" min="1" step="1" <?php echo $disabled ?>>
+                                    <input type="number" class="form-control" id="max_file_size" name="max_file_size" min="1" step="1" <?php echo $disabled; ?>>
                                     <span class="input-group-text">kb</span>
                                 </div>
                             </div>
@@ -82,7 +82,7 @@
             </div>
 
             <div class="card-body border-top">
-                <select id="allowed_file_extension" name="allowed_file_extension" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                <select id="allowed_file_extension" name="allowed_file_extension" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
             </div>
         </div>
     </div>

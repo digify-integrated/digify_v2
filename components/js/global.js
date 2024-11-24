@@ -525,8 +525,18 @@ function getDeviceInfo() {
     return `${browser} - ${device}`;
 }
 
-function initializeTinyMCE(tiny_mce_id){
-    var options = {selector: "#" + tiny_mce_id, height : "250", license_key: 'GPL2+'};
+function initializeTinyMCE(tiny_mce_id, disabled = 0){
+    var options = {
+        selector: "#" + tiny_mce_id,
+        height : "350",
+        toolbar: [
+            'styleselect fontselect fontsizeselect',
+            'undo redo | cut copy paste | bold italic | link image | alignleft aligncenter alignright alignjustify',
+            'bullist numlist | outdent indent | blockquote subscript superscript | advlist | autolink | lists charmap | print preview |  code | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+        ],
+        plugins: 'advlist autolink link image lists charmap print preview table code',
+        license_key: 'GPL2+'
+    };
 
     if (KTThemeMode.getMode() === "dark") {
         options["skin"] = "oxide-dark";
@@ -534,4 +544,8 @@ function initializeTinyMCE(tiny_mce_id){
     }
 
     tinymce.init(options);
+
+    if(disabled){
+        tinymce.activeEditor.mode.set('readonly');
+    }
 }

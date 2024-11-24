@@ -35,7 +35,7 @@
                     <span class="required">Display Name</span>
                 </label>
 
-                <input type="text" class="form-control" id="menu_item_name" name="menu_item_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                <input type="text" class="form-control" id="menu_item_name" name="menu_item_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
             </div>
 
             <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
@@ -45,7 +45,7 @@
                             <span class="required">App Module</span>
                         </label>
 
-                        <select id="app_module_id" name="app_module_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                        <select id="app_module_id" name="app_module_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
                     </div>
 
                 </div>
@@ -56,7 +56,7 @@
                             Parent Menu
                         </label>
 
-                        <select id="parent_id" name="parent_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                        <select id="parent_id" name="parent_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@
                             Icon
                         </label>
 
-                        <select id="menu_item_icon" name="menu_item_icon" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>>
+                        <select id="menu_item_icon" name="menu_item_icon" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>>
                             <option value="">--</option>
                             <optgroup label="Abstract">
                                 <option value="ki-outline ki-abstract">ki-outline ki-abstract</option>
@@ -738,7 +738,7 @@
                             <span class="required">Order Sequence</span>
                         </label>
 
-                        <input type="number" class="form-control" id="order_sequence" name="order_sequence" min="0" <?php echo $disabled ?>>
+                        <input type="number" class="form-control" id="order_sequence" name="order_sequence" min="0" <?php echo $disabled; ?>>
                     </div>
                 </div>
             </div>
@@ -750,7 +750,7 @@
                             Import Table
                         </label>
 
-                        <select id="table_name" name="table_name" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                        <select id="table_name" name="table_name" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
                     </div>
 
                 </div>
@@ -761,7 +761,7 @@
                             URL
                         </label>
 
-                        <input type="text" class="form-control" id="menu_item_url" name="menu_item_url" maxlength="50" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="menu_item_url" name="menu_item_url" maxlength="50" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
             </div>

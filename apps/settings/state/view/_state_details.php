@@ -32,7 +32,7 @@
                     <span class="required">Display Name</span>
                 </label>
 
-                <input type="text" class="form-control" id="state_name" name="state_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                <input type="text" class="form-control" id="state_name" name="state_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
             </div>
 
             <div class="fv-row mb-4">
@@ -40,7 +40,7 @@
                     <span class="required">Country</span>
                 </label>
 
-                <select id="country_id" name="country_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                <select id="country_id" name="country_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
             </div>
         </form>
     </div>

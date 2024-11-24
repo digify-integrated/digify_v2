@@ -114,4 +114,12 @@ BEGIN
     ORDER BY email_setting_id;
 END //
 
+DROP PROCEDURE IF EXISTS generateEmailSettingOptions//
+CREATE PROCEDURE generateEmailSettingOptions()
+BEGIN
+	SELECT email_setting_id, email_setting_name 
+    FROM email_setting 
+    ORDER BY email_setting_name;
+END //
+
 /* ----------------------------------------------------------------------------------------------------------------------------- */

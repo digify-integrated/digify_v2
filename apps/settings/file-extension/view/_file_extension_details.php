@@ -32,7 +32,7 @@
                     <span class="required">Display Name</span>
                 </label>
 
-                <input type="text" class="form-control" id="file_extension_name" name="file_extension_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                <input type="text" class="form-control" id="file_extension_name" name="file_extension_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
             </div>
 
             <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
@@ -42,7 +42,7 @@
                         <span class="required">File Extension</span>
                     </label>
 
-                        <input type="text" class="form-control" id="file_extension" name="file_extension" maxlength="10" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="file_extension" name="file_extension" maxlength="10" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
                     
@@ -52,7 +52,7 @@
                             <span class="required">File Type</span>
                         </label>
 
-                        <select id="file_type_id" name="file_type_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                        <select id="file_type_id" name="file_type_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
                     </div>
                 </div>
             </div>

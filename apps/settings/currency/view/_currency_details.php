@@ -32,7 +32,7 @@
                     <span class="required">Display Name</span>
                 </label>
 
-                <input type="text" class="form-control" id="currency_name" name="currency_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                <input type="text" class="form-control" id="currency_name" name="currency_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
             </div>
 
             <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
@@ -42,7 +42,7 @@
                             <span class="required">Symbol</span>
                         </label>
 
-                        <input type="text" class="form-control" id="symbol" name="symbol" maxlength="5" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="symbol" name="symbol" maxlength="5" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
 
                 </div>
@@ -53,7 +53,7 @@
                             <span class="required">Shorthand</span>
                         </label>
 
-                        <input type="text" class="form-control" id="shorthand" name="shorthand" maxlength="10" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="shorthand" name="shorthand" maxlength="10" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
             </div>

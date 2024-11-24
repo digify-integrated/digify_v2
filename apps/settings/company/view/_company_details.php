@@ -53,7 +53,7 @@
                             <span class="required">Display Name</span>
                         </label>
 
-                        <input type="text" class="form-control" id="company_name" name="company_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="company_name" name="company_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                     
                     <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
@@ -63,7 +63,7 @@
                                     <span class="required">Address</span>
                                 </label>
 
-                                <input type="text" class="form-control" id="address" name="address" maxlength="1000" autocomplete="off" <?php echo $disabled ?>>
+                                <input type="text" class="form-control" id="address" name="address" maxlength="1000" autocomplete="off" <?php echo $disabled; ?>>
                             </div>
 
                         </div>
@@ -74,7 +74,7 @@
                                     <span class="required">City</span>
                                 </label>
 
-                                <select id="city_id" name="city_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                                <select id="city_id" name="city_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
                             </div>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                                     Tax Identification Number
                                 </label>
 
-                                <input type="text" class="form-control" id="tax_id" name="tax_id" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                                <input type="text" class="form-control" id="tax_id" name="tax_id" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
                             </div>
 
                         </div>
@@ -97,7 +97,7 @@
                                 Currency
                                 </label>
 
-                                <select id="currency_id" name="currency_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                                <select id="currency_id" name="currency_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
                             </div>
                         </div>
                     </div>
@@ -109,7 +109,7 @@
                                     Phone
                                 </label>
 
-                                <input type="text" class="form-control" id="phone" name="phone" maxlength="20" autocomplete="off" <?php echo $disabled ?>>
+                                <input type="text" class="form-control" id="phone" name="phone" maxlength="20" autocomplete="off" <?php echo $disabled; ?>>
                             </div>
 
                         </div>
@@ -120,7 +120,7 @@
                                     Telephone
                                 </label>
 
-                                <input type="text" class="form-control" id="telephone" name="telephone" maxlength="20" autocomplete="off" <?php echo $disabled ?>>
+                                <input type="text" class="form-control" id="telephone" name="telephone" maxlength="20" autocomplete="off" <?php echo $disabled; ?>>
                             </div>
 
                         </div>
@@ -133,7 +133,7 @@
                                     Email
                                 </label>
 
-                                <input type="email" class="form-control" id="email" name="email" maxlength="250" autocomplete="off" <?php echo $disabled ?>>
+                                <input type="email" class="form-control" id="email" name="email" maxlength="250" autocomplete="off" <?php echo $disabled; ?>>
                             </div>
 
                         </div>
@@ -144,7 +144,7 @@
                                     Website
                                 </label>
 
-                                <input type="text" class="form-control" id="website" name="website" maxlength="250" autocomplete="off" <?php echo $disabled ?>>
+                                <input type="text" class="form-control" id="website" name="website" maxlength="250" autocomplete="off" <?php echo $disabled; ?>>
                             </div>
 
                         </div>

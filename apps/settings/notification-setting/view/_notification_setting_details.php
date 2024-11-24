@@ -63,36 +63,28 @@
             </div>
 
             <div class="card-body border-top p-9">
-                <div class="d-flex flex-wrap align-items-center">
-                    <div id="change_system_notification_template">
-                        <div class="fw-semibold text-gray-600" id="system_notification_template_summary"></div>
-                    </div>
-                                        
-                    <div id="change_system_notification_template_edit" class="flex-row-fluid d-none">
-                        <form id="update-system-notification-template-form">
-                            <div class="row mb-6">
-                                <div class="col-lg-12 mb-4 mb-lg-0">
-                                    <div class="fv-row mb-0 fv-plugins-icon-container">
-                                        <textarea class="form-control" id="system_notification_template" name="system_notification_template" maxlength="500" rows="3" <?php echo $disabled ?>></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                                        
-                            <?php
-                                echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
-                                                                        <button id="update_full_name_submit" form="update-system-notification-template-form" type="submit" class="btn btn-primary me-2 px-6">Update System Notification Template</button>
-                                                                        <button id="update_full_name_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary  px-6" data-toggle-section="change_system_notification_template">Cancel</button>
-                                                                    </div>' : '';
-                            ?>
-                        </form>
-                    </div>
+                <form id="update-system-notification-template-form">
+                    <div class="fv-row mb-4">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="system_notification_title">
+                            <span class="required">Title</span>
+                        </label>
 
+                        <input type="text" class="form-control" id="system_notification_title" name="system_notification_title" maxlength="200" autocomplete="off" <?php echo $disabled; ?>>
+                    </div>
+                    <div class="fv-row mb-4">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="system_notification_message">
+                            <span class="required">Message</span>
+                        </label>
+
+                        <textarea class="form-control" id="system_notification_message" name="system_notification_message" maxlength="500" rows="3" <?php echo $disabled; ?>></textarea>
+                    </div>
+                                        
                     <?php
-                        echo ($writeAccess['total'] > 0) ? '<div id="change_system_notification_template_button" class="ms-auto" data-toggle-section="change_system_notification_template">
-                                                                <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
+                        echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                <button id="submit-system-notification-template" form="update-system-notification-template-form" type="submit" class="btn btn-primary me-2 px-6">Update System Notification Template</button>
                                                             </div>' : '';
                     ?>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -104,36 +96,43 @@
             </div>
 
             <div class="card-body border-top p-9">
-                <div class="d-flex flex-wrap align-items-center">
-                    <div id="change_email_notification_template">
-                        <div class="fw-semibold text-gray-600" id="email_notification_template_summary"></div>
-                    </div>
-                                        
-                    <div id="change_email_notification_template_edit" class="flex-row-fluid d-none">
-                        <form id="update-email-notification-template-form">
-                            <div class="row mb-6">
-                                <div class="col-lg-12 mb-4 mb-lg-0">
-                                    <div class="fv-row mb-0 fv-plugins-icon-container">
-                                        <textarea id="email_notification_template_tinymce" name="email_notification_template_tinymce" class="tox-target"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                                        
-                            <?php
-                                echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
-                                                                        <button id="update_full_name_submit" form="update-email-notification-template-form" type="submit" class="btn btn-primary me-2 px-6">Update Email Notification Template</button>
-                                                                        <button id="update_full_name_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary  px-6" data-toggle-section="change_email_notification_template">Cancel</button>
-                                                                    </div>' : '';
-                            ?>
-                        </form>
-                    </div>
+                <form id="update-email-notification-template-form">
+                    <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
+                        <div class="col">
+                            <div class="fv-row mb-4">
+                                <label class="fs-6 fw-semibold form-label mt-3" for="email_notification_subject">
+                                    <span class="required">Subject</span>
+                                </label>
 
+                                <input type="text" class="form-control" id="email_notification_subject" name="email_notification_subject" maxlength="200" autocomplete="off" <?php echo $disabled; ?>>
+                            </div>
+
+                        </div>
+
+                        <div class="col">
+                            <div class="fv-row mb-4">
+                                <label class="fs-6 fw-semibold form-label mt-3" for="email_setting_id">
+                                    <span class="required">Email Sender</span>
+                                </label>
+
+                                <select id="email_setting_id" name="email_setting_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fv-row mb-4">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="email_notification_body">
+                            <span class="required">Body</span>
+                        </label>
+
+                        <textarea id="email_notification_body" class="tox-target" <?php echo $disabled; ?>></textarea>
+                    </div>
+                                        
                     <?php
-                        echo ($writeAccess['total'] > 0) ? '<div id="change_email_notification_template_button" class="ms-auto" data-toggle-section="change_email_notification_template">
-                                                                <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
+                        echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                <button id="submit-email-notification-template" form="update-email-notification-template-form" type="submit" class="btn btn-primary me-2 px-6">Update Email Notification Template</button>
                                                             </div>' : '';
                     ?>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -145,36 +144,21 @@
             </div>
 
             <div class="card-body border-top p-9">
-                <div class="d-flex flex-wrap align-items-center">
-                    <div id="change_sms_notification_template">
-                        <div class="fw-semibold text-gray-600" id="sms_notification_template_summary"></div>
-                    </div>
-                                        
-                    <div id="change_sms_notification_template_edit" class="flex-row-fluid d-none">
-                        <form id="update-sms-notification-template-form">
-                            <div class="row mb-6">
-                                <div class="col-lg-12 mb-4 mb-lg-0">
-                                    <div class="fv-row mb-0 fv-plugins-icon-container">
-                                        <textarea class="form-control" id="sms_notification_template" name="sms_notification_template" maxlength="500" rows="3" <?php echo $disabled ?>></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                                        
-                            <?php
-                                echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
-                                                                        <button id="update_full_name_submit" form="update-sms-notification-template-form" type="submit" class="btn btn-primary me-2 px-6">Update SMS Notification Template</button>
-                                                                        <button id="update_full_name_cancel" type="button" class="btn btn-color-gray-500 btn-active-light-primary  px-6" data-toggle-section="change_sms_notification_template">Cancel</button>
-                                                                    </div>' : '';
-                            ?>
-                        </form>
-                    </div>
+                <form id="update-sms-notification-template-form">
+                    <div class="fv-row mb-4">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="sms_notification_message">
+                            <span class="required">Message</span>
+                        </label>
 
+                        <textarea class="form-control" id="sms_notification_message" name="sms_notification_message" maxlength="500" rows="3" <?php echo $disabled; ?>></textarea>
+                    </div>
+                                        
                     <?php
-                        echo ($writeAccess['total'] > 0) ? '<div id="change_sms_notification_template_button" class="ms-auto" data-toggle-section="change_sms_notification_template">
-                                                                <button class="btn btn-icon btn-light btn-active-light-primary"><i class="ki-outline ki-pencil fs-3"></i></button>
+                        echo ($writeAccess['total'] > 0) ? '<div class="d-flex">
+                                                                <button id="submit-sms-notification-template" form="update-sms-notification-template-form" type="submit" class="btn btn-primary me-2 px-6">Update SMS Notification Template</button>
                                                             </div>' : '';
                     ?>
-                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -196,8 +180,7 @@
                             </div>
                             <div class="d-flex justify-content-end">
                                 <div class="form-check form-check-solid form-check-custom form-switch">
-                                    <input class="form-check-input w-45px h-30px" type="checkbox" id="system-notification">
-                                    <label class="form-check-label" for="system-notification"></label>
+                                    <input class="form-check-input w-45px h-30px" type="checkbox" id="system-notification" <?php echo $disabled; ?>>
                                 </div>
                             </div>
                         </div>
@@ -212,8 +195,7 @@
                             </div>
                             <div class="d-flex justify-content-end">
                                 <div class="form-check form-check-solid form-check-custom form-switch">
-                                    <input class="form-check-input w-45px h-30px" type="checkbox" id="email-notification">
-                                    <label class="form-check-label" for="email-notification"></label>
+                                    <input class="form-check-input w-45px h-30px" type="checkbox" id="email-notification" <?php echo $disabled; ?>>
                                 </div>
                             </div>
                         </div>
@@ -228,8 +210,7 @@
                             </div>
                             <div class="d-flex justify-content-end">
                                 <div class="form-check form-check-solid form-check-custom form-switch">
-                                    <input class="form-check-input w-45px h-30px" type="checkbox" id="sms-notification">
-                                    <label class="form-check-label" for="sms-notification"></label>
+                                    <input class="form-check-input w-45px h-30px" type="checkbox" id="sms-notification" <?php echo $disabled; ?>>
                                 </div>
                             </div>
                         </div>

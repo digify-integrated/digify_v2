@@ -54,14 +54,14 @@
                             <span class="required">Display Name</span>
                         </label>
 
-                        <input type="text" class="form-control" id="app_module_name" name="app_module_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="app_module_name" name="app_module_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                     <div class="fv-row mb-4">
                         <label class="fs-6 fw-semibold form-label mt-3" for="app_module_description">
                             <span class="required">Description</span>
                         </label>
 
-                        <textarea class="form-control" id="app_module_description" name="app_module_description" maxlength="500" rows="3" <?php echo $disabled ?>></textarea>
+                        <textarea class="form-control" id="app_module_description" name="app_module_description" maxlength="500" rows="3" <?php echo $disabled; ?>></textarea>
                     </div>
 
                     <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
@@ -71,7 +71,7 @@
                                     <span class="required">Default Page</span>
                                 </label>
 
-                                <select id="menu_item_id" name="menu_item_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled ?>></select>
+                                <select id="menu_item_id" name="menu_item_id" class="form-select" data-control="select2" data-allow-clear="false" <?php echo $disabled; ?>></select>
                             </div>
 
                         </div>
@@ -82,7 +82,7 @@
                                     <span class="required">Order Sequence</span>
                                 </label>
 
-                                <input type="number" class="form-control" id="order_sequence" name="order_sequence" min="0" <?php echo $disabled ?>>
+                                <input type="number" class="form-control" id="order_sequence" name="order_sequence" min="0" <?php echo $disabled; ?>>
                             </div>
                         </div>
                     </div>

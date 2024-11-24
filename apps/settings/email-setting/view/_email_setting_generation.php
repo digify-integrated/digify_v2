@@ -51,6 +51,33 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             echo json_encode($response);
         break;
         # -------------------------------------------------------------
+
+        # -------------------------------------------------------------
+        case 'email setting options':
+            $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;
+
+            $sql = $databaseModel->getConnection()->prepare('CALL generateEmailSettingOptions()');
+            $sql->execute();
+            $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+            $sql->closeCursor();
+
+            if(!$multiple){
+                $response[] = [
+                    'id' => '',
+                    'text' => '--'
+                ];
+            }            
+
+            foreach ($options as $row) {
+                $response[] = [
+                    'id' => $row['email_setting_id'],
+                    'text' => $row['email_setting_name']
+                ];
+            }
+
+            echo json_encode($response);
+        break;
+        # -------------------------------------------------------------
     }
 }
 

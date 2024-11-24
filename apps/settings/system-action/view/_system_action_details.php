@@ -35,14 +35,14 @@
                     <span class="required">Display Name</span>
                 </label>
 
-                <input type="text" class="form-control" id="system_action_name" name="system_action_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                <input type="text" class="form-control" id="system_action_name" name="system_action_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
             </div>
             <div class="fv-row mb-4">
                 <label class="fs-6 fw-semibold form-label mt-3" for="system_action_description">
                     <span class="required">Description</span>
                 </label>
 
-                <textarea class="form-control" id="system_action_description" name="system_action_description" maxlength="200" rows="3" <?php echo $disabled ?>></textarea>
+                <textarea class="form-control" id="system_action_description" name="system_action_description" maxlength="200" rows="3" <?php echo $disabled; ?>></textarea>
             </div>
         </form>
     </div>

@@ -32,7 +32,7 @@
                     <span class="required">Display Name</span>
                 </label>
 
-                <input type="text" class="form-control" id="country_name" name="country_name" maxlength="100" autocomplete="off" <?php echo $disabled ?>>
+                <input type="text" class="form-control" id="country_name" name="country_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
             </div>
 
             <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
@@ -42,7 +42,7 @@
                             <span class="required">Country Code</span>
                         </label>
 
-                        <input type="text" class="form-control" id="country_code" name="country_code" maxlength="10" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="country_code" name="country_code" maxlength="10" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
 
                 </div>
@@ -53,7 +53,7 @@
                             <span class="required">Phone Code</span>
                         </label>
 
-                        <input type="text" class="form-control" id="phone_code" name="phone_code" maxlength="10" autocomplete="off" <?php echo $disabled ?>>
+                        <input type="text" class="form-control" id="phone_code" name="phone_code" maxlength="10" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
             </div>
