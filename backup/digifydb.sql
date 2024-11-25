@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 24, 2024 at 12:42 PM
+-- Generation Time: Nov 25, 2024 at 08:52 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -2680,7 +2680,50 @@ CREATE TABLE `app_module` (
 --
 
 INSERT INTO `app_module` (`app_module_id`, `app_module_name`, `app_module_description`, `app_logo`, `menu_item_id`, `menu_item_name`, `order_sequence`, `created_date`, `last_log_by`) VALUES
-(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control.', '../settings/app-module/image/logo/1/Pboex.png', 10, 'Account Settings', 100, '2024-11-03 20:44:42', 2);
+(1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../settings/app-module/image/logo/1/Pboex.png', 1, 'App Module', 100, '2024-11-25 15:12:14', 1),
+(2, 'Employee', 'Centralize employee information', '../settings/app-module/image/logo/2/Jiwn.png', 24, 'Employee', 5, '2024-11-25 15:12:14', 2);
+
+--
+-- Triggers `app_module`
+--
+DROP TRIGGER IF EXISTS `app_module_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `app_module_trigger_insert` AFTER INSERT ON `app_module` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'App module created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('app_module', NEW.app_module_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `app_module_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `app_module_trigger_update` AFTER UPDATE ON `app_module` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'App module changed.<br/><br/>';
+
+    IF NEW.app_module_name <> OLD.app_module_name THEN
+        SET audit_log = CONCAT(audit_log, "App Module Name: ", OLD.app_module_name, " -> ", NEW.app_module_name, "<br/>");
+    END IF;
+
+    IF NEW.app_module_description <> OLD.app_module_description THEN
+        SET audit_log = CONCAT(audit_log, "App Module Description: ", OLD.app_module_description, " -> ", NEW.app_module_description, "<br/>");
+    END IF;
+
+    IF NEW.menu_item_name <> OLD.menu_item_name THEN
+        SET audit_log = CONCAT(audit_log, "Menu Item: ", OLD.menu_item_name, " -> ", NEW.menu_item_name, "<br/>");
+    END IF;
+
+    IF NEW.order_sequence <> OLD.order_sequence THEN
+        SET audit_log = CONCAT(audit_log, "Order Sequence: ", OLD.order_sequence, " -> ", NEW.order_sequence, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'App module changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('app_module', NEW.app_module_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -2965,7 +3008,8 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (259, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: asdasdasd -> asdasdasdasdasd<br/>', 2, '2024-11-24 19:39:06', '2024-11-24 19:39:06'),
 (260, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: asdasdasdasdasd -> <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:40:51', '2024-11-24 19:40:51'),
 (261, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasd</strong></span></em></p> -> <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasdasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:41:08', '2024-11-24 19:41:08'),
-(262, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasdasdasdasd</strong></span></em></p> -> <p><em><span style=\"text-decoration: underline;\"><strong>aasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:41:20', '2024-11-24 19:41:20');
+(262, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasdasdasdasd</strong></span></em></p> -> <p><em><span style=\"text-decoration: underline;\"><strong>aasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:41:20', '2024-11-24 19:41:20'),
+(263, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-24 17:44:11 -> 2024-11-25 11:44:20<br/>', 2, '2024-11-25 11:44:20', '2024-11-25 11:44:20');
 
 -- --------------------------------------------------------
 
@@ -3628,7 +3672,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (21, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-20 13:24:32'),
 (22, 2, 'Manila, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-21 14:08:58'),
 (23, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-24 13:26:06'),
-(24, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-24 17:44:11');
+(24, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-24 17:44:11'),
+(25, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-25 11:44:20');
 
 -- --------------------------------------------------------
 
@@ -3742,7 +3787,34 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (20, 'Upload Setting', 'upload-setting.php', 'ki-outline ki-exit-up', 1, 'Settings', 2, 'Settings', 'upload_setting', 21, '2024-11-18 14:42:34', 2),
 (21, 'Security Setting', 'security-setting.php', 'ki-outline ki-lock', 1, 'Settings', 2, 'Settings', 'security_setting', 19, '2024-11-20 16:48:34', 2),
 (22, 'Email Setting', 'email-setting.php', 'ki-outline ki-sms', 1, 'Settings', 2, 'Settings', 'email_setting', 5, '2024-11-22 10:39:27', 2),
-(23, 'Notification Setting', 'notification-setting.php', 'ki-outline ki-notification', 1, 'Settings', 2, 'Settings', 'notification_setting', 14, '2024-11-22 14:29:29', 2);
+(23, 'Notification Setting', 'notification-setting.php', 'ki-outline ki-notification', 1, 'Settings', 2, 'Settings', 'notification_setting', 14, '2024-11-22 14:29:29', 2),
+(24, 'Employee', 'employee.php', '', 2, 'Employee', 0, '', '', 1, '2024-11-25 14:34:33', 2),
+(25, 'Banking', '', 'ki-outline ki-bank', 1, 'Settings', 11, 'Configurations', '', 2, '2024-11-25 15:14:27', 2),
+(26, 'Bank', 'bank.php', '', 1, 'Settings', 25, 'Banking', '', 1, '2024-11-25 15:14:59', 2),
+(27, 'Bank Account Type', 'bank-account-type.php', '', 1, 'Settings', 25, 'Banking', '', 2, '2024-11-25 15:15:23', 2),
+(28, 'Contact Information', '', 'ki-outline ki-address-book', 1, 'Settings', 11, 'Configurations', '', 3, '2024-11-25 15:18:29', 2),
+(29, 'Address Type', 'address-type.php', '', 1, 'Settings', 28, 'Contact Information', '', 1, '2024-11-25 15:19:04', 2),
+(30, 'Contact Information Type', 'contact-information-type.php', 'ki-outline ki-abstract', 1, 'Settings', 28, 'Contact Information', '', 3, '2024-11-25 15:19:57', 2),
+(31, 'Language Settings', '', 'ki-outline ki-note-2', 1, 'Settings', 11, 'Configurations', '', 12, '2024-11-25 15:23:17', 2),
+(32, 'Language', 'language.php', '', 1, 'Settings', 31, 'Language Settings', '', 1, '2024-11-25 15:23:44', 2),
+(33, 'Language Proficiency', 'language-proficiency.php', '', 1, 'Settings', 31, 'Language Settings', '', 2, '2024-11-25 15:24:19', 2),
+(34, 'Profile Attribute', '', 'ki-outline ki-people', 1, 'Settings', 11, 'Configurations', '', 16, '2024-11-25 15:27:17', 2),
+(35, 'Blood Type', 'blood-type.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 2, '2024-11-25 15:27:50', 2),
+(36, 'Civil Status', 'civil-status.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 3, '2024-11-25 15:28:20', 2),
+(37, 'Educational Stage', 'educational-stage.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 5, '2024-11-25 15:28:53', 2),
+(38, 'Gender', 'gender.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 7, '2024-11-25 15:29:25', 2),
+(39, 'ID Type', 'id-type.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 9, '2024-11-25 15:30:00', 2),
+(40, 'Relationship', 'relationship.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 18, '2024-11-25 15:30:39', 2),
+(41, 'Religion', 'religion.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 19, '2024-11-25 15:31:21', 2),
+(42, 'HR Configurations', '', '', 2, 'Employee', 0, '', '', 8, '2024-11-25 15:33:34', 2),
+(43, 'Department', 'department.php', 'ki-outline ki-data', 2, 'Employee', 42, 'HR Configurations', '', 4, '2024-11-25 15:36:29', 2),
+(44, 'Departure Reason', 'departure-reason.php', 'ki-outline ki-user-square', 2, 'Employee', 42, 'HR Configurations', '', 4, '2024-11-25 15:38:31', 2),
+(45, 'Employment Location Type', 'employment-location-type.php', 'ki-outline ki-route', 2, 'Employee', 42, 'HR Configurations', '', 5, '2024-11-25 15:39:48', 2),
+(46, 'Employment Type', 'employment-type.php', 'ki-outline ki-briefcase', 2, 'Employee', 42, 'HR Configurations', '', 5, '2024-11-25 15:40:40', 2),
+(47, 'Job Position', 'job-position.php', 'ki-outline ki-questionnaire-tablet', 2, 'Employee', 42, 'HR Configurations', '', 10, '2024-11-25 15:42:05', 2),
+(48, 'Work Location', 'work-location.php', 'ki-outline ki-geolocation', 2, 'Employee', 42, 'HR Configurations', '', 23, '2024-11-25 15:43:23', 2),
+(49, 'Work Schedule Type', 'work-schedule-type.php', 'ki-outline ki-brifecase-timer', 2, 'Employee', 42, 'HR Configurations', '', 23, '2024-11-25 15:45:02', 2),
+(50, 'Work Schedule', 'work-schedule.php', '', 2, 'Employee', 0, '', '', 23, '2024-11-25 15:45:48', 2);
 
 -- --------------------------------------------------------
 
@@ -4062,28 +4134,55 @@ CREATE TABLE `role_permission` (
 
 INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `menu_item_id`, `menu_item_name`, `read_access`, `write_access`, `create_access`, `delete_access`, `import_access`, `export_access`, `log_notes_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
 (1, 1, 'Administrator', 1, 'App Module', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
-(2, 1, 'Administrator', 2, 'Settings', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
+(2, 1, 'Administrator', 2, 'Settings', 1, 0, 0, 0, 0, 0, 0, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
 (3, 1, 'Administrator', 3, 'Users & Companies', 1, 0, 0, 0, 0, 0, 0, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(4, 1, 'Administrator', 4, 'User Account', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
+(5, 1, 'Administrator', 5, 'Company', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
+(6, 1, 'Administrator', 6, 'Role', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
 (7, 1, 'Administrator', 7, 'User Interface', 1, 0, 0, 0, 0, 0, 0, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(8, 1, 'Administrator', 8, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(8, 1, 'Administrator', 8, 'Menu Item', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
 (9, 1, 'Administrator', 9, 'System Action', 1, 1, 1, 1, 1, 1, 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
-(19, 1, 'Administrator', 10, 'Account Settings', 1, 1, 0, 0, 0, 0, 0, '2024-11-12 15:33:52', '2024-11-12 15:33:52', 2),
+(19, 1, 'Administrator', 10, 'Account Settings', 1, 1, 0, 0, 0, 0, 1, '2024-11-12 15:33:52', '2024-11-12 15:33:52', 2),
 (20, 1, 'Administrator', 11, 'Configurations', 1, 0, 0, 0, 0, 0, 0, '2024-11-14 11:49:21', '2024-11-14 11:49:21', 2),
 (21, 1, 'Administrator', 12, 'Localization', 1, 0, 0, 0, 0, 0, 0, '2024-11-14 11:56:29', '2024-11-14 11:56:29', 2),
 (22, 1, 'Administrator', 13, 'Country', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 11:57:23', '2024-11-14 11:57:23', 2),
 (23, 1, 'Administrator', 14, 'State', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:13:08', '2024-11-14 12:13:08', 2),
 (24, 1, 'Administrator', 15, 'City', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:14:09', '2024-11-14 12:14:09', 2),
-(25, 1, 'Administrator', 16, 'Currency', 1, 1, 1, 1, 1, 1, 1, '2024-11-14 12:16:35', '2024-11-14 12:16:35', 2),
+(25, 1, 'Administrator', 16, 'Currency', 1, 1, 1, 1, 1, 1, 0, '2024-11-14 12:16:35', '2024-11-14 12:16:35', 2),
 (26, 1, 'Administrator', 17, 'Data Classification', 1, 0, 0, 0, 0, 0, 0, '2024-11-15 16:41:51', '2024-11-15 16:41:51', 2),
 (27, 1, 'Administrator', 18, 'File Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-15 16:42:56', '2024-11-15 16:42:56', 2),
 (28, 1, 'Administrator', 19, 'File Extension', 1, 1, 1, 1, 1, 1, 1, '2024-11-15 16:43:35', '2024-11-15 16:43:35', 2),
 (29, 1, 'Administrator', 20, 'Upload Setting', 1, 1, 1, 1, 1, 1, 1, '2024-11-18 14:42:39', '2024-11-18 14:42:39', 2),
-(30, 1, 'Administrator', 21, 'Security Setting', 1, 1, 0, 0, 0, 0, 1, '2024-11-20 16:48:41', '2024-11-20 16:48:41', 2),
+(30, 1, 'Administrator', 21, 'Security Setting', 1, 1, 0, 0, 0, 0, 0, '2024-11-20 16:48:41', '2024-11-20 16:48:41', 2),
 (31, 1, 'Administrator', 22, 'Email Setting', 1, 1, 1, 1, 1, 1, 1, '2024-11-22 10:39:32', '2024-11-22 10:39:32', 2),
-(32, 1, 'Administrator', 23, 'Notification Setting', 1, 1, 1, 1, 1, 1, 1, '2024-11-22 14:29:34', '2024-11-22 14:29:34', 2);
+(32, 1, 'Administrator', 23, 'Notification Setting', 1, 1, 1, 1, 1, 1, 1, '2024-11-22 14:29:34', '2024-11-22 14:29:34', 2),
+(33, 1, 'Administrator', 24, 'Employee', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 14:34:49', '2024-11-25 14:34:49', 2),
+(34, 1, 'Administrator', 26, 'Bank', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:15:41', '2024-11-25 15:15:41', 2),
+(35, 1, 'Administrator', 27, 'Bank Account Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:15:59', '2024-11-25 15:15:59', 2),
+(36, 1, 'Administrator', 25, 'Banking', 1, 0, 0, 0, 0, 0, 0, '2024-11-25 15:16:18', '2024-11-25 15:16:18', 2),
+(37, 1, 'Administrator', 28, 'Contact Information', 1, 0, 0, 0, 0, 0, 0, '2024-11-25 15:18:32', '2024-11-25 15:18:32', 2),
+(38, 1, 'Administrator', 29, 'Address Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:19:09', '2024-11-25 15:19:09', 2),
+(39, 1, 'Administrator', 30, 'Contact Information Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:20:01', '2024-11-25 15:20:01', 2),
+(40, 1, 'Administrator', 31, 'Language Settings', 1, 0, 0, 0, 0, 0, 0, '2024-11-25 15:23:22', '2024-11-25 15:23:22', 2),
+(41, 1, 'Administrator', 32, 'Language', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:23:47', '2024-11-25 15:23:47', 2),
+(42, 1, 'Administrator', 33, 'Language Proficiency', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:24:26', '2024-11-25 15:24:26', 2),
+(43, 1, 'Administrator', 34, 'Profile Attribute', 1, 0, 0, 0, 0, 0, 0, '2024-11-25 15:27:20', '2024-11-25 15:27:20', 2),
+(44, 1, 'Administrator', 35, 'Blood Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:27:54', '2024-11-25 15:27:54', 2),
+(45, 1, 'Administrator', 36, 'Civil Status', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:28:25', '2024-11-25 15:28:25', 2),
+(46, 1, 'Administrator', 37, 'Educational Stage', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:28:58', '2024-11-25 15:28:58', 2),
+(47, 1, 'Administrator', 38, 'Gender', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:29:29', '2024-11-25 15:29:29', 2),
+(48, 1, 'Administrator', 39, 'ID Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:30:04', '2024-11-25 15:30:04', 2),
+(49, 1, 'Administrator', 40, 'Relationship', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:30:43', '2024-11-25 15:30:43', 2),
+(50, 1, 'Administrator', 41, 'Religion', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:31:25', '2024-11-25 15:31:25', 2),
+(51, 1, 'Administrator', 42, 'HR Configurations', 1, 0, 0, 0, 0, 0, 0, '2024-11-25 15:33:39', '2024-11-25 15:33:39', 2),
+(52, 1, 'Administrator', 43, 'Department', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:36:33', '2024-11-25 15:36:33', 2),
+(53, 1, 'Administrator', 44, 'Departure Reason', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:38:35', '2024-11-25 15:38:35', 2),
+(54, 1, 'Administrator', 45, 'Employment Location Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:39:52', '2024-11-25 15:39:52', 2),
+(55, 1, 'Administrator', 46, 'Employment Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:40:45', '2024-11-25 15:40:45', 2),
+(56, 1, 'Administrator', 47, 'Job Position', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:42:09', '2024-11-25 15:42:09', 2),
+(57, 1, 'Administrator', 48, 'Work Location', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:43:27', '2024-11-25 15:43:27', 2),
+(58, 1, 'Administrator', 49, 'Work Schedule Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:45:07', '2024-11-25 15:45:07', 2),
+(59, 1, 'Administrator', 50, 'Work Schedule', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:45:53', '2024-11-25 15:45:53', 2);
 
 -- --------------------------------------------------------
 
@@ -4109,12 +4208,10 @@ CREATE TABLE `role_system_action_permission` (
 --
 
 INSERT INTO `role_system_action_permission` (`role_system_action_permission_id`, `role_id`, `role_name`, `system_action_id`, `system_action_name`, `system_action_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(1, 1, 'Administrator', 1, 'Update System Settings', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(2, 1, 'Administrator', 2, 'Update Security Settings', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
+(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
+(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
+(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
+(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
 (7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
 (9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
@@ -4439,7 +4536,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-24 17:44:11', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', '7w2t3mjEGYT8At5P4MP3kWWP0IMnOTjM4kfX55o%2F3SQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'pFZbKtYP%2BHRx%2BgZj%2F7L5JPVwZUU%2BG9hqtHN1BYltzaA%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-25 11:44:20', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'MYOQcjJ5EPGwBwwF9ry7pXNWjpDiRv%2F%2Ff3PP3yJvus4%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -4766,13 +4863,13 @@ ALTER TABLE `user_account`
 -- AUTO_INCREMENT for table `app_module`
 --
 ALTER TABLE `app_module`
-  MODIFY `app_module_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `app_module_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=263;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=264;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -4820,7 +4917,7 @@ ALTER TABLE `file_type`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -4832,7 +4929,7 @@ ALTER TABLE `menu_group`
 -- AUTO_INCREMENT for table `menu_item`
 --
 ALTER TABLE `menu_item`
-  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `menu_item_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT for table `notification_setting`
@@ -4874,7 +4971,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `role_permission`
 --
 ALTER TABLE `role_permission`
-  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `role_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `role_system_action_permission`
