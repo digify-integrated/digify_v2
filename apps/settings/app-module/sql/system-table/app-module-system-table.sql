@@ -19,6 +19,6 @@ CREATE INDEX app_module_index_menu_item_id ON app_module(menu_item_id);
 
 INSERT INTO app_module (app_module_id, app_module_name, app_module_description, app_logo, menu_item_id, menu_item_name, order_sequence, last_log_by) VALUES
 (1, 'Settings', 'Centralized management hub for comprehensive organizational oversight and control', '../settings/app-module/image/logo/1/Pboex.png', 1, 'App Module', 100, 1),
-(2, 'Subscription', 'Generate subscription code and manage renewals', '../settings/app-module/image/logo/2/FhZ0gHo.png', 10, 'Subscriber', 99, 1);
+(2, 'Employee', 'Centralize employee information', '../settings/app-module/image/logo/2/FhZ0gHo.png', 24, 'Employee', 5, 1);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

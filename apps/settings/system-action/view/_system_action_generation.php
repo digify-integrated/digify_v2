@@ -65,6 +65,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
 
             $disabled = ($updateRoleAccess['total'] == 0) ? 'disabled' : '';
             $deleteButton = '';
+            $logNotes = '';
 
             foreach ($options as $row) {
                 $roleSystemActionPermissionID = $row['role_system_action_permission_id'];

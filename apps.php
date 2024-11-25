@@ -69,7 +69,7 @@
                                                     $menuItemDetails = $menuItemModel->getMenuItem($menuItemID);
                                                     $menuItemURL = $menuItemDetails['menu_item_url'] ?? null;
                                                         
-                                                    $apps .= ' <div class="col-lg-3" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="'. $appModuleDescription .'">
+                                                    $apps .= ' <div class="col-lg-2" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="'. $appModuleDescription .'">
                                                                     <a class="card d-flex justify-content-between flex-column flex-center w-100 text-gray-800 p-10 text-center" href="'. $menuItemURL .'?app_module_id='. $securityModel->encryptData($appModuleID) .'&page_id='. $securityModel->encryptData($menuItemID) .'">
                                                                         <img src="'. $appLogo .'" alt="app-logo" class="img-fluid position-relative mb-5" width="75" height="75">
                                                                         <span class="fs-2 fw-bold">'. $appModuleName .'</span>

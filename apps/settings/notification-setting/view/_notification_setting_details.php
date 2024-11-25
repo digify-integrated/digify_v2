@@ -35,14 +35,14 @@
                             <span class="required">Display Name</span>
                         </label>
 
-                        <input type="text" class="form-control" id="notification_setting_name" name="notification_setting_name" maxlength="100" autocomplete="off">
+                        <input type="text" class="form-control" id="notification_setting_name" name="notification_setting_name" maxlength="100" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                     <div class="fv-row mb-4">
                         <label class="fs-6 fw-semibold form-label mt-3" for="notification_setting_description">
                             <span class="required">Description</span>
                         </label>
 
-                        <input type="text" class="form-control" id="notification_setting_description" name="notification_setting_description" maxlength="200" autocomplete="off">
+                        <input type="text" class="form-control" id="notification_setting_description" name="notification_setting_description" maxlength="200" autocomplete="off" <?php echo $disabled; ?>>
                     </div>
                 </div>
 

@@ -17,12 +17,23 @@
     $appModuleName = $appModuleDetails['app_module_name'];
     $appLogo = $systemModel->checkImage($appModuleDetails['app_logo'], 'app module logo');
 
-    $pageAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'read');
+    $readAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'read');
+    $writeAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'write');
+    $deleteAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'delete');
+    $createAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'create');
+    $importAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'import');
+    $exportAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'export');
+    $logNotesAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'log notes');
 
-    if ($pageAccess['total'] == 0) {
+    if ($readAccess['total'] == 0) {
         header('location: 404.php');
         exit;
     }
+
+    $newRecord = null;
+    $importRecord = null;
+    $detailID = null;
+    $importTableName = null;
 
     if(isset($_GET['id'])){
         if(empty($_GET['id'])){
@@ -32,27 +43,29 @@
     
         $detailID = $securityModel->decryptData($_GET['id']);
     }
-    else{
-        $detailID = null;
+
+    if(isset($_GET['new'])){
+        if($createAccess['total'] == 0){
+            header('location: ' . $pageLink);
+            exit;
+        }
+
+        $newRecord = isset($_GET['new']);
     }
 
-    $importTableName = '';
     if(isset($_GET['import']) && empty($_GET['import'])){
         header('location:' . $pageLink);
+        exit;
     }
     else if(isset($_GET['import']) && !empty($_GET['import'])){
+        if($importAccess['total'] == 0){
+            header('location: ' . $pageLink);
+            exit;
+        }
+
+        $importRecord = isset($_GET['import']);
         $importTableName = $securityModel->decryptData($_GET['import']);
     }
-    
-    $newRecord = isset($_GET['new']);
-    $importRecord = isset($_GET['import']);
-
-    $writeAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'write');
-    $deleteAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'delete');
-    $createAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'create');
-    $importAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'import');
-    $exportAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'export');
-    $logNotesAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'log notes');
-
+   
     $disabled = ($writeAccess['total'] == 0) ? 'disabled' : '';
 ?>
