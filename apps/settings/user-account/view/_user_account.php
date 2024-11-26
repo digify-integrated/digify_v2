@@ -1,8 +1,8 @@
 <?php
-    $activateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 3);
-    $deactivateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 4);
-    $lockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 5);
-    $unlockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 6);
+    $activateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 1);
+    $deactivateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 2);
+    $lockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 3);
+    $unlockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 4);
 ?>
 <div class="card mb-6">
     <div class="card-header border-0 pt-6">

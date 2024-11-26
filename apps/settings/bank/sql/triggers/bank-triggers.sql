@@ -11,12 +11,8 @@ BEGIN
         SET audit_log = CONCAT(audit_log, "Bank Name: ", OLD.bank_name, " -> ", NEW.bank_name, "<br/>");
     END IF;
 
-    IF NEW.state_name <> OLD.state_name THEN
-        SET audit_log = CONCAT(audit_log, "State: ", OLD.state_name, " -> ", NEW.state_name, "<br/>");
-    END IF;
-
-    IF NEW.country_name <> OLD.country_name THEN
-        SET audit_log = CONCAT(audit_log, "Country: ", OLD.country_name, " -> ", NEW.country_name, "<br/>");
+    IF NEW.bank_identifier_code <> OLD.bank_identifier_code THEN
+        SET audit_log = CONCAT(audit_log, "Bank Identifier Code: ", OLD.bank_identifier_code, " -> ", NEW.bank_identifier_code, "<br/>");
     END IF;
     
     IF audit_log <> 'Bank changed.<br/><br/>' THEN

@@ -60,8 +60,8 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
             $sql->closeCursor();
 
-            $updateRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 13);
-            $deleteRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 14);
+            $updateRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 11);
+            $deleteRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 12);
 
             $disabled = ($updateRoleAccess['total'] == 0) ? 'disabled' : '';
             $deleteButton = '';

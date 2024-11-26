@@ -1,6 +1,6 @@
 <?php
-    $addMenuItemRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 9);
-    $addSystemActionRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 12);
+    $addMenuItemRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 7);
+    $addSystemActionRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 10);
 ?>
 <div class="card mb-10">
     <div class="card-header border-0">

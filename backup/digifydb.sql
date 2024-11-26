@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 25, 2024 at 08:52 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Nov 26, 2024 at 10:28 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -192,11 +192,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkAccessRights` (IN `p_user_acco
     END IF;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkAddressTypeExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkAddressTypeExist` (IN `p_address_type_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM address_type
+    WHERE address_type_id = p_address_type_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkAppModuleExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkAppModuleExist` (IN `p_app_module_id` INT)   BEGIN
 	SELECT COUNT(*) AS total
     FROM app_module
     WHERE app_module_id = p_app_module_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkBankAccountTypeExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkBankAccountTypeExist` (IN `p_bank_account_type_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM bank_account_type
+    WHERE bank_account_type_id = p_bank_account_type_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkBankExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkBankExist` (IN `p_bank_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM bank
+    WHERE bank_id = p_bank_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkBillingCycleExist`$$
@@ -218,6 +239,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCompanyExist` (IN `p_company_i
 	SELECT COUNT(*) AS total
     FROM company
     WHERE company_id = p_company_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkContactInformationTypeExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkContactInformationTypeExist` (IN `p_contact_information_type_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM contact_information_type
+    WHERE contact_information_type_id = p_contact_information_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkCountryExist`$$
@@ -385,6 +413,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkUserAccountUsernameExist` (IN 
     WHERE user_account_id != p_user_account_id AND username = p_username;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteAddressType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteAddressType` (IN `p_address_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM address_type WHERE address_type_id = p_address_type_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `deleteAppModule`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteAppModule` (IN `p_app_module_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -395,6 +437,34 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteAppModule` (IN `p_app_module_
     START TRANSACTION;
 
     DELETE FROM app_module WHERE app_module_id = p_app_module_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteBank`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteBank` (IN `p_bank_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM bank WHERE bank_id = p_bank_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteBankAccountType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteBankAccountType` (IN `p_bank_account_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM bank_account_type WHERE bank_account_type_id = p_bank_account_type_id;
 
     COMMIT;
 END$$
@@ -437,6 +507,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCompany` (IN `p_company_id` I
     START TRANSACTION;
 
     DELETE FROM company WHERE company_id = p_company_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteContactInformationType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteContactInformationType` (IN `p_contact_information_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM contact_information_type WHERE contact_information_type_id = p_contact_information_type_id;
 
     COMMIT;
 END$$
@@ -731,6 +815,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `exportData` (IN `p_table_name` VARC
     DEALLOCATE PREPARE stmt;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateAddressTypeOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateAddressTypeOptions` ()   BEGIN
+	SELECT address_type_id, address_type_name 
+    FROM address_type 
+    ORDER BY address_type_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateAddressTypeTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateAddressTypeTable` ()   BEGIN
+	SELECT address_type_id, address_type_name
+    FROM address_type 
+    ORDER BY address_type_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateAppModuleOptions`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateAppModuleOptions` ()   BEGIN
 	SELECT app_module_id, app_module_name 
@@ -743,6 +841,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateAppModuleTable` ()   BEGIN
 	SELECT app_module_id, app_module_name, app_module_description, app_logo, order_sequence 
     FROM app_module 
     ORDER BY app_module_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateBankAccountTypeOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBankAccountTypeOptions` ()   BEGIN
+	SELECT bank_account_type_id, bank_account_type_name 
+    FROM bank_account_type 
+    ORDER BY bank_account_type_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateBankAccountTypeTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBankAccountTypeTable` ()   BEGIN
+	SELECT bank_account_type_id, bank_account_type_name
+    FROM bank_account_type 
+    ORDER BY bank_account_type_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateBankOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBankOptions` ()   BEGIN
+    SELECT bank_id, bank_name
+    FROM bank 
+    ORDER BY bank_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateBankTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBankTable` ()   BEGIN
+    SELECT bank_id, bank_name, bank_identifier_code FROM bank;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateBillingCycleOptions`$$
@@ -845,6 +969,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCompanyTable` (IN `p_filter
     PREPARE stmt FROM query;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateContactInformationTypeOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateContactInformationTypeOptions` ()   BEGIN
+	SELECT contact_information_type_id, contact_information_type_name 
+    FROM contact_information_type 
+    ORDER BY contact_information_type_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateContactInformationTypeTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateContactInformationTypeTable` ()   BEGIN
+	SELECT contact_information_type_id, contact_information_type_name
+    FROM contact_information_type 
+    ORDER BY contact_information_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateCountryOptions`$$
@@ -1263,10 +1401,28 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateUserAccountTable` ()   BEGI
     ORDER BY user_account_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getAddressType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getAddressType` (IN `p_address_type_id` INT)   BEGIN
+	SELECT * FROM address_type
+	WHERE address_type_id = p_address_type_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getAppModule`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getAppModule` (IN `p_app_module_id` INT)   BEGIN
 	SELECT * FROM app_module
 	WHERE app_module_id = p_app_module_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getBank`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getBank` (IN `p_bank_id` INT)   BEGIN
+	SELECT * FROM bank
+	WHERE bank_id = p_bank_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getBankAccountType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getBankAccountType` (IN `p_bank_account_type_id` INT)   BEGIN
+	SELECT * FROM bank_account_type
+	WHERE bank_account_type_id = p_bank_account_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getBillingCycle`$$
@@ -1285,6 +1441,12 @@ DROP PROCEDURE IF EXISTS `getCompany`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getCompany` (IN `p_company_id` INT)   BEGIN
 	SELECT * FROM company
 	WHERE company_id = p_company_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getContactInformationType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getContactInformationType` (IN `p_contact_information_type_id` INT)   BEGIN
+	SELECT * FROM contact_information_type
+	WHERE contact_information_type_id = p_contact_information_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getCountry`$$
@@ -1516,6 +1678,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `insertUploadSettingFileExtension` (
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveAddressType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveAddressType` (IN `p_address_type_id` INT, IN `p_address_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_address_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_address_type_id IS NULL OR NOT EXISTS (SELECT 1 FROM address_type WHERE address_type_id = p_address_type_id) THEN
+        INSERT INTO address_type (address_type_name, last_log_by) 
+        VALUES(p_address_type_name, p_last_log_by);
+        
+        SET p_new_address_type_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE address_type
+        SET address_type_name = p_address_type_name,
+            last_log_by = p_last_log_by
+        WHERE address_type_id = p_address_type_id;
+
+        SET p_new_address_type_id = p_address_type_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveAppModule`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveAppModule` (IN `p_app_module_id` INT, IN `p_app_module_name` VARCHAR(100), IN `p_app_module_description` VARCHAR(500), IN `p_menu_item_id` INT, IN `p_menu_item_name` VARCHAR(100), IN `p_order_sequence` TINYINT(10), IN `p_last_log_by` INT, OUT `p_new_app_module_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -1551,6 +1739,59 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveAppModule` (IN `p_app_module_id
         WHERE app_module_id = p_app_module_id;
 
         SET p_new_app_module_id = p_app_module_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveBank`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBank` (IN `p_bank_id` INT, IN `p_bank_name` VARCHAR(100), IN `p_bank_identifier_code` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_bank_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_bank_id IS NULL OR NOT EXISTS (SELECT 1 FROM bank WHERE bank_id = p_bank_id) THEN
+        INSERT INTO bank (bank_name, bank_identifier_code, last_log_by) 
+        VALUES(p_bank_name, p_bank_identifier_code, p_last_log_by);
+        
+        SET p_new_bank_id = LAST_INSERT_ID();
+    ELSE        
+        UPDATE bank
+        SET bank_name = p_bank_name,
+            bank_identifier_code = p_bank_identifier_code,
+            last_log_by = p_last_log_by
+        WHERE bank_id = p_bank_id;
+
+        SET p_new_bank_id = p_bank_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveBankAccountType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBankAccountType` (IN `p_bank_account_type_id` INT, IN `p_bank_account_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_bank_account_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_bank_account_type_id IS NULL OR NOT EXISTS (SELECT 1 FROM bank_account_type WHERE bank_account_type_id = p_bank_account_type_id) THEN
+        INSERT INTO bank_account_type (bank_account_type_name, last_log_by) 
+        VALUES(p_bank_account_type_name, p_last_log_by);
+        
+        SET p_new_bank_account_type_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE bank_account_type
+        SET bank_account_type_name = p_bank_account_type_name,
+            last_log_by = p_last_log_by
+        WHERE bank_account_type_id = p_bank_account_type_id;
+
+        SET p_new_bank_account_type_id = p_bank_account_type_id;
     END IF;
 
     COMMIT;
@@ -1653,6 +1894,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCompany` (IN `p_company_id` INT
         WHERE company_id = p_company_id;
 
         SET p_new_company_id = p_company_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveContactInformationType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveContactInformationType` (IN `p_contact_information_type_id` INT, IN `p_contact_information_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_contact_information_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_contact_information_type_id IS NULL OR NOT EXISTS (SELECT 1 FROM contact_information_type WHERE contact_information_type_id = p_contact_information_type_id) THEN
+        INSERT INTO contact_information_type (contact_information_type_name, last_log_by) 
+        VALUES(p_contact_information_type_name, p_last_log_by);
+        
+        SET p_new_contact_information_type_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE contact_information_type
+        SET contact_information_type_name = p_contact_information_type_name,
+            last_log_by = p_last_log_by
+        WHERE contact_information_type_id = p_contact_information_type_id;
+
+        SET p_new_contact_information_type_id = p_contact_information_type_id;
     END IF;
 
     COMMIT;
@@ -2659,6 +2926,61 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `address_type`
+--
+
+DROP TABLE IF EXISTS `address_type`;
+CREATE TABLE `address_type` (
+  `address_type_id` int(10) UNSIGNED NOT NULL,
+  `address_type_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `address_type`
+--
+
+INSERT INTO `address_type` (`address_type_id`, `address_type_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Home Address', '2024-11-26 17:03:35', 1),
+(2, 'Billing Address', '2024-11-26 17:03:35', 1),
+(3, 'Mailing Address', '2024-11-26 17:03:35', 1),
+(4, 'Shipping Address', '2024-11-26 17:03:35', 1),
+(5, 'Work Address', '2024-11-26 17:03:35', 1);
+
+--
+-- Triggers `address_type`
+--
+DROP TRIGGER IF EXISTS `address_type_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `address_type_trigger_insert` AFTER INSERT ON `address_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Address type created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('address_type', NEW.address_type_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `address_type_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `address_type_trigger_update` AFTER UPDATE ON `address_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Address type changed.<br/><br/>';
+
+    IF NEW.address_type_name <> OLD.address_type_name THEN
+        SET audit_log = CONCAT(audit_log, "Address Type Name: ", OLD.address_type_name, " -> ", NEW.address_type_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Address type changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('address_type', NEW.address_type_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `app_module`
 --
 
@@ -3009,7 +3331,238 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (260, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: asdasdasdasdasd -> <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:40:51', '2024-11-24 19:40:51'),
 (261, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasd</strong></span></em></p> -> <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasdasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:41:08', '2024-11-24 19:41:08'),
 (262, 'notification_setting_email_template', 4, 'Email notification template changed.<br/><br/>Email Notification Body: <p><em><span style=\"text-decoration: underline;\"><strong>asdasdasdasdasdasdasdasd</strong></span></em></p> -> <p><em><span style=\"text-decoration: underline;\"><strong>aasdasdasd</strong></span></em></p><br/>', 2, '2024-11-24 19:41:20', '2024-11-24 19:41:20'),
-(263, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-24 17:44:11 -> 2024-11-25 11:44:20<br/>', 2, '2024-11-25 11:44:20', '2024-11-25 11:44:20');
+(263, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-24 17:44:11 -> 2024-11-25 11:44:20<br/>', 2, '2024-11-25 11:44:20', '2024-11-25 11:44:20'),
+(264, 'bank', 46, 'Bank created.', 2, '2024-11-26 16:09:13', '2024-11-26 16:09:13'),
+(265, 'bank', 46, 'Bank changed.<br/><br/>Bank Name: test -> testtest<br/>Bank Identifier Code: test -> testtest<br/>', 2, '2024-11-26 16:09:16', '2024-11-26 16:09:16'),
+(266, 'bank', 46, 'Bank changed.<br/><br/>Bank Name: testtest -> testtesttest<br/>Bank Identifier Code: testtest -> testtesttest<br/>', 2, '2024-11-26 16:09:21', '2024-11-26 16:09:21'),
+(267, 'bank', 1, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(268, 'bank', 2, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(269, 'bank', 3, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(270, 'bank', 4, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(271, 'bank', 5, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(272, 'bank', 6, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(273, 'bank', 7, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(274, 'bank', 8, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(275, 'bank', 9, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(276, 'bank', 10, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(277, 'bank', 11, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(278, 'bank', 12, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(279, 'bank', 13, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(280, 'bank', 14, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(281, 'bank', 15, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(282, 'bank', 16, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(283, 'bank', 17, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(284, 'bank', 18, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(285, 'bank', 19, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(286, 'bank', 20, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(287, 'bank', 21, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(288, 'bank', 22, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(289, 'bank', 23, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(290, 'bank', 24, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(291, 'bank', 25, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(292, 'bank', 26, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(293, 'bank', 27, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(294, 'bank', 28, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(295, 'bank', 29, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(296, 'bank', 30, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(297, 'bank', 31, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(298, 'bank', 32, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(299, 'bank', 33, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(300, 'bank', 34, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(301, 'bank', 35, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(302, 'bank', 36, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(303, 'bank', 37, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(304, 'bank', 38, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(305, 'bank', 39, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(306, 'bank', 40, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(307, 'bank', 41, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(308, 'bank', 42, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(309, 'bank', 43, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(310, 'bank', 44, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(311, 'bank', 45, 'Bank created.', 1, '2024-11-26 16:10:26', '2024-11-26 16:10:26'),
+(312, 'bank_account_type', 11, 'Bank account type created.', 2, '2024-11-26 16:25:39', '2024-11-26 16:25:39'),
+(313, 'bank_account_type', 11, 'Bank account type changed.<br/><br/>Bank Account Type Name: test -> testtest<br/>', 2, '2024-11-26 16:25:42', '2024-11-26 16:25:42'),
+(314, 'bank_account_type', 1, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(315, 'bank_account_type', 2, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(316, 'bank_account_type', 3, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(317, 'bank_account_type', 4, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(318, 'bank_account_type', 5, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(319, 'bank_account_type', 6, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(320, 'bank_account_type', 7, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(321, 'bank_account_type', 8, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(322, 'bank_account_type', 9, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(323, 'bank_account_type', 10, 'Bank account type created.', 1, '2024-11-26 16:26:11', '2024-11-26 16:26:11'),
+(324, 'address_type', 6, 'Address type created.', 2, '2024-11-26 17:05:59', '2024-11-26 17:05:59'),
+(325, 'address_type', 6, 'Address type changed.<br/><br/>Address Type Name: test -> testtest<br/>', 2, '2024-11-26 17:06:02', '2024-11-26 17:06:02'),
+(326, 'address_type', 1, 'Address type created.', 1, '2024-11-26 17:06:56', '2024-11-26 17:06:56'),
+(327, 'address_type', 2, 'Address type created.', 1, '2024-11-26 17:06:56', '2024-11-26 17:06:56'),
+(328, 'address_type', 3, 'Address type created.', 1, '2024-11-26 17:06:56', '2024-11-26 17:06:56'),
+(329, 'address_type', 4, 'Address type created.', 1, '2024-11-26 17:06:56', '2024-11-26 17:06:56'),
+(330, 'address_type', 5, 'Address type created.', 1, '2024-11-26 17:06:56', '2024-11-26 17:06:56'),
+(331, 'contact_information_type', 3, 'Contact information type created.', 2, '2024-11-26 17:22:39', '2024-11-26 17:22:39'),
+(332, 'contact_information_type', 3, 'Contact information type changed.<br/><br/>Contact Information Type Name: test -> testtest<br/>', 2, '2024-11-26 17:22:45', '2024-11-26 17:22:45'),
+(333, 'contact_information_type', 1, 'Contact information type created.', 1, '2024-11-26 17:23:08', '2024-11-26 17:23:08'),
+(334, 'contact_information_type', 2, 'Contact information type created.', 1, '2024-11-26 17:23:08', '2024-11-26 17:23:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bank`
+--
+
+DROP TABLE IF EXISTS `bank`;
+CREATE TABLE `bank` (
+  `bank_id` int(10) UNSIGNED NOT NULL,
+  `bank_name` varchar(100) NOT NULL,
+  `bank_identifier_code` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `bank`
+--
+
+INSERT INTO `bank` (`bank_id`, `bank_name`, `bank_identifier_code`, `created_date`, `last_log_by`) VALUES
+(1, 'Banco de Oro (BDO)', '010530667', '2024-11-26 15:52:20', 1),
+(2, 'Metrobank', '010269996', '2024-11-26 15:52:20', 1),
+(3, 'Land Bank of the Philippines', '010350025', '2024-11-26 15:52:20', 1),
+(4, 'Bank of the Philippine Islands (BPI)', '010040018', '2024-11-26 15:52:20', 1),
+(5, 'Philippine National Bank (PNB)', '010080010', '2024-11-26 15:52:20', 1),
+(6, 'Security Bank', '010140015', '2024-11-26 15:52:20', 1),
+(7, 'UnionBank of the Philippines', '010419995', '2024-11-26 15:52:20', 1),
+(8, 'Development Bank of the Philippines (DBP)', '010590018', '2024-11-26 15:52:20', 1),
+(9, 'EastWest Bank', '010620014', '2024-11-26 15:52:20', 1),
+(10, 'China Banking Corporation (Chinabank)', '010100013', '2024-11-26 15:52:20', 1),
+(11, 'RCBC (Rizal Commercial Banking Corporation)', '010280014', '2024-11-26 15:52:20', 1),
+(12, 'Maybank Philippines', '010220016', '2024-11-26 15:52:20', 1),
+(13, 'Bank of America', 'BOFAUS3N', '2024-11-26 15:52:20', 1),
+(14, 'JPMorgan Chase', 'CHASUS33', '2024-11-26 15:52:20', 1),
+(15, 'Wells Fargo', 'WFBIUS6W', '2024-11-26 15:52:20', 1),
+(16, 'Citibank', 'CITIUS33', '2024-11-26 15:52:20', 1),
+(17, 'U.S. Bank', 'USBKUS44', '2024-11-26 15:52:20', 1),
+(18, 'Bank of New York Mellon', 'BKONYUS33', '2024-11-26 15:52:20', 1),
+(19, 'State Street Corporation', 'SSTTUS33', '2024-11-26 15:52:20', 1),
+(20, 'Goldman Sachs', 'GOLDUS33', '2024-11-26 15:52:20', 1),
+(21, 'Morgan Stanley', 'MSNYUS33', '2024-11-26 15:52:20', 1),
+(22, 'Capital One', 'COWNUS33', '2024-11-26 15:52:20', 1),
+(23, 'PNC Financial Services Group', 'PNCCUS33', '2024-11-26 15:52:20', 1),
+(24, 'Truist Financial Corporation', 'TRUIUS33', '2024-11-26 15:52:20', 1),
+(25, 'Charles Schwab Corporation', 'SCHWUS33', '2024-11-26 15:52:20', 1),
+(26, 'Ally Financial', 'ALLYUS33', '2024-11-26 15:52:20', 1),
+(27, 'TD Bank', 'TDUSUS33', '2024-11-26 15:52:20', 1),
+(28, 'Fifth Third Bank', 'FTBCUS3J', '2024-11-26 15:52:20', 1),
+(29, 'KeyBank', 'KEYBUS33', '2024-11-26 15:52:20', 1),
+(30, 'Huntington Bancshares', 'HBANUS33', '2024-11-26 15:52:20', 1),
+(31, 'Regions Financial Corporation', 'RGNSUS33', '2024-11-26 15:52:20', 1),
+(32, 'M&T Bank', 'MANTUS33', '2024-11-26 15:52:20', 1),
+(33, 'SunTrust Banks', 'STBAUS33', '2024-11-26 15:52:20', 1),
+(34, 'BB&T Corporation', 'BBTUS33', '2024-11-26 15:52:20', 1),
+(35, 'Emirates NBD', 'EBILAEAD', '2024-11-26 15:52:20', 1),
+(36, 'First Abu Dhabi Bank', 'NBADAEAAXXX', '2024-11-26 15:52:20', 1),
+(37, 'Abu Dhabi Commercial Bank', 'ADCBAEAAXXX', '2024-11-26 15:52:20', 1),
+(38, 'Dubai Islamic Bank', 'DIBAEAAXXX', '2024-11-26 15:52:20', 1),
+(39, 'Mashreq Bank', 'BOMLAEAD', '2024-11-26 15:52:20', 1),
+(40, 'Union National Bank', 'UNBAEAAXXX', '2024-11-26 15:52:20', 1),
+(41, 'Rakbank', 'RAKAEAAXXX', '2024-11-26 15:52:20', 1),
+(42, 'Commercial Bank of Dubai', 'CBDAEAAXXX', '2024-11-26 15:52:20', 1),
+(43, 'Emirates Islamic Bank', 'EIILAEAD', '2024-11-26 15:52:20', 1),
+(44, 'Ajman Bank', 'AJBLAEAD', '2024-11-26 15:52:20', 1),
+(45, 'Sharjah Islamic Bank', 'SIBAEAAXXX', '2024-11-26 15:52:20', 1);
+
+--
+-- Triggers `bank`
+--
+DROP TRIGGER IF EXISTS `bank_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `bank_trigger_insert` AFTER INSERT ON `bank` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Bank created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('bank', NEW.bank_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `bank_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `bank_trigger_update` AFTER UPDATE ON `bank` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Bank changed.<br/><br/>';
+
+    IF NEW.bank_name <> OLD.bank_name THEN
+        SET audit_log = CONCAT(audit_log, "Bank Name: ", OLD.bank_name, " -> ", NEW.bank_name, "<br/>");
+    END IF;
+
+    IF NEW.bank_identifier_code <> OLD.bank_identifier_code THEN
+        SET audit_log = CONCAT(audit_log, "Bank Identifier Code: ", OLD.bank_identifier_code, " -> ", NEW.bank_identifier_code, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Bank changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('bank', NEW.bank_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bank_account_type`
+--
+
+DROP TABLE IF EXISTS `bank_account_type`;
+CREATE TABLE `bank_account_type` (
+  `bank_account_type_id` int(10) UNSIGNED NOT NULL,
+  `bank_account_type_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `bank_account_type`
+--
+
+INSERT INTO `bank_account_type` (`bank_account_type_id`, `bank_account_type_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Checking', '2024-11-26 16:23:13', 1),
+(2, 'Savings', '2024-11-26 16:23:13', 1),
+(3, 'Money Market', '2024-11-26 16:23:13', 1),
+(4, 'Certificate of Deposit (CD)', '2024-11-26 16:23:13', 1),
+(5, 'Individual Retirement Account (IRA)', '2024-11-26 16:23:13', 1),
+(6, 'Business Checking', '2024-11-26 16:23:13', 1),
+(7, 'Business Savings', '2024-11-26 16:23:13', 1),
+(8, 'Business Money Market', '2024-11-26 16:23:13', 1),
+(9, 'Business Certificate of Deposit (CD)', '2024-11-26 16:23:13', 1),
+(10, 'Business Individual Retirement Account (IRA)', '2024-11-26 16:23:13', 1);
+
+--
+-- Triggers `bank_account_type`
+--
+DROP TRIGGER IF EXISTS `bank_account_type_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `bank_account_type_trigger_insert` AFTER INSERT ON `bank_account_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Bank account type created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('bank_account_type', NEW.bank_account_type_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `bank_account_type_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `bank_account_type_trigger_update` AFTER UPDATE ON `bank_account_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Bank account type changed.<br/><br/>';
+
+    IF NEW.bank_account_type_name <> OLD.bank_account_type_name THEN
+        SET audit_log = CONCAT(audit_log, "Bank Account Type Name: ", OLD.bank_account_type_name, " -> ", NEW.bank_account_type_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Bank account type changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('bank_account_type', NEW.bank_account_type_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -3176,6 +3729,58 @@ CREATE TRIGGER `company_trigger_update` AFTER UPDATE ON `company` FOR EACH ROW B
     IF audit_log <> 'Company changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('company', NEW.company_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contact_information_type`
+--
+
+DROP TABLE IF EXISTS `contact_information_type`;
+CREATE TABLE `contact_information_type` (
+  `contact_information_type_id` int(10) UNSIGNED NOT NULL,
+  `contact_information_type_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `contact_information_type`
+--
+
+INSERT INTO `contact_information_type` (`contact_information_type_id`, `contact_information_type_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Personal', '2024-11-26 17:22:04', 1),
+(2, 'Work', '2024-11-26 17:22:04', 1);
+
+--
+-- Triggers `contact_information_type`
+--
+DROP TRIGGER IF EXISTS `contact_information_type_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `contact_information_type_trigger_insert` AFTER INSERT ON `contact_information_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Contact information type created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('contact_information_type', NEW.contact_information_type_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `contact_information_type_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `contact_information_type_trigger_update` AFTER UPDATE ON `contact_information_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Contact information type changed.<br/><br/>';
+
+    IF NEW.contact_information_type_name <> OLD.contact_information_type_name THEN
+        SET audit_log = CONCAT(audit_log, "Contact Information Type Name: ", OLD.contact_information_type_name, " -> ", NEW.contact_information_type_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Contact information type changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('contact_information_type', NEW.contact_information_type_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -3790,11 +4395,11 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (23, 'Notification Setting', 'notification-setting.php', 'ki-outline ki-notification', 1, 'Settings', 2, 'Settings', 'notification_setting', 14, '2024-11-22 14:29:29', 2),
 (24, 'Employee', 'employee.php', '', 2, 'Employee', 0, '', '', 1, '2024-11-25 14:34:33', 2),
 (25, 'Banking', '', 'ki-outline ki-bank', 1, 'Settings', 11, 'Configurations', '', 2, '2024-11-25 15:14:27', 2),
-(26, 'Bank', 'bank.php', '', 1, 'Settings', 25, 'Banking', '', 1, '2024-11-25 15:14:59', 2),
-(27, 'Bank Account Type', 'bank-account-type.php', '', 1, 'Settings', 25, 'Banking', '', 2, '2024-11-25 15:15:23', 2),
+(26, 'Bank', 'bank.php', '', 1, 'Settings', 25, 'Banking', 'bank', 1, '2024-11-25 15:14:59', 2),
+(27, 'Bank Account Type', 'bank-account-type.php', '', 1, 'Settings', 25, 'Banking', 'bank_account_type', 2, '2024-11-25 15:15:23', 2),
 (28, 'Contact Information', '', 'ki-outline ki-address-book', 1, 'Settings', 11, 'Configurations', '', 3, '2024-11-25 15:18:29', 2),
-(29, 'Address Type', 'address-type.php', '', 1, 'Settings', 28, 'Contact Information', '', 1, '2024-11-25 15:19:04', 2),
-(30, 'Contact Information Type', 'contact-information-type.php', 'ki-outline ki-abstract', 1, 'Settings', 28, 'Contact Information', '', 3, '2024-11-25 15:19:57', 2),
+(29, 'Address Type', 'address-type.php', '', 1, 'Settings', 28, 'Contact Information', 'address_type', 1, '2024-11-25 15:19:04', 2),
+(30, 'Contact Information Type', 'contact-information-type.php', 'ki-outline ki-abstract', 1, 'Settings', 28, 'Contact Information', 'contact_information_type', 3, '2024-11-25 15:19:57', 2),
 (31, 'Language Settings', '', 'ki-outline ki-note-2', 1, 'Settings', 11, 'Configurations', '', 12, '2024-11-25 15:23:17', 2),
 (32, 'Language', 'language.php', '', 1, 'Settings', 31, 'Language Settings', '', 1, '2024-11-25 15:23:44', 2),
 (33, 'Language Proficiency', 'language-proficiency.php', '', 1, 'Settings', 31, 'Language Settings', '', 2, '2024-11-25 15:24:19', 2),
@@ -4200,7 +4805,7 @@ CREATE TABLE `role_system_action_permission` (
   `system_action_access` tinyint(1) NOT NULL DEFAULT 0,
   `date_assigned` datetime NOT NULL DEFAULT current_timestamp(),
   `created_date` datetime DEFAULT current_timestamp(),
-  `last_log_by` int(10) UNSIGNED DEFAULT 1
+  `last_log_by` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -4208,18 +4813,18 @@ CREATE TABLE `role_system_action_permission` (
 --
 
 INSERT INTO `role_system_action_permission` (`role_system_action_permission_id`, `role_id`, `role_name`, `system_action_id`, `system_action_name`, `system_action_access`, `date_assigned`, `created_date`, `last_log_by`) VALUES
-(3, 1, 'Administrator', 3, 'Activate User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
-(4, 1, 'Administrator', 4, 'Deactivate User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
-(5, 1, 'Administrator', 5, 'Lock User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
-(6, 1, 'Administrator', 6, 'Unlock User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 2),
-(7, 1, 'Administrator', 7, 'Add Role User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(8, 1, 'Administrator', 8, 'Delete Role User Account', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(9, 1, 'Administrator', 9, 'Add Role Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(10, 1, 'Administrator', 10, 'Update Role Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(11, 1, 'Administrator', 11, 'Delete Role Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1),
-(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1, '2024-11-07 10:43:23', '2024-11-07 10:43:23', 1);
+(1, 1, 'Administrator', 1, 'Activate User Account', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(2, 1, 'Administrator', 2, 'Deactivate User Account', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(3, 1, 'Administrator', 3, 'Lock User Account', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(4, 1, 'Administrator', 4, 'Unlock User Account', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(5, 1, 'Administrator', 5, 'Add Role User Account', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(6, 1, 'Administrator', 6, 'Delete Role User Account', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(7, 1, 'Administrator', 7, 'Add Role Access', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(8, 1, 'Administrator', 8, 'Update Role Access', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(9, 1, 'Administrator', 9, 'Delete Role Access', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(10, 1, 'Administrator', 10, 'Add Role System Action Access', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(11, 1, 'Administrator', 11, 'Update Role System Action Access', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL),
+(12, 1, 'Administrator', 12, 'Delete Role System Action Access', 1, '2024-11-26 13:51:42', '2024-11-26 13:51:42', NULL);
 
 -- --------------------------------------------------------
 
@@ -4386,22 +4991,18 @@ CREATE TABLE `system_action` (
 --
 
 INSERT INTO `system_action` (`system_action_id`, `system_action_name`, `system_action_description`, `created_date`, `last_log_by`) VALUES
-(1, 'Update System Settings', 'Access to update the system settings.', '2024-11-06 16:52:04', 1),
-(2, 'Update Security Settings', 'Access to update the security settings.', '2024-11-06 16:52:04', 1),
-(3, 'Activate User Account', 'Access to activate the user account.', '2024-11-06 16:52:04', 1),
-(4, 'Deactivate User Account', 'Access to deactivate the user account.', '2024-11-06 16:52:04', 1),
-(5, 'Lock User Account', 'Access to lock the user account.', '2024-11-06 16:52:04', 1),
-(6, 'Unlock User Account', 'Access to unlock the user account.', '2024-11-06 16:52:04', 1),
-(7, 'Add Role User Account', 'Access to assign roles to user account.', '2024-11-06 16:52:04', 1),
-(8, 'Delete Role User Account', 'Access to delete roles to user account.', '2024-11-06 16:52:04', 1),
-(9, 'Add Role Access', 'Access to add role access.', '2024-11-06 16:52:04', 1),
-(10, 'Update Role Access', 'Access to update role access.', '2024-11-06 16:52:04', 1),
-(11, 'Delete Role Access', 'Access to delete role access.', '2024-11-06 16:52:04', 1),
-(12, 'Add Role System Action Access', 'Access to add the role system action access.', '2024-11-06 16:52:04', 1),
-(13, 'Update Role System Action Access', 'Access to update the role system action access.', '2024-11-06 16:52:04', 1),
-(14, 'Delete Role System Action Access', 'Access to delete the role system action access.', '2024-11-06 16:52:04', 1),
-(15, 'Add Subscription', 'Access to add subscription to a subscriber.', '2024-11-06 16:52:04', 1),
-(16, 'Delete Subscription', 'Access to delete subscription to a subscriber.', '2024-11-06 16:52:04', 1);
+(1, 'Activate User Account', 'Access to activate the user account.', '2024-11-26 13:51:56', 1),
+(2, 'Deactivate User Account', 'Access to deactivate the user account.', '2024-11-26 13:51:56', 1),
+(3, 'Lock User Account', 'Access to lock the user account.', '2024-11-26 13:51:56', 1),
+(4, 'Unlock User Account', 'Access to unlock the user account.', '2024-11-26 13:51:56', 1),
+(5, 'Add Role User Account', 'Access to assign roles to user account.', '2024-11-26 13:51:56', 1),
+(6, 'Delete Role User Account', 'Access to delete roles to user account.', '2024-11-26 13:51:56', 1),
+(7, 'Add Role Access', 'Access to add role access.', '2024-11-26 13:51:56', 1),
+(8, 'Update Role Access', 'Access to update role access.', '2024-11-26 13:51:56', 1),
+(9, 'Delete Role Access', 'Access to delete role access.', '2024-11-26 13:51:56', 1),
+(10, 'Add Role System Action Access', 'Access to add the role system action access.', '2024-11-26 13:51:56', 1),
+(11, 'Update Role System Action Access', 'Access to update the role system action access.', '2024-11-26 13:51:56', 1),
+(12, 'Delete Role System Action Access', 'Access to delete the role system action access.', '2024-11-26 13:51:56', 1);
 
 -- --------------------------------------------------------
 
@@ -4601,6 +5202,14 @@ DELIMITER ;
 --
 
 --
+-- Indexes for table `address_type`
+--
+ALTER TABLE `address_type`
+  ADD PRIMARY KEY (`address_type_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `address_type_index_address_type_id` (`address_type_id`);
+
+--
 -- Indexes for table `app_module`
 --
 ALTER TABLE `app_module`
@@ -4618,6 +5227,22 @@ ALTER TABLE `audit_log`
   ADD KEY `audit_log_index_table_name` (`table_name`),
   ADD KEY `audit_log_index_reference_id` (`reference_id`),
   ADD KEY `audit_log_index_changed_by` (`changed_by`);
+
+--
+-- Indexes for table `bank`
+--
+ALTER TABLE `bank`
+  ADD PRIMARY KEY (`bank_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `bank_index_bank_id` (`bank_id`);
+
+--
+-- Indexes for table `bank_account_type`
+--
+ALTER TABLE `bank_account_type`
+  ADD PRIMARY KEY (`bank_account_type_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `bank_account_type_index_bank_account_type_id` (`bank_account_type_id`);
 
 --
 -- Indexes for table `city`
@@ -4640,6 +5265,14 @@ ALTER TABLE `company`
   ADD KEY `company_index_state_id` (`state_id`),
   ADD KEY `company_index_country_id` (`country_id`),
   ADD KEY `company_index_currency_id` (`currency_id`);
+
+--
+-- Indexes for table `contact_information_type`
+--
+ALTER TABLE `contact_information_type`
+  ADD PRIMARY KEY (`contact_information_type_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `contact_information_type_index_contact_information_type_id` (`contact_information_type_id`);
 
 --
 -- Indexes for table `country`
@@ -4860,6 +5493,12 @@ ALTER TABLE `user_account`
 --
 
 --
+-- AUTO_INCREMENT for table `address_type`
+--
+ALTER TABLE `address_type`
+  MODIFY `address_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `app_module`
 --
 ALTER TABLE `app_module`
@@ -4869,7 +5508,19 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=264;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=335;
+
+--
+-- AUTO_INCREMENT for table `bank`
+--
+ALTER TABLE `bank`
+  MODIFY `bank_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+
+--
+-- AUTO_INCREMENT for table `bank_account_type`
+--
+ALTER TABLE `bank_account_type`
+  MODIFY `bank_account_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `city`
@@ -4882,6 +5533,12 @@ ALTER TABLE `city`
 --
 ALTER TABLE `company`
   MODIFY `company_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `contact_information_type`
+--
+ALTER TABLE `contact_information_type`
+  MODIFY `contact_information_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `country`
@@ -4977,7 +5634,7 @@ ALTER TABLE `role_permission`
 -- AUTO_INCREMENT for table `role_system_action_permission`
 --
 ALTER TABLE `role_system_action_permission`
-  MODIFY `role_system_action_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `role_system_action_permission_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `role_user_account`
@@ -5001,7 +5658,7 @@ ALTER TABLE `state`
 -- AUTO_INCREMENT for table `system_action`
 --
 ALTER TABLE `system_action`
-  MODIFY `system_action_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `system_action_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `system_subscription`
@@ -5032,6 +5689,12 @@ ALTER TABLE `user_account`
 --
 
 --
+-- Constraints for table `address_type`
+--
+ALTER TABLE `address_type`
+  ADD CONSTRAINT `address_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
 -- Constraints for table `app_module`
 --
 ALTER TABLE `app_module`
@@ -5042,6 +5705,18 @@ ALTER TABLE `app_module`
 --
 ALTER TABLE `audit_log`
   ADD CONSTRAINT `audit_log_ibfk_1` FOREIGN KEY (`changed_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `bank`
+--
+ALTER TABLE `bank`
+  ADD CONSTRAINT `bank_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `bank_account_type`
+--
+ALTER TABLE `bank_account_type`
+  ADD CONSTRAINT `bank_account_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `city`
@@ -5059,6 +5734,12 @@ ALTER TABLE `company`
   ADD CONSTRAINT `company_ibfk_2` FOREIGN KEY (`city_id`) REFERENCES `city` (`city_id`),
   ADD CONSTRAINT `company_ibfk_3` FOREIGN KEY (`state_id`) REFERENCES `state` (`state_id`),
   ADD CONSTRAINT `company_ibfk_4` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
+
+--
+-- Constraints for table `contact_information_type`
+--
+ALTER TABLE `contact_information_type`
+  ADD CONSTRAINT `contact_information_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `country`
@@ -5180,6 +5861,12 @@ ALTER TABLE `role_user_account`
 ALTER TABLE `state`
   ADD CONSTRAINT `state_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`),
   ADD CONSTRAINT `state_ibfk_2` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
+
+--
+-- Constraints for table `system_action`
+--
+ALTER TABLE `system_action`
+  ADD CONSTRAINT `system_action_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `upload_setting`

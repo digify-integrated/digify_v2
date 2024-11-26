@@ -3,11 +3,11 @@
 
     $userAccountModel = new UserAccountModel($databaseModel);
 
-    $activateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 3);
-    $deactivateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 4);
-    $lockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 5);
-    $unlockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 6);
-    $addRoleUserAccount  = $authenticationModel->checkSystemActionAccessRights($userID, 7);
+    $activateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 1);
+    $deactivateUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 2);
+    $lockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 3);
+    $unlockUserAccount = $authenticationModel->checkSystemActionAccessRights($userID, 4);
+    $addRoleUserAccount  = $authenticationModel->checkSystemActionAccessRights($userID, 5);
 
     $userAccountDetails = $userAccountModel->getUserAccount($detailID);
     $userAccountActive = $securityModel->decryptData($userAccountDetails['active']);

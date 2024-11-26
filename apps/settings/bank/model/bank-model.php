@@ -27,14 +27,11 @@ class BankModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function saveBank($p_bank_id, $p_bank_name, $p_state_id, $p_state_name, $p_country_id, $p_country_name, $p_last_log_by) {
-        $stmt = $this->db->getConnection()->prepare('CALL saveBank(:p_bank_id, :p_bank_name, :p_state_id, :p_state_name, :p_country_id, :p_country_name, :p_last_log_by, @p_new_bank_id)');
+    public function saveBank($p_bank_id, $p_bank_name, $p_bank_identifier_code, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL saveBank(:p_bank_id, :p_bank_name, :p_bank_identifier_code, :p_last_log_by, @p_new_bank_id)');
         $stmt->bindValue(':p_bank_id', $p_bank_id, PDO::PARAM_INT);
         $stmt->bindValue(':p_bank_name', $p_bank_name, PDO::PARAM_STR);
-        $stmt->bindValue(':p_state_id', $p_state_id, PDO::PARAM_INT);
-        $stmt->bindValue(':p_state_name', $p_state_name, PDO::PARAM_STR);
-        $stmt->bindValue(':p_country_id', $p_country_id, PDO::PARAM_INT);
-        $stmt->bindValue(':p_country_name', $p_country_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_bank_identifier_code', $p_bank_identifier_code, PDO::PARAM_INT);
         $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
         $stmt->execute();
 

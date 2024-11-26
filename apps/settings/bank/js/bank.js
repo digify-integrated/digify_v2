@@ -2,9 +2,6 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('state options');
-        generateDropdownOptions('country options');
-
         if($('#bank-table').length){
             bankTable('#bank-table');
         }
@@ -21,8 +18,8 @@
     
             if(bank_id.length > 0){
                 Swal.fire({
-                    title: 'Confirm Multiple Cities Deletion',
-                    text: 'Are you sure you want to delete these cities?',
+                    title: 'Confirm Multiple Banks Deletion',
+                    text: 'Are you sure you want to delete these banks?',
                     icon: 'warning',
                     showCancelButton: !0,
                     confirmButtonText: 'Delete',
@@ -70,7 +67,7 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple Cities Error', 'Please select the cities you wish to delete.', 'danger');
+                showNotification('Deletion Multiple Banks Error', 'Please select the Banks you wish to delete.', 'danger');
             }
         });
 
@@ -92,17 +89,6 @@
             var length = $(this).val(); 
             table.page.len(length).draw();
         });
-
-        $(document).on('click','#apply-filter',function() {
-            bankTable('#bank-table');
-        });
-
-        $(document).on('click', '#reset-filter', function() {
-            $('#state_filter').val(null).trigger('change');
-            $('#country_filter').val(null).trigger('change');
-            
-            bankTable('#bank-table');
-        });
     });
 })(jQuery);
 
@@ -112,22 +98,18 @@ function bankTable(datatable_name) {
     const type = 'bank table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
-    const state_filter = $('#state_filter').val();
-    const country_filter = $('#country_filter').val();
 
 
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'CITY_NAME' },
-        { data: 'STATE_NAME' },
-        { data: 'COUNTRY_NAME' }
+        { data: 'BANK_NAME' },
+        { data: 'BANK_IDENTIFIER_CODE' }
     ];
 
     const columnDefs = [
         { width: '1%', bSortable: false, targets: 0, responsivePriority: 1 },
         { width: 'auto', targets: 1, responsivePriority: 2 },
-        { width: 'auto', targets: 2, responsivePriority: 3 },
-        { width: 'auto', targets: 3, responsivePriority: 4 }
+        { width: 'auto', targets: 2, responsivePriority: 3 }
     ];
 
     const lengthMenu = [[10, 5, 25, 50, 100, -1], [10, 5, 25, 50, 100, 'All']];
@@ -140,9 +122,7 @@ function bankTable(datatable_name) {
             data: {
                 type: type,
                 page_id: page_id,
-                page_link: page_link,
-                state_filter: state_filter,
-                country_filter: country_filter
+                page_link: page_link
             },
             dataSrc: '',
             error: function(xhr, status, error) {
@@ -175,49 +155,4 @@ function bankTable(datatable_name) {
 
     destroyDatatable(datatable_name);
     $(datatable_name).dataTable(settings);
-}
-
-function generateDropdownOptions(type){
-    switch (type) {
-        case 'state options':
-            
-            $.ajax({
-                url: 'apps/settings/state/view/_state_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type,
-                    multiple : 1
-                },
-                success: function(response) {
-                    $('#state_filter').select2({
-                        data: response
-                    });
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                }
-            });
-            break;
-        case 'country options':
-            
-            $.ajax({
-                url: 'apps/settings/country/view/_country_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type,
-                    multiple : 1
-                },
-                success: function(response) {
-                    $('#country_filter').select2({
-                        data: response
-                    });
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                }
-            });
-            break;
-    }
 }

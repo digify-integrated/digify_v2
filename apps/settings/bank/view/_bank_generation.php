@@ -22,17 +22,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
     switch ($type) {
         # -------------------------------------------------------------
         case 'bank table':
-            $filterState = isset($_POST['state_filter']) && is_array($_POST['state_filter']) 
-            ? "'" . implode("','", array_map('trim', $_POST['state_filter'])) . "'" 
-            : null;
-
-            $filterCountry = isset($_POST['country_filter']) && is_array($_POST['country_filter']) 
-            ? "'" . implode("','", array_map('trim', $_POST['country_filter'])) . "'" 
-            : null;
-
-            $sql = $databaseModel->getConnection()->prepare('CALL generateBankTable(:filterState, :filterCountry)');
-            $sql->bindValue(':filterState', $filterState, PDO::PARAM_STR);
-            $sql->bindValue(':filterCountry', $filterCountry, PDO::PARAM_STR);
+            $sql = $databaseModel->getConnection()->prepare('CALL generateBankTable()');
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
             $sql->closeCursor();
@@ -40,8 +30,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $bankID = $row['bank_id'];
                 $bankName = $row['bank_name'];
-                $stateName = $row['state_name'];
-                $countryName = $row['country_name'];
+                $bankIdentifierCode = $row['bank_identifier_code'];
 
                 $bankIDEncrypted = $securityModel->encryptData($bankID);
 
@@ -49,9 +38,8 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
                     'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $bankID .'">
                                     </div>',
-                    'CITY_NAME' => $bankName,
-                    'STATE_NAME' => $stateName,
-                    'COUNTRY_NAME' => $countryName,
+                    'BANK_NAME' => $bankName,
+                    'BANK_IDENTIFIER_CODE' => $bankIdentifierCode,
                     'LINK' => $pageLink .'&id='. $bankIDEncrypted
                 ];
             }
@@ -79,7 +67,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $response[] = [
                     'id' => $row['bank_id'],
-                    'text' => $row['bank_name'] . ', ' . $row['state_name'] . ', ' . $row['country_name']
+                    'text' => $row['bank_name']
                 ];
             }
 

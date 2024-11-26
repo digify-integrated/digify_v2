@@ -61,16 +61,16 @@ INSERT INTO role_permission (role_permission_id, role_id, role_name, menu_item_i
 /* Role System Action Permission Table */
 
 DROP TABLE IF EXISTS role_system_action_permission;
-CREATE TABLE role_system_action_permission(
-	role_system_action_permission_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-	role_id INT UNSIGNED NOT NULL,
-	role_name VARCHAR(100) NOT NULL,
-	system_action_id INT UNSIGNED NOT NULL,
-	system_action_name VARCHAR(100) NOT NULL,
-	system_action_access TINYINT(1) NOT NULL DEFAULT 0,
+CREATE TABLE role_system_action_permission (
+    role_system_action_permission_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    role_id INT UNSIGNED NOT NULL,
+    role_name VARCHAR(100) NOT NULL,
+    system_action_id INT UNSIGNED NOT NULL,
+    system_action_name VARCHAR(100) NOT NULL,
+    system_action_access TINYINT(1) NOT NULL DEFAULT 0,
     date_assigned DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    last_log_by INT UNSIGNED DEFAULT 1,
+    last_log_by INT UNSIGNED DEFAULT NULL,
     FOREIGN KEY (system_action_id) REFERENCES system_action(system_action_id),
     FOREIGN KEY (role_id) REFERENCES role(role_id),
     FOREIGN KEY (last_log_by) REFERENCES user_account(user_account_id)
@@ -81,20 +81,18 @@ CREATE INDEX role_system_action_permission_index_system_action_id ON role_system
 CREATE INDEX role_system_action_permissionn_index_role_id ON role_system_action_permission(role_id);
 
 INSERT INTO `role_system_action_permission` (`role_system_action_permission_id`, `role_id`, `role_name`, `system_action_id`, `system_action_name`, `system_action_access`) VALUES
-(1, 1, 'Administrator', 1, 'Update System Settings', 1),
-(2, 1, 'Administrator', 2, 'Update Security Settings', 1),
-(3, 1, 'Administrator', 3, 'Activate User Account', 1),
-(4, 1, 'Administrator', 4, 'Deactivate User Account', 1),
-(5, 1, 'Administrator', 5, 'Lock User Account', 1),
-(6, 1, 'Administrator', 6, 'Unlock User Account', 1),
-(7, 1, 'Administrator', 7, 'Add Role User Account', 1),
-(8, 1, 'Administrator', 8, 'Delete Role User Account', 1),
-(9, 1, 'Administrator', 9, 'Add Role Access', 1),
-(10, 1, 'Administrator', 10, 'Update Role Access', 1),
-(11, 1, 'Administrator', 11, 'Delete Role Access', 1),
-(12, 1, 'Administrator', 12, 'Add Role System Action Access', 1),
-(13, 1, 'Administrator', 13, 'Update Role System Action Access', 1),
-(14, 1, 'Administrator', 14, 'Delete Role System Action Access', 1);
+(1, 1, 'Administrator', 1, 'Activate User Account', 1),
+(2, 1, 'Administrator', 2, 'Deactivate User Account', 1),
+(3, 1, 'Administrator', 3, 'Lock User Account', 1),
+(4, 1, 'Administrator', 4, 'Unlock User Account', 1),
+(5, 1, 'Administrator', 5, 'Add Role User Account', 1),
+(6, 1, 'Administrator', 6, 'Delete Role User Account', 1),
+(7, 1, 'Administrator', 7, 'Add Role Access', 1),
+(8, 1, 'Administrator', 8, 'Update Role Access', 1),
+(9, 1, 'Administrator', 9, 'Delete Role Access', 1),
+(10, 1, 'Administrator', 10, 'Add Role System Action Access', 1),
+(11, 1, 'Administrator', 11, 'Update Role System Action Access', 1),
+(12, 1, 'Administrator', 12, 'Delete Role System Action Access', 1);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 

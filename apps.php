@@ -1,5 +1,5 @@
 <?php
-    require('components/view/_required_php.php');
+    require('./components/view/_required_php.php');
 
     $pageTitle = 'Apps';
 ?>
@@ -7,22 +7,22 @@
 <html lang="en" dir="ltr" data-bs-theme="light" data-color-theme="Blue_Theme" data-layout="vertical">
 
 <head>
-    <?php require_once('components/view/_head_meta_tags.php'); ?>
-    <?php require_once('components/view/_head_stylesheet.php'); ?>
+    <?php require_once('./components/view/_head_meta_tags.php'); ?>
+    <?php require_once('./components/view/_head_stylesheet.php'); ?>
 </head>
 
 <?php 
-    require_once('components/view/_theme_script.php');
+    require_once('./components/view/_theme_script.php');
 ?>
 
 <body  id="kt_app_body" data-kt-app-header-fixed-mobile="true" data-kt-app-toolbar-enabled="true" class="app-default" data-kt-app-page-loading-enabled="true" data-kt-app-page-loading="on">
     <?php 
-        require_once('components/view/_preloader.php');
+        require_once('./components/view/_preloader.php');
     ?>
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
             <?php 
-                require_once('components/view/_header.php');
+                require_once('./components/view/_header.php');
             ?>
             <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
                 <div id="kt_app_toolbar" class="app-toolbar py-6">
@@ -90,8 +90,8 @@
         </div>
     </div>
     <?php 
-        require_once('components/view/_error_modal.php');
-        require_once('components/view/_required_js.php');
+        require_once('./components/view/_error_modal.php');
+        require_once('./components/view/_required_js.php');
     ?>
 </body>
 

@@ -8,28 +8,22 @@ require_once '../../../../components/model/system-model.php';
 require_once '../../authentication/model/authentication-model.php';
 require_once '../../security-setting/model/security-setting-model.php';
 require_once '../../bank/model/bank-model.php';
-require_once '../../state/model/state-model.php';
-require_once '../../country/model/country-model.php';
 
 require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new BankController(new BankModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new StateModel(new DatabaseModel), new CountryModel(new DatabaseModel), new SecurityModel(), new SystemModel());
+$controller = new BankController(new BankModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
 class BankController {
     private $bankModel;
-    private $stateModel;
-    private $countryModel;
     private $authenticationModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(BankModel $bankModel, AuthenticationModel $authenticationModel, StateModel $stateModel, CountryModel $countryModel, SecurityModel $securityModel, SystemModel $systemModel) {
+    public function __construct(BankModel $bankModel, AuthenticationModel $authenticationModel, SecurityModel $securityModel, SystemModel $systemModel) {
         $this->bankModel = $bankModel;
-        $this->stateModel = $stateModel;
-        $this->countryModel = $countryModel;
         $this->authenticationModel = $authenticationModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
@@ -151,14 +145,9 @@ class BankController {
 
         $userID = $_SESSION['user_account_id'];
         $bankName = filter_input(INPUT_POST, 'bank_name', FILTER_SANITIZE_STRING);
-        $stateID = filter_input(INPUT_POST, 'state_id', FILTER_VALIDATE_INT);
-
-        $stateDetails = $this->stateModel->getState($stateID);
-        $stateName = $stateDetails['state_name'] ?? null;
-        $countryID = $stateDetails['country_id'] ?? null;
-        $countryName = $stateDetails['country_name'] ?? null;
+        $bankIdentifierCode = filter_input(INPUT_POST, 'bank_identifier_code', FILTER_SANITIZE_STRING);
         
-        $bankID = $this->bankModel->saveBank(null, $bankName, $stateID, $stateName, $countryID, $countryName, $userID);
+        $bankID = $this->bankModel->saveBank(null, $bankName, $bankIdentifierCode, $userID);
     
         $response = [
             'success' => true,
@@ -186,7 +175,7 @@ class BankController {
         $userID = $_SESSION['user_account_id'];
         $bankID = filter_input(INPUT_POST, 'bank_id', FILTER_VALIDATE_INT);
         $bankName = filter_input(INPUT_POST, 'bank_name', FILTER_SANITIZE_STRING);
-        $stateID = filter_input(INPUT_POST, 'state_id', FILTER_VALIDATE_INT);
+        $bankIdentifierCode = filter_input(INPUT_POST, 'bank_identifier_code', FILTER_SANITIZE_STRING);
     
         $checkBankExist = $this->bankModel->checkBankExist($bankID);
         $total = $checkBankExist['total'] ?? 0;
@@ -203,13 +192,8 @@ class BankController {
             echo json_encode($response);
             exit;
         }
-
-        $stateDetails = $this->stateModel->getState($stateID);
-        $stateName = $stateDetails['state_name'] ?? null;
-        $countryID = $stateDetails['country_id'] ?? null;
-        $countryName = $stateDetails['country_name'] ?? null;
         
-        $bankID = $this->bankModel->saveBank($bankID, $bankName, $stateID, $stateName, $countryID, $countryName, $userID);
+        $bankID = $this->bankModel->saveBank($bankID, $bankName, $bankIdentifierCode, $userID);
             
         $response = [
             'success' => true,
@@ -285,8 +269,8 @@ class BankController {
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple Cities',
-                'message' => 'The selected cities have been deleted successfully.',
+                'title' => 'Delete Multiple Banks',
+                'message' => 'The selected banks have been deleted successfully.',
                 'messageType' => 'success'
             ];
             
@@ -431,7 +415,7 @@ class BankController {
         $response = [
             'success' => true,
             'bankName' => $bankDetails['bank_name'] ?? null,
-            'stateID' => $bankDetails['state_id'] ?? null
+            'bankIdentifierCode' => $bankDetails['bank_identifier_code'] ?? null
         ];
 
         echo json_encode($response);

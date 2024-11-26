@@ -1,5 +1,5 @@
 <?php
-    $addSystemActionRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 12);
+    $addSystemActionRoleAccess = $authenticationModel->checkSystemActionAccessRights($userID, 10);
 ?>
 <div class="card mb-10">
     <div class="card-header border-0">

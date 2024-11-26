@@ -2,8 +2,6 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('state options');
-
         if($('#bank-form').length){
             bankForm();
         }
@@ -16,7 +14,7 @@ function bankForm(){
             bank_name: {
                 required: true
             },
-            state_id: {
+            bank_identifier_code: {
                 required: true
             }
         },
@@ -24,8 +22,8 @@ function bankForm(){
             bank_name: {
                 required: 'Enter the display name'
             },
-            state_id: {
-                required: 'Choose the state'
+            bank_identifier_code: {
+                required: 'Choose the bank identifier code'
             }
         },
         errorPlacement: function(error, element) {
@@ -79,30 +77,4 @@ function bankForm(){
             return false;
         }
     });
-}
-
-function generateDropdownOptions(type){
-    switch (type) {
-        case 'state options':
-            
-            $.ajax({
-                url: 'apps/settings/state/view/_state_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type
-                },
-                success: function(response) {
-                    $('#state_id').select2({
-                        data: response
-                    }).on('change', function (e) {
-                        $(this).valid()
-                    });
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                }
-            });
-            break;
-    }
 }

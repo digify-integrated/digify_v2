@@ -14,13 +14,12 @@
 
                 <input type="text" class="form-control" id="bank_name" name="bank_name" maxlength="100" autocomplete="off">
             </div>
-
             <div class="fv-row mb-4">
-                <label class="fs-6 fw-semibold form-label mt-3" for="state_id">
-                    <span class="required">State</span>
+                <label class="fs-6 fw-semibold form-label mt-3" for="bank_identifier_code">
+                    <span class="required">Bank Identifier Code</span>
                 </label>
 
-                <select id="state_id" name="state_id" class="form-select" data-control="select2" data-allow-clear="false"></select>
+                <input type="text" class="form-control" id="bank_identifier_code" name="bank_identifier_code" maxlength="100" autocomplete="off">
             </div>
         </form>
     </div>
