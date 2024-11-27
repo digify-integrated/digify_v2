@@ -3,66 +3,12 @@
 
     $(function() {
         if($('#language-table').length){
-            addressTypeTable('#language-table');
+            languageTable('#language-table');
         }
-
-        $(document).on('click','.delete-language',function() {
-            const language_id = $(this).data('language-id');
-            const transaction = 'delete address type';
-    
-            Swal.fire({
-                title: 'Confirm Address Type Deletion',
-                text: 'Are you sure you want to delete this address type?',
-                icon: 'warning',
-                showCancelButton: !0,
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    confirmButton: 'btn btn-danger mt-2',
-                    cancelButton: 'btn btn-secondary ms-2 mt-2'
-                },
-                buttonsStyling: !1
-            }).then(function(result) {
-                if (result.value) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'apps/settings/language/controller/language-controller.php',
-                        dataType: 'json',
-                        data: {
-                            language_id : language_id, 
-                            transaction : transaction
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                showNotification(response.title, response.message, response.messageType);
-                                reloadDatatable('#language-table');
-                            }
-                            else {
-                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    window.location = 'logout.php?logout';
-                                }
-                                else if (response.notExist) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#language-table');
-                                }
-                                else {
-                                    showNotification(response.title, response.message, response.messageType);
-                                }
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            handleSystemError(xhr, status, error);
-                        }
-                    });
-                    return false;
-                }
-            });
-        });
 
         $(document).on('click','#delete-language',function() {
             let language_id = [];
-            const transaction = 'delete multiple address type';
+            const transaction = 'delete multiple language';
 
             $('.datatable-checkbox-children').each((index, element) => {
                 if ($(element).is(':checked')) {
@@ -72,8 +18,8 @@
     
             if(language_id.length > 0){
                 Swal.fire({
-                    title: 'Confirm Multiple Address Types Deletion',
-                    text: 'Are you sure you want to delete these address types?',
+                    title: 'Confirm Multiple Languages Deletion',
+                    text: 'Are you sure you want to delete these languages?',
                     icon: 'warning',
                     showCancelButton: !0,
                     confirmButtonText: 'Delete',
@@ -121,7 +67,7 @@
                 });
             }
             else{
-                showNotification('Deletion Multiple Address Type Error', 'Please select the address types you wish to delete.', 'danger');
+                showNotification('Deletion Multiple Language Error', 'Please select the languages you wish to delete.', 'danger');
             }
         });
 
@@ -146,16 +92,16 @@
     });
 })(jQuery);
 
-function addressTypeTable(datatable_name) {
+function languageTable(datatable_name) {
     toggleHideActionDropdown();
 
-    const type = 'address type table';
+    const type = 'language table';
     const page_id = $('#page-id').val();
     const page_link = document.getElementById('page-link').getAttribute('href');
 
     const columns = [ 
         { data: 'CHECK_BOX' },
-        { data: 'ADDRESS_TYPE_NAME' }
+        { data: 'LANGUAGE_NAME' }
     ];
 
     const columnDefs = [

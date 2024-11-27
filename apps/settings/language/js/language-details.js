@@ -2,24 +2,20 @@
     'use strict';
 
     $(function() {
-        displayDetails('get address type details');
+        displayDetails('get language details');
 
         if($('#language-form').length){
-            addressTypeForm();
+            languageForm();
         }
-
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get address type details');
-        });
 
         $(document).on('click','#delete-language',function() {
             const language_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'delete address type';
+            const transaction = 'delete language';
     
             Swal.fire({
-                title: 'Confirm Address Type Deletion',
-                text: 'Are you sure you want to delete this address type?',
+                title: 'Confirm Language Deletion',
+                text: 'Are you sure you want to delete this language?',
                 icon: 'warning',
                 showCancelButton: !0,
                 confirmButtonText: 'Delete',
@@ -75,7 +71,7 @@
     });
 })(jQuery);
 
-function addressTypeForm(){
+function languageForm(){
     $('#language-form').validate({
         rules: {
             language_name: {
@@ -103,7 +99,7 @@ function addressTypeForm(){
         submitHandler: function(form) {
             const language_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update address type';
+            const transaction = 'update language';
           
             $.ajax({
                 type: 'POST',
@@ -147,7 +143,7 @@ function addressTypeForm(){
 
 function displayDetails(transaction){
     switch (transaction) {
-        case 'get address type details':
+        case 'get language details':
             var language_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
             
@@ -164,7 +160,7 @@ function displayDetails(transaction){
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#language_name').val(response.addressTypeName);
+                        $('#language_name').val(response.languageName);
                     } 
                     else {
                         if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {

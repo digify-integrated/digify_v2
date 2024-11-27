@@ -246,23 +246,6 @@ class FileExtensionController {
             exit;
         }
 
-        $fileExtensionDetails = $this->fileExtensionModel->getFileExtension($fileExtensionID);
-        $appLogoPath = !empty($fileExtensionDetails['app_logo']) ? str_replace('../', '../../../../apps/', $fileExtensionDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete File Extension',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->fileExtensionModel->deleteFileExtension($fileExtensionID);
                 
         $response = [

@@ -8,10 +8,6 @@
             bankAccountTypeForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get bank account type details');
-        });
-
         $(document).on('click','#delete-bank-account-type',function() {
             const bank_account_type_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

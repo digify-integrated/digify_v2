@@ -11,19 +11,19 @@ require_once '../../security-setting/model/security-setting-model.php';
 
 require_once '../../../../assets/plugins/PhpSpreadsheet/autoload.php';
 
-$controller = new AddressTypeController(new AddressTypeModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SecurityModel(), new SystemModel());
+$controller = new LanguageController(new LanguageModel(new DatabaseModel), new AuthenticationModel(new DatabaseModel, new SecurityModel), new SecurityModel(), new SystemModel());
 $controller->handleRequest();
 
 # -------------------------------------------------------------
-class AddressTypeController {
-    private $addressTypeModel;
+class LanguageController {
+    private $languageModel;
     private $authenticationModel;
     private $securityModel;
     private $systemModel;
 
     # -------------------------------------------------------------
-    public function __construct(AddressTypeModel $addressTypeModel, AuthenticationModel $authenticationModel, SecurityModel $securityModel, SystemModel $systemModel) {
-        $this->addressTypeModel = $addressTypeModel;
+    public function __construct(LanguageModel $languageModel, AuthenticationModel $authenticationModel, SecurityModel $securityModel, SystemModel $systemModel) {
+        $this->languageModel = $languageModel;
         $this->authenticationModel = $authenticationModel;
         $this->securityModel = $securityModel;
         $this->systemModel = $systemModel;
@@ -100,20 +100,20 @@ class AddressTypeController {
             $transaction = isset($_POST['transaction']) ? $_POST['transaction'] : null;
 
             switch ($transaction) {
-                case 'add address type':
-                    $this->addAddressType();
+                case 'add language':
+                    $this->addLanguage();
                     break;
-                case 'update address type':
-                    $this->updateAddressType();
+                case 'update language':
+                    $this->updateLanguage();
                     break;
-                case 'get address type details':
-                    $this->getAddressTypeDetails();
+                case 'get language details':
+                    $this->getLanguageDetails();
                     break;
-                case 'delete address type':
-                    $this->deleteAddressType();
+                case 'delete language':
+                    $this->deleteLanguage();
                     break;
-                case 'delete multiple address type':
-                    $this->deleteMultipleAddressType();
+                case 'delete multiple language':
+                    $this->deleteMultipleLanguage();
                     break;
                 case 'export data':
                     $this->exportData();
@@ -138,21 +138,21 @@ class AddressTypeController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function addAddressType() {
+    public function addLanguage() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
 
         $userID = $_SESSION['user_account_id'];
-        $addressTypeName = filter_input(INPUT_POST, 'language_name', FILTER_SANITIZE_STRING);
+        $languageName = filter_input(INPUT_POST, 'language_name', FILTER_SANITIZE_STRING);
         
-        $addressTypeID = $this->addressTypeModel->saveAddressType(null, $addressTypeName, $userID);
+        $languageID = $this->languageModel->saveLanguage(null, $languageName, $userID);
     
         $response = [
             'success' => true,
-            'addressTypeID' => $this->securityModel->encryptData($addressTypeID),
-            'title' => 'Save Address Type',
-            'message' => 'The address type has been saved successfully.',
+            'languageID' => $this->securityModel->encryptData($languageID),
+            'title' => 'Save Language',
+            'message' => 'The language has been saved successfully.',
             'messageType' => 'success'
         ];
             
@@ -166,24 +166,24 @@ class AddressTypeController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function updateAddressType() {
+    public function updateLanguage() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
         
         $userID = $_SESSION['user_account_id'];
-        $addressTypeID = filter_input(INPUT_POST, 'language_id', FILTER_VALIDATE_INT);
-        $addressTypeName = filter_input(INPUT_POST, 'language_name', FILTER_SANITIZE_STRING);
+        $languageID = filter_input(INPUT_POST, 'language_id', FILTER_VALIDATE_INT);
+        $languageName = filter_input(INPUT_POST, 'language_name', FILTER_SANITIZE_STRING);
     
-        $checkAddressTypeExist = $this->addressTypeModel->checkAddressTypeExist($addressTypeID);
-        $total = $checkAddressTypeExist['total'] ?? 0;
+        $checkLanguageExist = $this->languageModel->checkLanguageExist($languageID);
+        $total = $checkLanguageExist['total'] ?? 0;
 
         if($total === 0){
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Save Address Type',
-                'message' => 'The address type does not exist.',
+                'title' => 'Save Language',
+                'message' => 'The language does not exist.',
                 'messageType' => 'error'
             ];
             
@@ -191,12 +191,12 @@ class AddressTypeController {
             exit;
         }
 
-        $this->addressTypeModel->saveAddressType($addressTypeID, $addressTypeName, $userID);
+        $this->languageModel->saveLanguage($languageID, $languageName, $userID);
             
         $response = [
             'success' => true,
-            'title' => 'Save Address Type',
-            'message' => 'The address type has been saved successfully.',
+            'title' => 'Save Language',
+            'message' => 'The language has been saved successfully.',
             'messageType' => 'success'
         ];
         
@@ -210,22 +210,22 @@ class AddressTypeController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function deleteAddressType() {
+    public function deleteLanguage() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
 
-        $addressTypeID = filter_input(INPUT_POST, 'language_id', FILTER_VALIDATE_INT);
+        $languageID = filter_input(INPUT_POST, 'language_id', FILTER_VALIDATE_INT);
         
-        $checkAddressTypeExist = $this->addressTypeModel->checkAddressTypeExist($addressTypeID);
-        $total = $checkAddressTypeExist['total'] ?? 0;
+        $checkLanguageExist = $this->languageModel->checkLanguageExist($languageID);
+        $total = $checkLanguageExist['total'] ?? 0;
 
         if($total === 0){
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Delete Address Type',
-                'message' => 'The address type does not exist.',
+                'title' => 'Delete Language',
+                'message' => 'The language does not exist.',
                 'messageType' => 'error'
             ];
                 
@@ -233,14 +233,14 @@ class AddressTypeController {
             exit;
         }
 
-        $addressTypeDetails = $this->addressTypeModel->getAddressType($addressTypeID);
-        $appLogoPath = !empty($addressTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $addressTypeDetails['app_logo']) : null;
+        $languageDetails = $this->languageModel->getLanguage($languageID);
+        $appLogoPath = !empty($languageDetails['app_logo']) ? str_replace('../', '../../../../apps/', $languageDetails['app_logo']) : null;
 
         if(file_exists($appLogoPath)){
             if (!unlink($appLogoPath)) {
                 $response = [
                     'success' => false,
-                    'title' => 'Delete Address Type',
+                    'title' => 'Delete Language',
                     'message' => 'The app logo cannot be deleted due to an error.',
                     'messageType' => 'error'
                 ];
@@ -250,12 +250,12 @@ class AddressTypeController {
             }
         }
 
-        $this->addressTypeModel->deleteAddressType($addressTypeID);
+        $this->languageModel->deleteLanguage($languageID);
                 
         $response = [
             'success' => true,
-            'title' => 'Delete Address Type',
-            'message' => 'The address type has been deleted successfully.',
+            'title' => 'Delete Language',
+            'message' => 'The language has been deleted successfully.',
             'messageType' => 'success'
         ];
             
@@ -265,27 +265,27 @@ class AddressTypeController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function deleteMultipleAddressType() {
+    public function deleteMultipleLanguage() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
 
         if (isset($_POST['language_id']) && !empty($_POST['language_id'])) {
-            $addressTypeIDs = $_POST['language_id'];
+            $languageIDs = $_POST['language_id'];
     
-            foreach($addressTypeIDs as $addressTypeID){
-                $checkAddressTypeExist = $this->addressTypeModel->checkAddressTypeExist($addressTypeID);
-                $total = $checkAddressTypeExist['total'] ?? 0;
+            foreach($languageIDs as $languageID){
+                $checkLanguageExist = $this->languageModel->checkLanguageExist($languageID);
+                $total = $checkLanguageExist['total'] ?? 0;
 
                 if($total > 0){
-                    $addressTypeDetails = $this->addressTypeModel->getAddressType($addressTypeID);
-                    $appLogoPath = !empty($addressTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $addressTypeDetails['app_logo']) : null;
+                    $languageDetails = $this->languageModel->getLanguage($languageID);
+                    $appLogoPath = !empty($languageDetails['app_logo']) ? str_replace('../', '../../../../apps/', $languageDetails['app_logo']) : null;
 
                     if(file_exists($appLogoPath)){
                         if (!unlink($appLogoPath)) {
                             $response = [
                                 'success' => false,
-                                'title' => 'Delete Multiple Address Types',
+                                'title' => 'Delete Multiple Languages',
                                 'message' => 'The app logo cannot be deleted due to an error.',
                                 'messageType' => 'error'
                             ];
@@ -295,14 +295,14 @@ class AddressTypeController {
                         }
                     }
                     
-                    $this->addressTypeModel->deleteAddressType($addressTypeID);
+                    $this->languageModel->deleteLanguage($languageID);
                 }
             }
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple Address Types',
-                'message' => 'The selected address types have been deleted successfully.',
+                'title' => 'Delete Multiple Languages',
+                'message' => 'The selected languages have been deleted successfully.',
                 'messageType' => 'success'
             ];
             
@@ -351,10 +351,10 @@ class AddressTypeController {
                 $columns = implode(", ", $tableColumns);
                 
                 $ids = implode(",", array_map('intval', $exportIDs));
-                $addressTypeDetails = $this->addressTypeModel->exportAddressType($columns, $ids);
+                $languageDetails = $this->languageModel->exportLanguage($columns, $ids);
 
-                foreach ($addressTypeDetails as $addressTypeDetail) {
-                    fputcsv($output, $addressTypeDetail);
+                foreach ($languageDetails as $languageDetail) {
+                    fputcsv($output, $languageDetail);
                 }
 
                 fclose($output);
@@ -376,13 +376,13 @@ class AddressTypeController {
                 $columns = implode(", ", $tableColumns);
                 
                 $ids = implode(",", array_map('intval', $exportIDs));
-                $addressTypeDetails = $this->addressTypeModel->exportAddressType($columns, $ids);
+                $languageDetails = $this->languageModel->exportLanguage($columns, $ids);
 
                 $rowNumber = 2;
-                foreach ($addressTypeDetails as $addressTypeDetail) {
+                foreach ($languageDetails as $languageDetail) {
                     $colIndex = 'A';
                     foreach ($tableColumns as $column) {
-                        $sheet->setCellValue($colIndex . $rowNumber, $addressTypeDetail[$column]);
+                        $sheet->setCellValue($colIndex . $rowNumber, $languageDetail[$column]);
                         $colIndex++;
                     }
                     $rowNumber++;
@@ -418,23 +418,23 @@ class AddressTypeController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function getAddressTypeDetails() {
+    public function getLanguageDetails() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
     
         $userID = $_SESSION['user_account_id'];
-        $addressTypeID = filter_input(INPUT_POST, 'language_id', FILTER_VALIDATE_INT);
+        $languageID = filter_input(INPUT_POST, 'language_id', FILTER_VALIDATE_INT);
 
-        $checkAddressTypeExist = $this->addressTypeModel->checkAddressTypeExist($addressTypeID);
-        $total = $checkAddressTypeExist['total'] ?? 0;
+        $checkLanguageExist = $this->languageModel->checkLanguageExist($languageID);
+        $total = $checkLanguageExist['total'] ?? 0;
 
         if($total === 0){
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Get Address Type Details',
-                'message' => 'The address type does not exist.',
+                'title' => 'Get Language Details',
+                'message' => 'The language does not exist.',
                 'messageType' => 'error'
             ];
             
@@ -442,11 +442,11 @@ class AddressTypeController {
             exit;
         }
 
-        $addressTypeDetails = $this->addressTypeModel->getAddressType($addressTypeID);
+        $languageDetails = $this->languageModel->getLanguage($languageID);
 
         $response = [
             'success' => true,
-            'addressTypeName' => $addressTypeDetails['language_name'] ?? null,
+            'languageName' => $languageDetails['language_name'] ?? null,
         ];
 
         echo json_encode($response);

@@ -436,6 +436,7 @@ class MenuItemController {
         }
 
         $menuItemDetails = $this->menuItemModel->getMenuItem($menuItemID);
+        $parentID = $menuItemDetails['parent_id'] == 0 ? '' : $menuItemDetails['parent_id'];
 
         $response = [
             'success' => true,
@@ -443,7 +444,7 @@ class MenuItemController {
             'menuItemURL' => $menuItemDetails['menu_item_url'] ?? null,
             'menuItemIcon' => $menuItemDetails['menu_item_icon'] ?? null,
             'appModuleID' => $menuItemDetails['app_module_id'] ?? null,
-            'parentID' => $menuItemDetails['parent_id'] ?? null,
+            'parentID' => $parentID,
             'tableName' => $menuItemDetails['table_name'] ?? null,
             'orderSequence' => $menuItemDetails['order_sequence'] ?? null
         ];

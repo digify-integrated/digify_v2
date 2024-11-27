@@ -19,23 +19,23 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
     
     switch ($type) {
         # -------------------------------------------------------------
-        case 'address type table':
-            $sql = $databaseModel->getConnection()->prepare('CALL generateAddressTypeTable()');
+        case 'language table':
+            $sql = $databaseModel->getConnection()->prepare('CALL generateLanguageTable()');
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
             $sql->closeCursor();
 
             foreach ($options as $row) {
-                $addressTypeID = $row['language_id'];
-                $addressTypeName = $row['language_name'];
-                $addressTypeIDEncrypted = $securityModel->encryptData($addressTypeID);
+                $languageID = $row['language_id'];
+                $languageName = $row['language_name'];
+                $languageIDEncrypted = $securityModel->encryptData($languageID);
 
                 $response[] = [
                     'CHECK_BOX' => '<div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $addressTypeID .'">
+                                        <input class="form-check-input datatable-checkbox-children" type="checkbox" value="'. $languageID .'">
                                     </div>',
-                    'LANGUAGE_NAME' => $addressTypeName,
-                    'LINK' => $pageLink .'&id='. $addressTypeIDEncrypted
+                    'LANGUAGE_NAME' => $languageName,
+                    'LINK' => $pageLink .'&id='. $languageIDEncrypted
                 ];
             }
 
@@ -44,10 +44,10 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
         # -------------------------------------------------------------
 
         # -------------------------------------------------------------
-        case 'address type options':
+        case 'language options':
             $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;
 
-            $sql = $databaseModel->getConnection()->prepare('CALL generateAddressTypeOptions()');
+            $sql = $databaseModel->getConnection()->prepare('CALL generateLanguageOptions()');
             $sql->execute();
             $options = $sql->fetchAll(PDO::FETCH_ASSOC);
             $sql->closeCursor();

@@ -2,8 +2,8 @@ DELIMITER //
 
 /* Check Stored Procedure */
 
-DROP PROCEDURE IF EXISTS checkAddressTypeExist//
-CREATE PROCEDURE checkAddressTypeExist(
+DROP PROCEDURE IF EXISTS checkLanguageExist//
+CREATE PROCEDURE checkLanguageExist(
     IN p_language_id INT
 )
 BEGIN
@@ -16,8 +16,8 @@ END //
 
 /* Save Stored Procedure */
 
-DROP PROCEDURE IF EXISTS saveAddressType//
-CREATE PROCEDURE saveAddressType(
+DROP PROCEDURE IF EXISTS saveLanguage//
+CREATE PROCEDURE saveLanguage(
     IN p_language_id INT, 
     IN p_language_name VARCHAR(100), 
     IN p_last_log_by INT, 
@@ -52,8 +52,8 @@ END //
 
 /* Delete Stored Procedure */
 
-DROP PROCEDURE IF EXISTS deleteAddressType//
-CREATE PROCEDURE deleteAddressType(
+DROP PROCEDURE IF EXISTS deleteLanguage//
+CREATE PROCEDURE deleteLanguage(
     IN p_language_id INT
 )
 BEGIN
@@ -73,8 +73,8 @@ END //
 
 /* Get Stored Procedure */
 
-DROP PROCEDURE IF EXISTS getAddressType//
-CREATE PROCEDURE getAddressType(
+DROP PROCEDURE IF EXISTS getLanguage//
+CREATE PROCEDURE getLanguage(
     IN p_language_id INT
 )
 BEGIN
@@ -86,16 +86,16 @@ END //
 
 /* Generate Stored Procedure */
 
-DROP PROCEDURE IF EXISTS generateAddressTypeTable//
-CREATE PROCEDURE generateAddressTypeTable()
+DROP PROCEDURE IF EXISTS generateLanguageTable//
+CREATE PROCEDURE generateLanguageTable()
 BEGIN
 	SELECT language_id, language_name
     FROM language 
     ORDER BY language_id;
 END //
 
-DROP PROCEDURE IF EXISTS generateAddressTypeOptions//
-CREATE PROCEDURE generateAddressTypeOptions()
+DROP PROCEDURE IF EXISTS generateLanguageOptions//
+CREATE PROCEDURE generateLanguageOptions()
 BEGIN
 	SELECT language_id, language_name 
     FROM language 

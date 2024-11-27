@@ -10,10 +10,6 @@
             cityForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get city details');
-        });
-
         $(document).on('click','#delete-city',function() {
             const city_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

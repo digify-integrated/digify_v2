@@ -24,10 +24,6 @@
             systemActionPermissionTable('#system-action-permission-table');
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get role details');
-        });
-
         $(document).on('click','#delete-role',function() {
             const role_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

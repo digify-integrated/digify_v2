@@ -20,10 +20,6 @@
             rolePermissionTable('#role-permission-table');
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get menu item details');
-        });
-
         $(document).on('click','#delete-menu-item',function() {
             const menu_item_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

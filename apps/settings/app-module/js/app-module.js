@@ -6,60 +6,6 @@
             appModuleTable('#app-module-table');
         }
 
-        $(document).on('click','.delete-app-module',function() {
-            const app_module_id = $(this).data('app-module-id');
-            const transaction = 'delete app module';
-    
-            Swal.fire({
-                title: 'Confirm App Module Deletion',
-                text: 'Are you sure you want to delete this app module?',
-                icon: 'warning',
-                showCancelButton: !0,
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    confirmButton: 'btn btn-danger mt-2',
-                    cancelButton: 'btn btn-secondary ms-2 mt-2'
-                },
-                buttonsStyling: !1
-            }).then(function(result) {
-                if (result.value) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'apps/settings/app-module/controller/app-module-controller.php',
-                        dataType: 'json',
-                        data: {
-                            app_module_id : app_module_id, 
-                            transaction : transaction
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                showNotification(response.title, response.message, response.messageType);
-                                reloadDatatable('#app-module-table');
-                            }
-                            else {
-                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    window.location = 'logout.php?logout';
-                                }
-                                else if (response.notExist) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#app-module-table');
-                                }
-                                else {
-                                    showNotification(response.title, response.message, response.messageType);
-                                }
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            handleSystemError(xhr, status, error);
-                        }
-                    });
-                    return false;
-                }
-            });
-        });
-
         $(document).on('click','#delete-app-module',function() {
             let app_module_id = [];
             const transaction = 'delete multiple app module';

@@ -15,11 +15,7 @@
         if($('#role-permission-table').length){
             rolePermissionTable('#role-permission-table');
         }
-
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get system action details');
-        });
-
+        
         $(document).on('click','#delete-system-action',function() {
             const system_action_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

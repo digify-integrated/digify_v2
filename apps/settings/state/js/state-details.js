@@ -10,10 +10,6 @@
             stateForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get state details');
-        });
-
         $(document).on('click','#delete-state',function() {
             const state_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

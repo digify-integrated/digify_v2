@@ -8,10 +8,6 @@
             fileTypeForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get file type details');
-        });
-
         $(document).on('click','#delete-file-type',function() {
             const file_type_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

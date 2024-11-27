@@ -8,10 +8,6 @@
             currencyForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get currency details');
-        });
-
         $(document).on('click','#delete-currency',function() {
             const currency_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

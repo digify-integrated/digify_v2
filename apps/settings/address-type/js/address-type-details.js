@@ -8,10 +8,6 @@
             addressTypeForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get address type details');
-        });
-
         $(document).on('click','#delete-address-type',function() {
             const address_type_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

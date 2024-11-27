@@ -11,10 +11,6 @@
             companyForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get company details');
-        });
-
         $(document).on('click','#delete-company',function() {
             const company_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

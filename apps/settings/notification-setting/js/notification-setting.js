@@ -6,60 +6,6 @@
             notificationSettingTable('#notification-setting-table');
         }
 
-        $(document).on('click','.delete-notification-setting',function() {
-            const notification_setting_id = $(this).data('notification-setting-id');
-            const transaction = 'delete notification setting';
-    
-            Swal.fire({
-                title: 'Confirm Notification Setting Deletion',
-                text: 'Are you sure you want to delete this notification setting?',
-                icon: 'warning',
-                showCancelButton: !0,
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    confirmButton: 'btn btn-danger mt-2',
-                    cancelButton: 'btn btn-secondary ms-2 mt-2'
-                },
-                buttonsStyling: !1
-            }).then(function(result) {
-                if (result.value) {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'apps/settings/notification-setting/controller/notification-setting-controller.php',
-                        dataType: 'json',
-                        data: {
-                            notification_setting_id : notification_setting_id, 
-                            transaction : transaction
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                showNotification(response.title, response.message, response.messageType);
-                                reloadDatatable('#notification-setting-table');
-                            }
-                            else {
-                                if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    window.location = 'logout.php?logout';
-                                }
-                                else if (response.notExist) {
-                                    setNotification(response.title, response.message, response.messageType);
-                                    reloadDatatable('#notification-setting-table');
-                                }
-                                else {
-                                    showNotification(response.title, response.message, response.messageType);
-                                }
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            handleSystemError(xhr, status, error);
-                        }
-                    });
-                    return false;
-                }
-            });
-        });
-
         $(document).on('click','#delete-notification-setting',function() {
             let notification_setting_id = [];
             const transaction = 'delete multiple notification setting';

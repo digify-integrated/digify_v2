@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 26, 2024 at 10:28 AM
+-- Generation Time: Nov 27, 2024 at 10:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -227,11 +227,25 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkBillingCycleExist` (IN `p_bill
     WHERE billing_cycle_id = p_billing_cycle_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkBloodTypeExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkBloodTypeExist` (IN `p_blood_type_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM blood_type
+    WHERE blood_type_id = p_blood_type_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkCityExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCityExist` (IN `p_city_id` INT)   BEGIN
 	SELECT COUNT(*) AS total
     FROM city
     WHERE city_id = p_city_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkCivilStatusExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCivilStatusExist` (IN `p_civil_status_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM civil_status
+    WHERE civil_status_id = p_civil_status_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkCompanyExist`$$
@@ -255,11 +269,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCountryExist` (IN `p_country_i
     WHERE country_id = p_country_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkCredentialTypeExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCredentialTypeExist` (IN `p_credential_type_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM credential_type
+    WHERE credential_type_id = p_credential_type_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkCurrencyExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkCurrencyExist` (IN `p_currency_id` INT)   BEGIN
 	SELECT COUNT(*) AS total
     FROM currency
     WHERE currency_id = p_currency_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkDepartmentExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkDepartmentExist` (IN `p_department_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM department
+    WHERE department_id = p_department_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkEducationalStageExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkEducationalStageExist` (IN `p_educational_stage_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM educational_stage
+    WHERE educational_stage_id = p_educational_stage_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkEmailSettingExist`$$
@@ -281,6 +316,27 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkFileTypeExist` (IN `p_file_typ
 	SELECT COUNT(*) AS total
     FROM file_type
     WHERE file_type_id = p_file_type_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkGenderExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkGenderExist` (IN `p_gender_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM gender
+    WHERE gender_id = p_gender_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkLanguageExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkLanguageExist` (IN `p_language_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM language
+    WHERE language_id = p_language_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkLanguageProficiencyExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkLanguageProficiencyExist` (IN `p_language_proficiency_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM language_proficiency
+    WHERE language_proficiency_id = p_language_proficiency_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkLoginCredentialsExist`$$
@@ -311,6 +367,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkNotificationSettingExist` (IN 
 	SELECT COUNT(*) AS total
     FROM notification_setting
     WHERE notification_setting_id = p_notification_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkRelationshipExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkRelationshipExist` (IN `p_relationship_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM relationship
+    WHERE relationship_id = p_relationship_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkReligionExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkReligionExist` (IN `p_religion_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM religion
+    WHERE religion_id = p_religion_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkRoleExist`$$
@@ -483,6 +553,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteBillingCycle` (IN `p_billing_
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteBloodType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteBloodType` (IN `p_blood_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM blood_type WHERE blood_type_id = p_blood_type_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `deleteCity`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCity` (IN `p_city_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -493,6 +577,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCity` (IN `p_city_id` INT)   
     START TRANSACTION;
 
     DELETE FROM city WHERE city_id = p_city_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteCivilStatus`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCivilStatus` (IN `p_civil_status_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM civil_status WHERE civil_status_id = p_civil_status_id;
 
     COMMIT;
 END$$
@@ -541,6 +639,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCountry` (IN `p_country_id` I
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteCredentialType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCredentialType` (IN `p_credential_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM credential_type WHERE credential_type_id = p_credential_type_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `deleteCurrency`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCurrency` (IN `p_currency_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -551,6 +663,34 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteCurrency` (IN `p_currency_id`
     START TRANSACTION;
 
     DELETE FROM currency WHERE currency_id = p_currency_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteDepartment`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteDepartment` (IN `p_department_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM department WHERE department_id = p_department_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteEducationalStage`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteEducationalStage` (IN `p_educational_stage_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM educational_stage WHERE educational_stage_id = p_educational_stage_id;
 
     COMMIT;
 END$$
@@ -598,6 +738,48 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteFileType` (IN `p_file_type_id
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteGender`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteGender` (IN `p_gender_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM gender WHERE gender_id = p_gender_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteLanguage`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteLanguage` (IN `p_language_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM language WHERE language_id = p_language_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteLanguageProficiency`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteLanguageProficiency` (IN `p_language_proficiency_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM language_proficiency WHERE language_proficiency_id = p_language_proficiency_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `deleteMenuGroup`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteMenuGroup` (IN `p_menu_group_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -640,6 +822,34 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteNotificationSetting` (IN `p_n
     DELETE FROM notification_setting_system_template WHERE notification_setting_id = p_notification_setting_id;
     DELETE FROM notification_setting_sms_template WHERE notification_setting_id = p_notification_setting_id;
     DELETE FROM notification_setting WHERE notification_setting_id = p_notification_setting_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteRelationship`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteRelationship` (IN `p_relationship_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM relationship WHERE relationship_id = p_relationship_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteReligion`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteReligion` (IN `p_religion_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM religion WHERE religion_id = p_religion_id;
 
     COMMIT;
 END$$
@@ -883,6 +1093,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBillingCycleTable` ()   BEG
     ORDER BY billing_cycle_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateBloodTypeOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBloodTypeOptions` ()   BEGIN
+	SELECT blood_type_id, blood_type_name 
+    FROM blood_type 
+    ORDER BY blood_type_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateBloodTypeTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateBloodTypeTable` ()   BEGIN
+	SELECT blood_type_id, blood_type_name
+    FROM blood_type 
+    ORDER BY blood_type_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateCityOptions`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCityOptions` ()   BEGIN
     SELECT city_id, city_name, state_name, country_name
@@ -918,6 +1142,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCityTable` (IN `p_filter_by
     PREPARE stmt FROM query;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCivilStatusOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCivilStatusOptions` ()   BEGIN
+	SELECT civil_status_id, civil_status_name 
+    FROM civil_status 
+    ORDER BY civil_status_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCivilStatusTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCivilStatusTable` ()   BEGIN
+	SELECT civil_status_id, civil_status_name
+    FROM civil_status 
+    ORDER BY civil_status_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateCompanyOptions`$$
@@ -999,6 +1237,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCountryTable` ()   BEGIN
     ORDER BY country_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateCredentialTypeOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCredentialTypeOptions` ()   BEGIN
+	SELECT credential_type_id, credential_type_name 
+    FROM credential_type 
+    ORDER BY credential_type_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateCredentialTypeTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCredentialTypeTable` ()   BEGIN
+	SELECT credential_type_id, credential_type_name
+    FROM credential_type 
+    ORDER BY credential_type_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateCurrencyOptions`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCurrencyOptions` ()   BEGIN
     SELECT currency_id, currency_name, symbol
@@ -1011,6 +1263,54 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateCurrencyTable` ()   BEGIN
     SELECT currency_id, currency_name, symbol, shorthand 
     FROM currency
     ORDER BY currency_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateDepartmentOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateDepartmentOptions` ()   BEGIN
+	SELECT department_id, department_name
+    FROM department 
+    ORDER BY department_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateDepartmentTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateDepartmentTable` (IN `p_filter_by_parent_department` TEXT, IN `p_filter_by_manager` TEXT)   BEGIN
+    DECLARE query TEXT;
+    DECLARE filter_conditions TEXT DEFAULT '';
+
+    SET query = 'SELECT department_id, department_name, parent_department_name, manager_name
+                FROM department ';
+
+    IF p_filter_by_parent_department IS NOT NULL AND p_filter_by_parent_department <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' parent_department_id IN (', p_filter_by_parent_department, ')');
+    END IF;
+
+    IF p_filter_by_manager IS NOT NULL AND p_filter_by_manager <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' manager_id IN (', p_filter_by_manager, ')');
+    END IF;
+
+    IF filter_conditions <> '' THEN
+        SET query = CONCAT(query, ' WHERE ', filter_conditions);
+    END IF;
+
+    SET query = CONCAT(query, ' ORDER BY department_name');
+
+    PREPARE stmt FROM query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateEducationalStageOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEducationalStageOptions` ()   BEGIN
+	SELECT educational_stage_id, educational_stage_name 
+    FROM educational_stage 
+    ORDER BY educational_stage_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateEducationalStageTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEducationalStageTable` ()   BEGIN
+	SELECT educational_stage_id, educational_stage_name
+    FROM educational_stage 
+    ORDER BY educational_stage_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateEmailSettingOptions`$$
@@ -1080,12 +1380,54 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateFileTypeTable` ()   BEGIN
     ORDER BY file_type_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateGenderOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateGenderOptions` ()   BEGIN
+	SELECT gender_id, gender_name 
+    FROM gender 
+    ORDER BY gender_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateGenderTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateGenderTable` ()   BEGIN
+	SELECT gender_id, gender_name
+    FROM gender 
+    ORDER BY gender_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateInternalNotes`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateInternalNotes` (IN `p_table_name` VARCHAR(255), IN `p_reference_id` INT)   BEGIN
 	SELECT internal_notes_id, internal_note, internal_note_by, internal_note_date
     FROM internal_notes
     WHERE table_name = p_table_name AND reference_id  = p_reference_id
     ORDER BY internal_note_date DESC;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateLanguageOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateLanguageOptions` ()   BEGIN
+	SELECT language_id, language_name 
+    FROM language 
+    ORDER BY language_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateLanguageProficiencyOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateLanguageProficiencyOptions` ()   BEGIN
+    SELECT language_proficiency_id, language_proficiency_name 
+    FROM language_proficiency 
+    ORDER BY language_proficiency_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateLanguageProficiencyTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateLanguageProficiencyTable` ()   BEGIN
+    SELECT language_proficiency_id, language_proficiency_name, language_proficiency_description 
+    FROM language_proficiency
+    ORDER BY language_proficiency_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateLanguageTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateLanguageTable` ()   BEGIN
+	SELECT language_id, language_name
+    FROM language 
+    ORDER BY language_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateLogNotes`$$
@@ -1184,6 +1526,42 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateNotificationSettingTable` (
 	SELECT notification_setting_id, notification_setting_name, notification_setting_description
     FROM notification_setting 
     ORDER BY notification_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateParentDepartmentOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateParentDepartmentOptions` (IN `p_department_id` INT)   BEGIN
+	SELECT department_id, department_name
+    FROM department 
+    WHERE department_id != p_department_id
+    ORDER BY department_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateRelationshipOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateRelationshipOptions` ()   BEGIN
+	SELECT relationship_id, relationship_name 
+    FROM relationship 
+    ORDER BY relationship_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateRelationshipTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateRelationshipTable` ()   BEGIN
+	SELECT relationship_id, relationship_name
+    FROM relationship 
+    ORDER BY relationship_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateReligionOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateReligionOptions` ()   BEGIN
+	SELECT religion_id, religion_name 
+    FROM religion 
+    ORDER BY religion_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateReligionTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateReligionTable` ()   BEGIN
+	SELECT religion_id, religion_name
+    FROM religion 
+    ORDER BY religion_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateRoleAssignedMenuItemTable`$$
@@ -1431,10 +1809,22 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getBillingCycle` (IN `p_billing_cyc
 	WHERE billing_cycle_id = p_billing_cycle_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getBloodType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getBloodType` (IN `p_blood_type_id` INT)   BEGIN
+	SELECT * FROM blood_type
+	WHERE blood_type_id = p_blood_type_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getCity`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getCity` (IN `p_city_id` INT)   BEGIN
 	SELECT * FROM city
 	WHERE city_id = p_city_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getCivilStatus`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getCivilStatus` (IN `p_civil_status_id` INT)   BEGIN
+	SELECT * FROM civil_status
+	WHERE civil_status_id = p_civil_status_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getCompany`$$
@@ -1455,10 +1845,28 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getCountry` (IN `p_country_id` INT)
 	WHERE country_id = p_country_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getCredentialType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getCredentialType` (IN `p_credential_type_id` INT)   BEGIN
+	SELECT * FROM credential_type
+	WHERE credential_type_id = p_credential_type_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getCurrency`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getCurrency` (IN `p_currency_id` INT)   BEGIN
 	SELECT * FROM currency
 	WHERE currency_id = p_currency_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getDepartment`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getDepartment` (IN `p_department_id` INT)   BEGIN
+	SELECT * FROM department
+	WHERE department_id = p_department_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getEducationalStage`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEducationalStage` (IN `p_educational_stage_id` INT)   BEGIN
+	SELECT * FROM educational_stage
+	WHERE educational_stage_id = p_educational_stage_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getEmailNotificationTemplate`$$
@@ -1485,10 +1893,28 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getFileType` (IN `p_file_type_id` I
 	WHERE file_type_id = p_file_type_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getGender`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getGender` (IN `p_gender_id` INT)   BEGIN
+	SELECT * FROM gender
+	WHERE gender_id = p_gender_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getInternalNotesAttachment`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getInternalNotesAttachment` (IN `p_internal_notes_id` INT)   BEGIN
 	SELECT * FROM internal_notes_attachment
 	WHERE internal_notes_id = p_internal_notes_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getLanguage`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getLanguage` (IN `p_language_id` INT)   BEGIN
+	SELECT * FROM language
+	WHERE language_id = p_language_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getLanguageProficiency`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getLanguageProficiency` (IN `p_language_proficiency_id` INT)   BEGIN
+	SELECT * FROM language_proficiency
+	WHERE language_proficiency_id = p_language_proficiency_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getLoginCredentials`$$
@@ -1541,6 +1967,18 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getPasswordHistory` (IN `p_user_acc
     SELECT password 
     FROM password_history
     WHERE user_account_id = p_user_account_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getRelationship`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getRelationship` (IN `p_relationship_id` INT)   BEGIN
+	SELECT * FROM relationship
+	WHERE relationship_id = p_relationship_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getReligion`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getReligion` (IN `p_religion_id` INT)   BEGIN
+	SELECT * FROM religion
+	WHERE religion_id = p_religion_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getRole`$$
@@ -1828,6 +2266,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBillingCycle` (IN `p_billing_cy
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveBloodType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBloodType` (IN `p_blood_type_id` INT, IN `p_blood_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_blood_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_blood_type_id IS NULL OR NOT EXISTS (SELECT 1 FROM blood_type WHERE blood_type_id = p_blood_type_id) THEN
+        INSERT INTO blood_type (blood_type_name, last_log_by) 
+        VALUES(p_blood_type_name, p_last_log_by);
+        
+        SET p_new_blood_type_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE blood_type
+        SET blood_type_name = p_blood_type_name,
+            last_log_by = p_last_log_by
+        WHERE blood_type_id = p_blood_type_id;
+
+        SET p_new_blood_type_id = p_blood_type_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveCity`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCity` (IN `p_city_id` INT, IN `p_city_name` VARCHAR(100), IN `p_state_id` INT, IN `p_state_name` VARCHAR(100), IN `p_country_id` INT, IN `p_country_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_city_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -1854,6 +2318,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCity` (IN `p_city_id` INT, IN `
         WHERE city_id = p_city_id;
 
         SET p_new_city_id = p_city_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveCivilStatus`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCivilStatus` (IN `p_civil_status_id` INT, IN `p_civil_status_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_civil_status_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_civil_status_id IS NULL OR NOT EXISTS (SELECT 1 FROM civil_status WHERE civil_status_id = p_civil_status_id) THEN
+        INSERT INTO civil_status (civil_status_name, last_log_by) 
+        VALUES(p_civil_status_name, p_last_log_by);
+        
+        SET p_new_civil_status_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE civil_status
+        SET civil_status_name = p_civil_status_name,
+            last_log_by = p_last_log_by
+        WHERE civil_status_id = p_civil_status_id;
+
+        SET p_new_civil_status_id = p_civil_status_id;
     END IF;
 
     COMMIT;
@@ -1963,6 +2453,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCountry` (IN `p_country_id` INT
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveCredentialType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCredentialType` (IN `p_credential_type_id` INT, IN `p_credential_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_credential_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_credential_type_id IS NULL OR NOT EXISTS (SELECT 1 FROM credential_type WHERE credential_type_id = p_credential_type_id) THEN
+        INSERT INTO credential_type (credential_type_name, last_log_by) 
+        VALUES(p_credential_type_name, p_last_log_by);
+        
+        SET p_new_credential_type_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE credential_type
+        SET credential_type_name = p_credential_type_name,
+            last_log_by = p_last_log_by
+        WHERE credential_type_id = p_credential_type_id;
+
+        SET p_new_credential_type_id = p_credential_type_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveCurrency`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCurrency` (IN `p_currency_id` INT, IN `p_currency_name` VARCHAR(100), IN `p_symbol` VARCHAR(5), IN `p_shorthand` VARCHAR(10), IN `p_last_log_by` INT, OUT `p_new_currency_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -1986,6 +2502,62 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCurrency` (IN `p_currency_id` I
         WHERE currency_id = p_currency_id;
 
         SET p_new_currency_id = p_currency_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveDepartment`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveDepartment` (IN `p_department_id` INT, IN `p_department_name` VARCHAR(100), IN `p_parent_department_id` INT, IN `p_parent_department_name` VARCHAR(100), IN `p_manager_id` INT, IN `p_manager_name` VARCHAR(500), IN `p_last_log_by` INT, OUT `p_new_department_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_department_id IS NULL OR NOT EXISTS (SELECT 1 FROM department WHERE department_id = p_department_id) THEN
+        INSERT INTO department (department_name, parent_department_id, parent_department_name, manager_id, manager_name, last_log_by) 
+        VALUES(p_department_name, p_parent_department_id, p_parent_department_name, p_manager_id, p_manager_name, p_last_log_by);
+        
+        SET p_new_department_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE department
+        SET department_name = p_department_name,
+            parent_department_id = p_parent_department_id,
+            parent_department_name = p_parent_department_name,
+            manager_id = p_manager_id,
+            manager_name = p_manager_name,
+            last_log_by = p_last_log_by
+        WHERE department_id = p_department_id;
+
+        SET p_new_department_id = p_department_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveEducationalStage`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveEducationalStage` (IN `p_educational_stage_id` INT, IN `p_educational_stage_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_educational_stage_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_educational_stage_id IS NULL OR NOT EXISTS (SELECT 1 FROM educational_stage WHERE educational_stage_id = p_educational_stage_id) THEN
+        INSERT INTO educational_stage (educational_stage_name, last_log_by) 
+        VALUES(p_educational_stage_name, p_last_log_by);
+        
+        SET p_new_educational_stage_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE educational_stage
+        SET educational_stage_name = p_educational_stage_name,
+            last_log_by = p_last_log_by
+        WHERE educational_stage_id = p_educational_stage_id;
+
+        SET p_new_educational_stage_id = p_educational_stage_id;
     END IF;
 
     COMMIT;
@@ -2087,6 +2659,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveFileType` (IN `p_file_type_id` 
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveGender`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveGender` (IN `p_gender_id` INT, IN `p_gender_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_gender_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_gender_id IS NULL OR NOT EXISTS (SELECT 1 FROM gender WHERE gender_id = p_gender_id) THEN
+        INSERT INTO gender (gender_name, last_log_by) 
+        VALUES(p_gender_name, p_last_log_by);
+        
+        SET p_new_gender_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE gender
+        SET gender_name = p_gender_name,
+            last_log_by = p_last_log_by
+        WHERE gender_id = p_gender_id;
+
+        SET p_new_gender_id = p_gender_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveImport`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveImport` (IN `p_table_name` VARCHAR(255), IN `p_columns` TEXT, IN `p_placeholders` TEXT, IN `p_updateFields` TEXT, IN `p_values` TEXT)   BEGIN
     SET @sql = CONCAT(
@@ -2098,6 +2696,59 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveImport` (IN `p_table_name` VARC
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveLanguage`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveLanguage` (IN `p_language_id` INT, IN `p_language_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_language_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_language_id IS NULL OR NOT EXISTS (SELECT 1 FROM language WHERE language_id = p_language_id) THEN
+        INSERT INTO language (language_name, last_log_by) 
+        VALUES(p_language_name, p_last_log_by);
+        
+        SET p_new_language_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE language
+        SET language_name = p_language_name,
+            last_log_by = p_last_log_by
+        WHERE language_id = p_language_id;
+
+        SET p_new_language_id = p_language_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveLanguageProficiency`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveLanguageProficiency` (IN `p_language_proficiency_id` INT, IN `p_language_proficiency_name` VARCHAR(100), IN `p_language_proficiency_description` VARCHAR(200), IN `p_last_log_by` INT, OUT `p_new_language_proficiency_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_language_proficiency_id IS NULL OR NOT EXISTS (SELECT 1 FROM language_proficiency WHERE language_proficiency_id = p_language_proficiency_id) THEN
+        INSERT INTO language_proficiency (language_proficiency_name, language_proficiency_description, last_log_by) 
+        VALUES(p_language_proficiency_name, p_language_proficiency_description, p_last_log_by);
+        
+        SET p_new_language_proficiency_id = LAST_INSERT_ID();
+    ELSE        
+        UPDATE language_proficiency
+        SET language_proficiency_name = p_language_proficiency_name,
+            language_proficiency_description = p_language_proficiency_description,
+            last_log_by = p_last_log_by
+        WHERE language_proficiency_id = p_language_proficiency_id;
+
+        SET p_new_language_proficiency_id = p_language_proficiency_id;
+    END IF;
+
+    COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `saveMenuGroup`$$
@@ -2202,6 +2853,58 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveNotificationSetting` (IN `p_not
         WHERE notification_setting_id = p_notification_setting_id;
 
         SET p_new_notification_setting_id = p_notification_setting_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveRelationship`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveRelationship` (IN `p_relationship_id` INT, IN `p_relationship_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_relationship_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_relationship_id IS NULL OR NOT EXISTS (SELECT 1 FROM relationship WHERE relationship_id = p_relationship_id) THEN
+        INSERT INTO relationship (relationship_name, last_log_by) 
+        VALUES(p_relationship_name, p_last_log_by);
+        
+        SET p_new_relationship_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE relationship
+        SET relationship_name = p_relationship_name,
+            last_log_by = p_last_log_by
+        WHERE relationship_id = p_relationship_id;
+
+        SET p_new_relationship_id = p_relationship_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveReligion`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveReligion` (IN `p_religion_id` INT, IN `p_religion_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_religion_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_religion_id IS NULL OR NOT EXISTS (SELECT 1 FROM religion WHERE religion_id = p_religion_id) THEN
+        INSERT INTO religion (religion_name, last_log_by) 
+        VALUES(p_religion_name, p_last_log_by);
+        
+        SET p_new_religion_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE religion
+        SET religion_name = p_religion_name,
+            last_log_by = p_last_log_by
+        WHERE religion_id = p_religion_id;
+
+        SET p_new_religion_id = p_religion_id;
     END IF;
 
     COMMIT;
@@ -3402,7 +4105,283 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (331, 'contact_information_type', 3, 'Contact information type created.', 2, '2024-11-26 17:22:39', '2024-11-26 17:22:39'),
 (332, 'contact_information_type', 3, 'Contact information type changed.<br/><br/>Contact Information Type Name: test -> testtest<br/>', 2, '2024-11-26 17:22:45', '2024-11-26 17:22:45'),
 (333, 'contact_information_type', 1, 'Contact information type created.', 1, '2024-11-26 17:23:08', '2024-11-26 17:23:08'),
-(334, 'contact_information_type', 2, 'Contact information type created.', 1, '2024-11-26 17:23:08', '2024-11-26 17:23:08');
+(334, 'contact_information_type', 2, 'Contact information type created.', 1, '2024-11-26 17:23:08', '2024-11-26 17:23:08'),
+(335, 'language', 152, 'Language created.', 2, '2024-11-27 11:25:00', '2024-11-27 11:25:00'),
+(336, 'language', 152, 'Language changed.<br/><br/>Language Name: asdasd -> asdasdasdasd<br/>', 2, '2024-11-27 11:25:07', '2024-11-27 11:25:07'),
+(337, 'language', 1, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(338, 'language', 2, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(339, 'language', 3, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(340, 'language', 4, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(341, 'language', 5, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(342, 'language', 6, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(343, 'language', 7, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(344, 'language', 8, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(345, 'language', 9, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(346, 'language', 10, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(347, 'language', 11, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(348, 'language', 12, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(349, 'language', 13, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(350, 'language', 14, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(351, 'language', 15, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(352, 'language', 16, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(353, 'language', 17, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(354, 'language', 18, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(355, 'language', 19, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(356, 'language', 20, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(357, 'language', 21, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(358, 'language', 22, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(359, 'language', 23, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(360, 'language', 24, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(361, 'language', 25, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(362, 'language', 26, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(363, 'language', 27, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(364, 'language', 28, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(365, 'language', 29, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(366, 'language', 30, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(367, 'language', 31, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(368, 'language', 32, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(369, 'language', 33, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(370, 'language', 34, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(371, 'language', 35, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(372, 'language', 36, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(373, 'language', 37, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(374, 'language', 38, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(375, 'language', 39, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(376, 'language', 40, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(377, 'language', 41, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(378, 'language', 42, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(379, 'language', 43, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(380, 'language', 44, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(381, 'language', 45, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(382, 'language', 46, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(383, 'language', 47, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(384, 'language', 48, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(385, 'language', 49, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(386, 'language', 50, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(387, 'language', 51, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(388, 'language', 52, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(389, 'language', 53, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(390, 'language', 54, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(391, 'language', 55, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(392, 'language', 56, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(393, 'language', 57, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(394, 'language', 58, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(395, 'language', 59, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(396, 'language', 60, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(397, 'language', 61, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(398, 'language', 62, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(399, 'language', 63, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(400, 'language', 64, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(401, 'language', 65, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(402, 'language', 66, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(403, 'language', 67, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(404, 'language', 68, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(405, 'language', 69, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(406, 'language', 70, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(407, 'language', 71, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(408, 'language', 72, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(409, 'language', 73, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(410, 'language', 74, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(411, 'language', 75, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(412, 'language', 76, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(413, 'language', 77, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(414, 'language', 78, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(415, 'language', 79, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(416, 'language', 80, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(417, 'language', 81, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(418, 'language', 82, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(419, 'language', 83, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(420, 'language', 84, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(421, 'language', 85, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(422, 'language', 86, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(423, 'language', 87, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(424, 'language', 88, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15');
+INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `changed_by`, `changed_at`, `created_date`) VALUES
+(425, 'language', 89, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(426, 'language', 90, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(427, 'language', 91, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(428, 'language', 92, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(429, 'language', 93, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(430, 'language', 94, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(431, 'language', 95, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(432, 'language', 96, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(433, 'language', 97, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(434, 'language', 98, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(435, 'language', 99, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(436, 'language', 100, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(437, 'language', 101, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(438, 'language', 102, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(439, 'language', 103, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(440, 'language', 104, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(441, 'language', 105, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(442, 'language', 106, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(443, 'language', 107, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(444, 'language', 108, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(445, 'language', 109, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(446, 'language', 110, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(447, 'language', 111, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(448, 'language', 112, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(449, 'language', 113, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(450, 'language', 114, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(451, 'language', 115, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(452, 'language', 116, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(453, 'language', 117, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(454, 'language', 118, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(455, 'language', 119, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(456, 'language', 120, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(457, 'language', 121, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(458, 'language', 122, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(459, 'language', 123, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(460, 'language', 124, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(461, 'language', 125, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(462, 'language', 126, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(463, 'language', 127, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(464, 'language', 128, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(465, 'language', 129, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(466, 'language', 130, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(467, 'language', 131, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(468, 'language', 132, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(469, 'language', 133, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(470, 'language', 134, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(471, 'language', 135, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(472, 'language', 136, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(473, 'language', 137, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(474, 'language', 138, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(475, 'language', 139, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(476, 'language', 140, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(477, 'language', 141, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(478, 'language', 142, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(479, 'language', 143, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(480, 'language', 144, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(481, 'language', 145, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(482, 'language', 146, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(483, 'language', 147, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(484, 'language', 148, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(485, 'language', 149, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(486, 'language', 150, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(487, 'language', 151, 'Language created.', 1, '2024-11-27 11:26:15', '2024-11-27 11:26:15'),
+(488, 'language_proficiency', 7, 'Language proficiency created.', 2, '2024-11-27 11:53:00', '2024-11-27 11:53:00'),
+(489, 'language_proficiency', 7, 'Language proficiency changed.<br/><br/>Language Proficiency Name: test -> testtest<br/>Language Proficiency Description: test -> testtest<br/>', 2, '2024-11-27 11:53:04', '2024-11-27 11:53:04'),
+(490, 'language_proficiency', 1, 'Language proficiency created.', 1, '2024-11-27 11:53:27', '2024-11-27 11:53:27'),
+(491, 'language_proficiency', 2, 'Language proficiency created.', 1, '2024-11-27 11:53:27', '2024-11-27 11:53:27'),
+(492, 'language_proficiency', 3, 'Language proficiency created.', 1, '2024-11-27 11:53:27', '2024-11-27 11:53:27'),
+(493, 'language_proficiency', 4, 'Language proficiency created.', 1, '2024-11-27 11:53:27', '2024-11-27 11:53:27'),
+(494, 'language_proficiency', 5, 'Language proficiency created.', 1, '2024-11-27 11:53:27', '2024-11-27 11:53:27'),
+(495, 'language_proficiency', 6, 'Language proficiency created.', 1, '2024-11-27 11:53:27', '2024-11-27 11:53:27'),
+(496, 'blood_type', 9, 'Blood type created.', 2, '2024-11-27 12:07:53', '2024-11-27 12:07:53'),
+(497, 'blood_type', 9, 'Blood type changed.<br/><br/>Blood Type Name: asasdasdasdasdasd -> asasdasdasdasdasdasdasd<br/>', 2, '2024-11-27 12:08:22', '2024-11-27 12:08:22'),
+(498, 'blood_type', 1, 'Blood type created.', 1, '2024-11-27 12:08:46', '2024-11-27 12:08:46'),
+(499, 'blood_type', 2, 'Blood type created.', 1, '2024-11-27 12:08:46', '2024-11-27 12:08:46'),
+(500, 'blood_type', 3, 'Blood type created.', 1, '2024-11-27 12:08:46', '2024-11-27 12:08:46'),
+(501, 'blood_type', 4, 'Blood type created.', 1, '2024-11-27 12:08:46', '2024-11-27 12:08:46'),
+(502, 'blood_type', 5, 'Blood type created.', 1, '2024-11-27 12:08:46', '2024-11-27 12:08:46'),
+(503, 'blood_type', 6, 'Blood type created.', 1, '2024-11-27 12:08:46', '2024-11-27 12:08:46'),
+(504, 'blood_type', 7, 'Blood type created.', 1, '2024-11-27 12:08:46', '2024-11-27 12:08:46'),
+(505, 'blood_type', 8, 'Blood type created.', 1, '2024-11-27 12:08:46', '2024-11-27 12:08:46'),
+(506, 'civil_status', 6, 'Civil status created.', 2, '2024-11-27 12:27:13', '2024-11-27 12:27:13'),
+(507, 'civil_status', 6, 'Civil status changed.<br/><br/>Civil Status Name: asdasd -> asdasdasdasdasd<br/>', 2, '2024-11-27 12:27:16', '2024-11-27 12:27:16'),
+(508, 'civil_status', 1, 'Civil status created.', 1, '2024-11-27 12:27:37', '2024-11-27 12:27:37'),
+(509, 'civil_status', 2, 'Civil status created.', 1, '2024-11-27 12:27:37', '2024-11-27 12:27:37'),
+(510, 'civil_status', 3, 'Civil status created.', 1, '2024-11-27 12:27:37', '2024-11-27 12:27:37'),
+(511, 'civil_status', 4, 'Civil status created.', 1, '2024-11-27 12:27:37', '2024-11-27 12:27:37'),
+(512, 'civil_status', 5, 'Civil status created.', 1, '2024-11-27 12:27:37', '2024-11-27 12:27:37'),
+(513, 'educational_stage', 10, 'Educational stage created.', 2, '2024-11-27 14:09:29', '2024-11-27 14:09:29'),
+(514, 'educational_stage', 10, 'Educational stage changed.<br/><br/>Educational Stage Name: test -> testtest<br/>', 2, '2024-11-27 14:09:32', '2024-11-27 14:09:32'),
+(515, 'educational_stage', 1, 'Educational stage created.', 1, '2024-11-27 14:12:02', '2024-11-27 14:12:02'),
+(516, 'educational_stage', 2, 'Educational stage created.', 1, '2024-11-27 14:12:02', '2024-11-27 14:12:02'),
+(517, 'educational_stage', 3, 'Educational stage created.', 1, '2024-11-27 14:12:02', '2024-11-27 14:12:02'),
+(518, 'educational_stage', 4, 'Educational stage created.', 1, '2024-11-27 14:12:02', '2024-11-27 14:12:02'),
+(519, 'educational_stage', 5, 'Educational stage created.', 1, '2024-11-27 14:12:02', '2024-11-27 14:12:02'),
+(520, 'educational_stage', 6, 'Educational stage created.', 1, '2024-11-27 14:12:02', '2024-11-27 14:12:02'),
+(521, 'educational_stage', 7, 'Educational stage created.', 1, '2024-11-27 14:12:02', '2024-11-27 14:12:02'),
+(522, 'educational_stage', 8, 'Educational stage created.', 1, '2024-11-27 14:12:02', '2024-11-27 14:12:02'),
+(523, 'educational_stage', 9, 'Educational stage created.', 1, '2024-11-27 14:12:02', '2024-11-27 14:12:02'),
+(524, 'gender', 3, 'Gender created.', 2, '2024-11-27 14:24:12', '2024-11-27 14:24:12'),
+(525, 'gender', 3, 'Gender changed.<br/><br/>Gender Name: asdasd -> asdasdasdasdasd<br/>', 2, '2024-11-27 14:24:17', '2024-11-27 14:24:17'),
+(526, 'gender', 1, 'Gender created.', 1, '2024-11-27 14:24:43', '2024-11-27 14:24:43'),
+(527, 'gender', 2, 'Gender created.', 1, '2024-11-27 14:24:43', '2024-11-27 14:24:43'),
+(528, 'credential_type', 32, 'Credential type created.', 2, '2024-11-27 14:51:28', '2024-11-27 14:51:28'),
+(529, 'credential_type', 32, 'Credential type changed.<br/><br/>Credential Type Name: asdasd -> aasdasdasdasd<br/>', 2, '2024-11-27 14:51:33', '2024-11-27 14:51:33'),
+(530, 'credential_type', 1, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(531, 'credential_type', 2, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(532, 'credential_type', 3, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(533, 'credential_type', 4, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(534, 'credential_type', 5, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(535, 'credential_type', 6, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(536, 'credential_type', 7, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(537, 'credential_type', 8, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(538, 'credential_type', 9, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(539, 'credential_type', 10, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(540, 'credential_type', 11, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(541, 'credential_type', 12, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(542, 'credential_type', 13, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(543, 'credential_type', 14, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(544, 'credential_type', 15, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(545, 'credential_type', 16, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(546, 'credential_type', 17, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(547, 'credential_type', 18, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(548, 'credential_type', 19, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(549, 'credential_type', 20, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(550, 'credential_type', 21, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(551, 'credential_type', 22, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(552, 'credential_type', 23, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(553, 'credential_type', 24, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(554, 'credential_type', 25, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(555, 'credential_type', 26, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(556, 'credential_type', 27, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(557, 'credential_type', 28, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(558, 'credential_type', 29, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(559, 'credential_type', 30, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(560, 'credential_type', 31, 'Credential type created.', 1, '2024-11-27 14:51:56', '2024-11-27 14:51:56'),
+(561, 'relationship', 19, 'Relationship created.', 2, '2024-11-27 15:02:04', '2024-11-27 15:02:04'),
+(562, 'relationship', 19, 'Relationship changed.<br/><br/>Relationship Name: asd -> asdasdasd<br/>', 2, '2024-11-27 15:02:08', '2024-11-27 15:02:08'),
+(563, 'relationship', 1, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(564, 'relationship', 2, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(565, 'relationship', 3, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(566, 'relationship', 4, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(567, 'relationship', 5, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(568, 'relationship', 6, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(569, 'relationship', 7, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(570, 'relationship', 8, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(571, 'relationship', 9, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(572, 'relationship', 10, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(573, 'relationship', 11, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(574, 'relationship', 12, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(575, 'relationship', 13, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(576, 'relationship', 14, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(577, 'relationship', 15, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(578, 'relationship', 16, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(579, 'relationship', 17, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(580, 'relationship', 18, 'Relationship created.', 1, '2024-11-27 15:02:31', '2024-11-27 15:02:31'),
+(581, 'religion', 21, 'Religion created.', 2, '2024-11-27 15:17:26', '2024-11-27 15:17:26'),
+(582, 'religion', 21, 'Religion changed.<br/><br/>Religion Name: asasdasd -> asasdasdasdasdasd<br/>', 2, '2024-11-27 15:17:30', '2024-11-27 15:17:30'),
+(583, 'religion', 1, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(584, 'religion', 2, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(585, 'religion', 3, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(586, 'religion', 4, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(587, 'religion', 5, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(588, 'religion', 6, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(589, 'religion', 7, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(590, 'religion', 8, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(591, 'religion', 9, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(592, 'religion', 10, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(593, 'religion', 11, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(594, 'religion', 12, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(595, 'religion', 13, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(596, 'religion', 14, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(597, 'religion', 15, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(598, 'religion', 16, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(599, 'religion', 17, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(600, 'religion', 18, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(601, 'religion', 19, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(602, 'religion', 20, 'Religion created.', 1, '2024-11-27 15:17:59', '2024-11-27 15:17:59'),
+(603, 'department', 1, 'Department created.', 2, '2024-11-27 16:50:57', '2024-11-27 16:50:57'),
+(604, 'department', 1, 'Department changed.<br/><br/>Department Name: asdasd -> asdasdasdasdasd<br/>', 2, '2024-11-27 16:51:44', '2024-11-27 16:51:44'),
+(605, 'department', 2, 'Department created.', 2, '2024-11-27 16:58:22', '2024-11-27 16:58:22'),
+(606, 'department', 2, 'Department changed.<br/><br/>Department Name: asdasdasd -> asdasdasdasdasdasd<br/>', 2, '2024-11-27 17:03:47', '2024-11-27 17:03:47'),
+(607, 'department', 2, 'Department changed.<br/><br/>Department Name: asdasdasdasdasdasd -> asdasdasdasdasdasdasdasdasd<br/>', 2, '2024-11-27 17:24:19', '2024-11-27 17:24:19'),
+(608, 'department', 2, 'Department changed.<br/><br/>Department Name: asdasdasdasdasdasdasdasdasd -> asdasdasdasdasdasdasdasdasdasdasdasdasd<br/>', 2, '2024-11-27 17:24:47', '2024-11-27 17:24:47'),
+(609, 'department', 2, 'Department changed.<br/><br/>Parent Department:  -> asdasdasdasdasd<br/>', 2, '2024-11-27 17:28:28', '2024-11-27 17:28:28');
 
 -- --------------------------------------------------------
 
@@ -3567,6 +4546,64 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `blood_type`
+--
+
+DROP TABLE IF EXISTS `blood_type`;
+CREATE TABLE `blood_type` (
+  `blood_type_id` int(10) UNSIGNED NOT NULL,
+  `blood_type_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `blood_type`
+--
+
+INSERT INTO `blood_type` (`blood_type_id`, `blood_type_name`, `created_date`, `last_log_by`) VALUES
+(1, 'A+', '2024-11-27 12:07:24', 1),
+(2, 'A-', '2024-11-27 12:07:24', 1),
+(3, 'B+', '2024-11-27 12:07:24', 1),
+(4, 'B-', '2024-11-27 12:07:24', 1),
+(5, 'AB+', '2024-11-27 12:07:24', 1),
+(6, 'AB-', '2024-11-27 12:07:24', 1),
+(7, 'O+', '2024-11-27 12:07:24', 1),
+(8, 'O-', '2024-11-27 12:07:24', 1);
+
+--
+-- Triggers `blood_type`
+--
+DROP TRIGGER IF EXISTS `blood_type_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `blood_type_trigger_insert` AFTER INSERT ON `blood_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Blood type created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('blood_type', NEW.blood_type_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `blood_type_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `blood_type_trigger_update` AFTER UPDATE ON `blood_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Blood type changed.<br/><br/>';
+
+    IF NEW.blood_type_name <> OLD.blood_type_name THEN
+        SET audit_log = CONCAT(audit_log, "Blood Type Name: ", OLD.blood_type_name, " -> ", NEW.blood_type_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Blood type changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('blood_type', NEW.blood_type_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `city`
 --
 
@@ -3623,6 +4660,61 @@ CREATE TRIGGER `city_trigger_update` AFTER UPDATE ON `city` FOR EACH ROW BEGIN
     IF audit_log <> 'City changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('city', NEW.city_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `civil_status`
+--
+
+DROP TABLE IF EXISTS `civil_status`;
+CREATE TABLE `civil_status` (
+  `civil_status_id` int(10) UNSIGNED NOT NULL,
+  `civil_status_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `civil_status`
+--
+
+INSERT INTO `civil_status` (`civil_status_id`, `civil_status_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Single', '2024-11-27 12:26:56', 1),
+(2, 'Married', '2024-11-27 12:26:56', 1),
+(3, 'Divorced', '2024-11-27 12:26:56', 1),
+(4, 'Widowed', '2024-11-27 12:26:56', 1),
+(5, 'Separated', '2024-11-27 12:26:56', 1);
+
+--
+-- Triggers `civil_status`
+--
+DROP TRIGGER IF EXISTS `civil_status_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `civil_status_trigger_insert` AFTER INSERT ON `civil_status` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Civil status created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('civil_status', NEW.civil_status_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `civil_status_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `civil_status_trigger_update` AFTER UPDATE ON `civil_status` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Civil status changed.<br/><br/>';
+
+    IF NEW.civil_status_name <> OLD.civil_status_name THEN
+        SET audit_log = CONCAT(audit_log, "Civil Status Name: ", OLD.civil_status_name, " -> ", NEW.civil_status_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Civil status changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('civil_status', NEW.civil_status_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -3851,6 +4943,87 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `credential_type`
+--
+
+DROP TABLE IF EXISTS `credential_type`;
+CREATE TABLE `credential_type` (
+  `credential_type_id` int(10) UNSIGNED NOT NULL,
+  `credential_type_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `credential_type`
+--
+
+INSERT INTO `credential_type` (`credential_type_id`, `credential_type_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Passport', '2024-11-27 14:51:12', 1),
+(2, 'Driver\'s License', '2024-11-27 14:51:12', 1),
+(3, 'National ID', '2024-11-27 14:51:12', 1),
+(4, 'SSS ID', '2024-11-27 14:51:12', 1),
+(5, 'GSIS ID', '2024-11-27 14:51:12', 1),
+(6, 'PhilHealth ID', '2024-11-27 14:51:12', 1),
+(7, 'Postal ID', '2024-11-27 14:51:12', 1),
+(8, 'Voter\'s ID', '2024-11-27 14:51:12', 1),
+(9, 'Barangay ID', '2024-11-27 14:51:12', 1),
+(10, 'Student ID', '2024-11-27 14:51:12', 1),
+(11, 'PRC License', '2024-11-27 14:51:12', 1),
+(12, 'Company ID', '2024-11-27 14:51:12', 1),
+(13, 'Professional Certification', '2024-11-27 14:51:12', 1),
+(14, 'Work Permit', '2024-11-27 14:51:12', 1),
+(15, 'Medical License', '2024-11-27 14:51:12', 1),
+(16, 'Teaching License', '2024-11-27 14:51:12', 1),
+(17, 'Engineering License', '2024-11-27 14:51:12', 1),
+(18, 'Bar Exam Certificate', '2024-11-27 14:51:12', 1),
+(19, 'Visa', '2024-11-27 14:51:12', 1),
+(20, 'Work Visa', '2024-11-27 14:51:12', 1),
+(21, 'Immigration Card', '2024-11-27 14:51:12', 1),
+(22, 'Marriage Certificate', '2024-11-27 14:51:12', 1),
+(23, 'Birth Certificate', '2024-11-27 14:51:12', 1),
+(24, 'Death Certificate', '2024-11-27 14:51:12', 1),
+(25, 'Police Clearance', '2024-11-27 14:51:12', 1),
+(26, 'NBI Clearance', '2024-11-27 14:51:12', 1),
+(27, 'Barangay Clearance', '2024-11-27 14:51:12', 1),
+(28, 'Travel Permit', '2024-11-27 14:51:12', 1),
+(29, 'Employment Certificate', '2024-11-27 14:51:12', 1),
+(30, 'Firearm License', '2024-11-27 14:51:12', 1),
+(31, 'Business Permit', '2024-11-27 14:51:12', 1);
+
+--
+-- Triggers `credential_type`
+--
+DROP TRIGGER IF EXISTS `credential_type_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `credential_type_trigger_insert` AFTER INSERT ON `credential_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Credential type created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('credential_type', NEW.credential_type_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `credential_type_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `credential_type_trigger_update` AFTER UPDATE ON `credential_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Credential type changed.<br/><br/>';
+
+    IF NEW.credential_type_name <> OLD.credential_type_name THEN
+        SET audit_log = CONCAT(audit_log, "Credential Type Name: ", OLD.credential_type_name, " -> ", NEW.credential_type_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Credential type changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('credential_type', NEW.credential_type_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `currency`
 --
 
@@ -3905,6 +5078,129 @@ CREATE TRIGGER `currency_trigger_update` AFTER UPDATE ON `currency` FOR EACH ROW
     IF audit_log <> 'Currency changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('currency', NEW.currency_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `department`
+--
+
+DROP TABLE IF EXISTS `department`;
+CREATE TABLE `department` (
+  `department_id` int(10) UNSIGNED NOT NULL,
+  `department_name` varchar(100) NOT NULL,
+  `parent_department_id` int(11) DEFAULT NULL,
+  `parent_department_name` varchar(100) DEFAULT NULL,
+  `manager_id` int(11) DEFAULT NULL,
+  `manager_name` varchar(100) DEFAULT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `department`
+--
+
+INSERT INTO `department` (`department_id`, `department_name`, `parent_department_id`, `parent_department_name`, `manager_id`, `manager_name`, `created_date`, `last_log_by`) VALUES
+(1, 'asdasdasdasdasd', 2, 'asdasdasdasdasdasd', 0, '', '2024-11-27 16:50:57', 2),
+(2, 'asdasdasdasdasdasdasdasdasdasdasdasdasd', 1, 'asdasdasdasdasd', 0, '', '2024-11-27 16:58:22', 2);
+
+--
+-- Triggers `department`
+--
+DROP TRIGGER IF EXISTS `department_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `department_trigger_insert` AFTER INSERT ON `department` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Department created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('department', NEW.department_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `department_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `department_trigger_update` AFTER UPDATE ON `department` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Department changed.<br/><br/>';
+
+    IF NEW.department_name <> OLD.department_name THEN
+        SET audit_log = CONCAT(audit_log, "Department Name: ", OLD.department_name, " -> ", NEW.department_name, "<br/>");
+    END IF;
+
+    IF NEW.parent_department_name <> OLD.parent_department_name THEN
+        SET audit_log = CONCAT(audit_log, "Parent Department: ", OLD.parent_department_name, " -> ", NEW.parent_department_name, "<br/>");
+    END IF;
+
+    IF NEW.manager_name <> OLD.manager_name THEN
+        SET audit_log = CONCAT(audit_log, "Manager: ", OLD.manager_name, " -> ", NEW.manager_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Department changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('department', NEW.department_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `educational_stage`
+--
+
+DROP TABLE IF EXISTS `educational_stage`;
+CREATE TABLE `educational_stage` (
+  `educational_stage_id` int(10) UNSIGNED NOT NULL,
+  `educational_stage_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `educational_stage`
+--
+
+INSERT INTO `educational_stage` (`educational_stage_id`, `educational_stage_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Primary Education', '2024-11-27 14:04:06', 1),
+(2, 'Middle School', '2024-11-27 14:04:06', 1),
+(3, 'High School', '2024-11-27 14:04:06', 1),
+(4, 'Diploma', '2024-11-27 14:04:06', 1),
+(5, 'Bachelor', '2024-11-27 14:04:06', 1),
+(6, 'Master', '2024-11-27 14:04:06', 1),
+(7, 'Doctorate', '2024-11-27 14:04:06', 1),
+(8, 'Post-Doctorate', '2024-11-27 14:04:06', 1),
+(9, 'Vocational Training', '2024-11-27 14:04:06', 1);
+
+--
+-- Triggers `educational_stage`
+--
+DROP TRIGGER IF EXISTS `educational_stage_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `educational_stage_trigger_insert` AFTER INSERT ON `educational_stage` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Educational stage created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('educational_stage', NEW.educational_stage_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `educational_stage_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `educational_stage_trigger_update` AFTER UPDATE ON `educational_stage` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Educational stage changed.<br/><br/>';
+
+    IF NEW.educational_stage_name <> OLD.educational_stage_name THEN
+        SET audit_log = CONCAT(audit_log, "Educational Stage Name: ", OLD.educational_stage_name, " -> ", NEW.educational_stage_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Educational stage changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('educational_stage', NEW.educational_stage_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -4235,6 +5531,320 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `gender`
+--
+
+DROP TABLE IF EXISTS `gender`;
+CREATE TABLE `gender` (
+  `gender_id` int(10) UNSIGNED NOT NULL,
+  `gender_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `gender`
+--
+
+INSERT INTO `gender` (`gender_id`, `gender_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Male', '2024-11-27 14:22:15', 1),
+(2, 'Female', '2024-11-27 14:22:15', 1);
+
+--
+-- Triggers `gender`
+--
+DROP TRIGGER IF EXISTS `gender_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `gender_trigger_insert` AFTER INSERT ON `gender` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Gender created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('gender', NEW.gender_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `gender_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `gender_trigger_update` AFTER UPDATE ON `gender` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Gender changed.<br/><br/>';
+
+    IF NEW.gender_name <> OLD.gender_name THEN
+        SET audit_log = CONCAT(audit_log, "Gender Name: ", OLD.gender_name, " -> ", NEW.gender_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Gender changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('gender', NEW.gender_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `language`
+--
+
+DROP TABLE IF EXISTS `language`;
+CREATE TABLE `language` (
+  `language_id` int(10) UNSIGNED NOT NULL,
+  `language_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `language`
+--
+
+INSERT INTO `language` (`language_id`, `language_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Afrikaans', '2024-11-27 11:24:20', 1),
+(2, 'Amharic', '2024-11-27 11:24:20', 1),
+(3, 'Arabic', '2024-11-27 11:24:20', 1),
+(4, 'Assamese', '2024-11-27 11:24:20', 1),
+(5, 'Azerbaijani', '2024-11-27 11:24:20', 1),
+(6, 'Belarusian', '2024-11-27 11:24:20', 1),
+(7, 'Bulgarian', '2024-11-27 11:24:20', 1),
+(8, 'Bhojpuri', '2024-11-27 11:24:20', 1),
+(9, 'Bengali', '2024-11-27 11:24:20', 1),
+(10, 'Bosnian', '2024-11-27 11:24:20', 1),
+(11, 'Catalan, Valencian', '2024-11-27 11:24:20', 1),
+(12, 'Cebuano', '2024-11-27 11:24:20', 1),
+(13, 'Czech', '2024-11-27 11:24:20', 1),
+(14, 'Danish', '2024-11-27 11:24:20', 1),
+(15, 'German', '2024-11-27 11:24:20', 1),
+(16, 'English', '2024-11-27 11:24:20', 1),
+(17, 'Ewe', '2024-11-27 11:24:20', 1),
+(18, 'Greek, Modern', '2024-11-27 11:24:20', 1),
+(19, 'Spanish', '2024-11-27 11:24:20', 1),
+(20, 'Estonian', '2024-11-27 11:24:20', 1),
+(21, 'Basque', '2024-11-27 11:24:20', 1),
+(22, 'Persian', '2024-11-27 11:24:20', 1),
+(23, 'Fula', '2024-11-27 11:24:20', 1),
+(24, 'Finnish', '2024-11-27 11:24:20', 1),
+(25, 'French', '2024-11-27 11:24:20', 1),
+(26, 'Irish', '2024-11-27 11:24:20', 1),
+(27, 'Galician', '2024-11-27 11:24:20', 1),
+(28, 'Guarani', '2024-11-27 11:24:20', 1),
+(29, 'Gujarati', '2024-11-27 11:24:20', 1),
+(30, 'Hausa', '2024-11-27 11:24:20', 1),
+(31, 'Haitian Creole', '2024-11-27 11:24:20', 1),
+(32, 'Hebrew (modern)', '2024-11-27 11:24:20', 1),
+(33, 'Hindi', '2024-11-27 11:24:20', 1),
+(34, 'Chhattisgarhi', '2024-11-27 11:24:20', 1),
+(35, 'Croatian', '2024-11-27 11:24:20', 1),
+(36, 'Hungarian', '2024-11-27 11:24:20', 1),
+(37, 'Armenian', '2024-11-27 11:24:20', 1),
+(38, 'Indonesian', '2024-11-27 11:24:20', 1),
+(39, 'Igbo', '2024-11-27 11:24:20', 1),
+(40, 'Icelandic', '2024-11-27 11:24:20', 1),
+(41, 'Italian', '2024-11-27 11:24:20', 1),
+(42, 'Japanese', '2024-11-27 11:24:20', 1),
+(43, 'Syro-Palestinian Sign Language', '2024-11-27 11:24:20', 1),
+(44, 'Javanese', '2024-11-27 11:24:20', 1),
+(45, 'Georgian', '2024-11-27 11:24:20', 1),
+(46, 'Kikuyu', '2024-11-27 11:24:20', 1),
+(47, 'Kyrgyz', '2024-11-27 11:24:20', 1),
+(48, 'Kuanyama', '2024-11-27 11:24:20', 1),
+(49, 'Kazakh', '2024-11-27 11:24:20', 1),
+(50, 'Khmer', '2024-11-27 11:24:20', 1),
+(51, 'Kannada', '2024-11-27 11:24:20', 1),
+(52, 'Korean', '2024-11-27 11:24:20', 1),
+(53, 'Krio', '2024-11-27 11:24:20', 1),
+(54, 'Kashmiri', '2024-11-27 11:24:20', 1),
+(55, 'Kurdish', '2024-11-27 11:24:20', 1),
+(56, 'Latin', '2024-11-27 11:24:20', 1),
+(57, 'Lithuanian', '2024-11-27 11:24:20', 1),
+(58, 'Luxembourgish', '2024-11-27 11:24:20', 1),
+(59, 'Latvian', '2024-11-27 11:24:20', 1),
+(60, 'Magahi', '2024-11-27 11:24:20', 1),
+(61, 'Maithili', '2024-11-27 11:24:20', 1),
+(62, 'Malagasy', '2024-11-27 11:24:20', 1),
+(63, 'Macedonian', '2024-11-27 11:24:20', 1),
+(64, 'Malayalam', '2024-11-27 11:24:20', 1),
+(65, 'Mongolian', '2024-11-27 11:24:20', 1),
+(66, 'Marathi (Marāṭhī)', '2024-11-27 11:24:20', 1),
+(67, 'Malay', '2024-11-27 11:24:20', 1),
+(68, 'Maltese', '2024-11-27 11:24:20', 1),
+(69, 'Burmese', '2024-11-27 11:24:20', 1),
+(70, 'Nepali', '2024-11-27 11:24:20', 1),
+(71, 'Dutch', '2024-11-27 11:24:20', 1),
+(72, 'Norwegian', '2024-11-27 11:24:20', 1),
+(73, 'Oromo', '2024-11-27 11:24:20', 1),
+(74, 'Odia', '2024-11-27 11:24:20', 1),
+(75, 'Oromo', '2024-11-27 11:24:20', 1),
+(76, 'Panjabi, Punjabi', '2024-11-27 11:24:20', 1),
+(77, 'Polish', '2024-11-27 11:24:20', 1),
+(78, 'Pashto', '2024-11-27 11:24:20', 1),
+(79, 'Portuguese', '2024-11-27 11:24:20', 1),
+(80, 'Rundi', '2024-11-27 11:24:20', 1),
+(81, 'Romanian, Moldavian, Moldovan', '2024-11-27 11:24:20', 1),
+(82, 'Russian', '2024-11-27 11:24:20', 1),
+(83, 'Kinyarwanda', '2024-11-27 11:24:20', 1),
+(84, 'Sindhi', '2024-11-27 11:24:20', 1),
+(85, 'Argentine Sign Language', '2024-11-27 11:24:20', 1),
+(86, 'Brazilian Sign Language', '2024-11-27 11:24:20', 1),
+(87, 'Chinese Sign Language', '2024-11-27 11:24:20', 1),
+(88, 'Colombian Sign Language', '2024-11-27 11:24:20', 1),
+(89, 'German Sign Language', '2024-11-27 11:24:20', 1),
+(90, 'Algerian Sign Language', '2024-11-27 11:24:20', 1),
+(91, 'Ecuadorian Sign Language', '2024-11-27 11:24:20', 1),
+(92, 'Spanish Sign Language', '2024-11-27 11:24:20', 1),
+(93, 'Ethiopian Sign Language', '2024-11-27 11:24:20', 1),
+(94, 'French Sign Language', '2024-11-27 11:24:20', 1),
+(95, 'British Sign Language', '2024-11-27 11:24:20', 1),
+(96, 'Ghanaian Sign Language', '2024-11-27 11:24:20', 1),
+(97, 'Irish Sign Language', '2024-11-27 11:24:20', 1),
+(98, 'Indopakistani Sign Language', '2024-11-27 11:24:20', 1),
+(99, 'Persian Sign Language', '2024-11-27 11:24:20', 1),
+(100, 'Italian Sign Language', '2024-11-27 11:24:20', 1),
+(101, 'Japanese Sign Language', '2024-11-27 11:24:20', 1),
+(102, 'Kenyan Sign Language', '2024-11-27 11:24:20', 1),
+(103, 'Korean Sign Language', '2024-11-27 11:24:20', 1),
+(104, 'Moroccan Sign Language', '2024-11-27 11:24:20', 1),
+(105, 'Mexican Sign Language', '2024-11-27 11:24:20', 1),
+(106, 'Malaysian Sign Language', '2024-11-27 11:24:20', 1),
+(107, 'Philippine Sign Language', '2024-11-27 11:24:20', 1),
+(108, 'Polish Sign Language', '2024-11-27 11:24:20', 1),
+(109, 'Portuguese Sign Language', '2024-11-27 11:24:20', 1),
+(110, 'Russian Sign Language', '2024-11-27 11:24:20', 1),
+(111, 'Saudi Arabian Sign Language', '2024-11-27 11:24:20', 1),
+(112, 'El Salvadoran Sign Language', '2024-11-27 11:24:20', 1),
+(113, 'Turkish Sign Language', '2024-11-27 11:24:20', 1),
+(114, 'Tanzanian Sign Language', '2024-11-27 11:24:20', 1),
+(115, 'Ukrainian Sign Language', '2024-11-27 11:24:20', 1),
+(116, 'American Sign Language', '2024-11-27 11:24:20', 1),
+(117, 'South African Sign Language', '2024-11-27 11:24:20', 1),
+(118, 'Zimbabwe Sign Language', '2024-11-27 11:24:20', 1),
+(119, 'Sinhala, Sinhalese', '2024-11-27 11:24:20', 1),
+(120, 'Slovak', '2024-11-27 11:24:20', 1),
+(121, 'Saraiki', '2024-11-27 11:24:20', 1),
+(122, 'Slovene', '2024-11-27 11:24:20', 1),
+(123, 'Shona', '2024-11-27 11:24:20', 1),
+(124, 'Somali', '2024-11-27 11:24:20', 1),
+(125, 'Albanian', '2024-11-27 11:24:20', 1),
+(126, 'Serbian', '2024-11-27 11:24:20', 1),
+(127, 'Swati', '2024-11-27 11:24:20', 1),
+(128, 'Sunda', '2024-11-27 11:24:20', 1),
+(129, 'Swedish', '2024-11-27 11:24:20', 1),
+(130, 'Swahili', '2024-11-27 11:24:20', 1),
+(131, 'Sylheti', '2024-11-27 11:24:20', 1),
+(132, 'Tagalog', '2024-11-27 11:24:20', 1),
+(133, 'Tamil', '2024-11-27 11:24:20', 1),
+(134, 'Telugu', '2024-11-27 11:24:20', 1),
+(135, 'Thai', '2024-11-27 11:24:20', 1),
+(136, 'Tibetan', '2024-11-27 11:24:20', 1),
+(137, 'Tigrinya', '2024-11-27 11:24:20', 1),
+(138, 'Turkmen', '2024-11-27 11:24:20', 1),
+(139, 'Tswana', '2024-11-27 11:24:20', 1),
+(140, 'Turkish', '2024-11-27 11:24:20', 1),
+(141, 'Uyghur', '2024-11-27 11:24:20', 1),
+(142, 'Ukrainian', '2024-11-27 11:24:20', 1),
+(143, 'Urdu', '2024-11-27 11:24:20', 1),
+(144, 'Uzbek', '2024-11-27 11:24:20', 1),
+(145, 'Vietnamese', '2024-11-27 11:24:20', 1),
+(146, 'Xhosa', '2024-11-27 11:24:20', 1),
+(147, 'Yiddish', '2024-11-27 11:24:20', 1),
+(148, 'Yoruba', '2024-11-27 11:24:20', 1),
+(149, 'Cantonese', '2024-11-27 11:24:20', 1),
+(150, 'Chinese', '2024-11-27 11:24:20', 1),
+(151, 'Zulu', '2024-11-27 11:24:20', 1);
+
+--
+-- Triggers `language`
+--
+DROP TRIGGER IF EXISTS `language_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `language_trigger_insert` AFTER INSERT ON `language` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Language created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('language', NEW.language_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `language_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `language_trigger_update` AFTER UPDATE ON `language` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Language changed.<br/><br/>';
+
+    IF NEW.language_name <> OLD.language_name THEN
+        SET audit_log = CONCAT(audit_log, "Language Name: ", OLD.language_name, " -> ", NEW.language_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Language changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('language', NEW.language_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `language_proficiency`
+--
+
+DROP TABLE IF EXISTS `language_proficiency`;
+CREATE TABLE `language_proficiency` (
+  `language_proficiency_id` int(10) UNSIGNED NOT NULL,
+  `language_proficiency_name` varchar(100) NOT NULL,
+  `language_proficiency_description` varchar(200) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `language_proficiency`
+--
+
+INSERT INTO `language_proficiency` (`language_proficiency_id`, `language_proficiency_name`, `language_proficiency_description`, `created_date`, `last_log_by`) VALUES
+(1, 'Native', 'Fluent in the language, spoken at home', '2024-11-27 11:50:38', 1),
+(2, 'Fluent', 'Able to communicate effectively and accurately in most formal and informal conversations', '2024-11-27 11:50:38', 1),
+(3, 'Advanced', 'Able to communicate effectively and accurately in most formal and informal conversations, with some difficulty in complex situations', '2024-11-27 11:50:38', 1),
+(4, 'Intermediate', 'Able to communicate in everyday situations, with some difficulty in formal conversations', '2024-11-27 11:50:38', 1),
+(5, 'Basic', 'Able to communicate in very basic situations, with difficulty in everyday conversations', '2024-11-27 11:50:38', 1),
+(6, 'Non-proficient', 'No knowledge of the language', '2024-11-27 11:50:38', 1);
+
+--
+-- Triggers `language_proficiency`
+--
+DROP TRIGGER IF EXISTS `language_proficiency_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `language_proficiency_trigger_insert` AFTER INSERT ON `language_proficiency` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Language proficiency created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('language_proficiency', NEW.language_proficiency_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `language_proficiency_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `language_proficiency_trigger_update` AFTER UPDATE ON `language_proficiency` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Language proficiency changed.<br/><br/>';
+
+    IF NEW.language_proficiency_name <> OLD.language_proficiency_name THEN
+        SET audit_log = CONCAT(audit_log, "Language Proficiency Name: ", OLD.language_proficiency_name, " -> ", NEW.language_proficiency_name, "<br/>");
+    END IF;
+
+    IF NEW.language_proficiency_description <> OLD.language_proficiency_description THEN
+        SET audit_log = CONCAT(audit_log, "Language Proficiency Description: ", OLD.language_proficiency_description, " -> ", NEW.language_proficiency_description, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Language proficiency changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('language_proficiency', NEW.language_proficiency_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `login_session`
 --
 
@@ -4401,17 +6011,17 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (29, 'Address Type', 'address-type.php', '', 1, 'Settings', 28, 'Contact Information', 'address_type', 1, '2024-11-25 15:19:04', 2),
 (30, 'Contact Information Type', 'contact-information-type.php', 'ki-outline ki-abstract', 1, 'Settings', 28, 'Contact Information', 'contact_information_type', 3, '2024-11-25 15:19:57', 2),
 (31, 'Language Settings', '', 'ki-outline ki-note-2', 1, 'Settings', 11, 'Configurations', '', 12, '2024-11-25 15:23:17', 2),
-(32, 'Language', 'language.php', '', 1, 'Settings', 31, 'Language Settings', '', 1, '2024-11-25 15:23:44', 2),
-(33, 'Language Proficiency', 'language-proficiency.php', '', 1, 'Settings', 31, 'Language Settings', '', 2, '2024-11-25 15:24:19', 2),
+(32, 'Language', 'language.php', '', 1, 'Settings', 31, 'Language Settings', 'language', 1, '2024-11-25 15:23:44', 2),
+(33, 'Language Proficiency', 'language-proficiency.php', '', 1, 'Settings', 31, 'Language Settings', 'language_proficiency', 2, '2024-11-25 15:24:19', 2),
 (34, 'Profile Attribute', '', 'ki-outline ki-people', 1, 'Settings', 11, 'Configurations', '', 16, '2024-11-25 15:27:17', 2),
-(35, 'Blood Type', 'blood-type.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 2, '2024-11-25 15:27:50', 2),
-(36, 'Civil Status', 'civil-status.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 3, '2024-11-25 15:28:20', 2),
-(37, 'Educational Stage', 'educational-stage.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 5, '2024-11-25 15:28:53', 2),
-(38, 'Gender', 'gender.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 7, '2024-11-25 15:29:25', 2),
-(39, 'ID Type', 'id-type.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 9, '2024-11-25 15:30:00', 2),
-(40, 'Relationship', 'relationship.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 18, '2024-11-25 15:30:39', 2),
-(41, 'Religion', 'religion.php', '', 1, 'Settings', 34, 'Profile Attribute', '', 19, '2024-11-25 15:31:21', 2),
-(42, 'HR Configurations', '', '', 2, 'Employee', 0, '', '', 8, '2024-11-25 15:33:34', 2),
+(35, 'Blood Type', 'blood-type.php', '', 1, 'Settings', 34, 'Profile Attribute', 'blood_type', 2, '2024-11-25 15:27:50', 2),
+(36, 'Civil Status', 'civil-status.php', '', 1, 'Settings', 34, 'Profile Attribute', 'civil_status', 3, '2024-11-25 15:28:20', 2),
+(37, 'Educational Stage', 'educational-stage.php', '', 1, 'Settings', 34, 'Profile Attribute', 'educational_stage', 5, '2024-11-25 15:28:53', 2),
+(38, 'Gender', 'gender.php', '', 1, 'Settings', 34, 'Profile Attribute', 'gender', 7, '2024-11-25 15:29:25', 2),
+(39, 'Credential Type', 'credential-type.php', '', 1, 'Settings', 34, 'Profile Attribute', 'credential_type', 3, '2024-11-25 15:30:00', 2),
+(40, 'Relationship', 'relationship.php', '', 1, 'Settings', 34, 'Profile Attribute', 'relationship', 18, '2024-11-25 15:30:39', 2),
+(41, 'Religion', 'religion.php', '', 1, 'Settings', 34, 'Profile Attribute', 'religion', 19, '2024-11-25 15:31:21', 2),
+(42, 'HR Configurations', '', '', 2, 'Employee', NULL, '', '', 99, '2024-11-25 15:33:34', 2),
 (43, 'Department', 'department.php', 'ki-outline ki-data', 2, 'Employee', 42, 'HR Configurations', '', 4, '2024-11-25 15:36:29', 2),
 (44, 'Departure Reason', 'departure-reason.php', 'ki-outline ki-user-square', 2, 'Employee', 42, 'HR Configurations', '', 4, '2024-11-25 15:38:31', 2),
 (45, 'Employment Location Type', 'employment-location-type.php', 'ki-outline ki-route', 2, 'Employee', 42, 'HR Configurations', '', 5, '2024-11-25 15:39:48', 2),
@@ -4689,6 +6299,144 @@ CREATE TABLE `password_history` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `relationship`
+--
+
+DROP TABLE IF EXISTS `relationship`;
+CREATE TABLE `relationship` (
+  `relationship_id` int(10) UNSIGNED NOT NULL,
+  `relationship_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `relationship`
+--
+
+INSERT INTO `relationship` (`relationship_id`, `relationship_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Father', '2024-11-27 15:01:02', 1),
+(2, 'Mother', '2024-11-27 15:01:02', 1),
+(3, 'Husband', '2024-11-27 15:01:02', 1),
+(4, 'Wife', '2024-11-27 15:01:02', 1),
+(5, 'Son', '2024-11-27 15:01:02', 1),
+(6, 'Daughter', '2024-11-27 15:01:02', 1),
+(7, 'Brother', '2024-11-27 15:01:02', 1),
+(8, 'Sister', '2024-11-27 15:01:02', 1),
+(9, 'Grandfather', '2024-11-27 15:01:02', 1),
+(10, 'Grandmother', '2024-11-27 15:01:02', 1),
+(11, 'Grandson', '2024-11-27 15:01:02', 1),
+(12, 'Granddaughter', '2024-11-27 15:01:02', 1),
+(13, 'Uncle', '2024-11-27 15:01:02', 1),
+(14, 'Aunt', '2024-11-27 15:01:02', 1),
+(15, 'Nephew', '2024-11-27 15:01:02', 1),
+(16, 'Niece', '2024-11-27 15:01:02', 1),
+(17, 'Cousin', '2024-11-27 15:01:02', 1),
+(18, 'Friend', '2024-11-27 15:01:02', 1);
+
+--
+-- Triggers `relationship`
+--
+DROP TRIGGER IF EXISTS `relationship_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `relationship_trigger_insert` AFTER INSERT ON `relationship` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Relationship created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('relationship', NEW.relationship_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `relationship_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `relationship_trigger_update` AFTER UPDATE ON `relationship` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Relationship changed.<br/><br/>';
+
+    IF NEW.relationship_name <> OLD.relationship_name THEN
+        SET audit_log = CONCAT(audit_log, "Relationship Name: ", OLD.relationship_name, " -> ", NEW.relationship_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Relationship changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('relationship', NEW.relationship_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `religion`
+--
+
+DROP TABLE IF EXISTS `religion`;
+CREATE TABLE `religion` (
+  `religion_id` int(10) UNSIGNED NOT NULL,
+  `religion_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `religion`
+--
+
+INSERT INTO `religion` (`religion_id`, `religion_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Christianity', '2024-11-27 15:16:36', 1),
+(2, 'Islam', '2024-11-27 15:16:36', 1),
+(3, 'Hinduism', '2024-11-27 15:16:36', 1),
+(4, 'Buddhism', '2024-11-27 15:16:36', 1),
+(5, 'Judaism', '2024-11-27 15:16:36', 1),
+(6, 'Sikhism', '2024-11-27 15:16:36', 1),
+(7, 'Atheism', '2024-11-27 15:16:36', 1),
+(8, 'Agnosticism', '2024-11-27 15:16:36', 1),
+(9, 'Baháʼí', '2024-11-27 15:16:36', 1),
+(10, 'Confucianism', '2024-11-27 15:16:36', 1),
+(11, 'Shinto', '2024-11-27 15:16:36', 1),
+(12, 'Taoism', '2024-11-27 15:16:36', 1),
+(13, 'Zoroastrianism', '2024-11-27 15:16:36', 1),
+(14, 'Jainism', '2024-11-27 15:16:36', 1),
+(15, 'Spiritualism', '2024-11-27 15:16:36', 1),
+(16, 'Paganism', '2024-11-27 15:16:36', 1),
+(17, 'Rastafarianism', '2024-11-27 15:16:36', 1),
+(18, 'Unitarian Universalism', '2024-11-27 15:16:36', 1),
+(19, 'Scientology', '2024-11-27 15:16:36', 1),
+(20, 'Druze', '2024-11-27 15:16:36', 1);
+
+--
+-- Triggers `religion`
+--
+DROP TRIGGER IF EXISTS `religion_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `religion_trigger_insert` AFTER INSERT ON `religion` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Religion created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('religion', NEW.religion_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `religion_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `religion_trigger_update` AFTER UPDATE ON `religion` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Religion changed.<br/><br/>';
+
+    IF NEW.religion_name <> OLD.religion_name THEN
+        SET audit_log = CONCAT(audit_log, "Religion Name: ", OLD.religion_name, " -> ", NEW.religion_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Religion changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('religion', NEW.religion_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `role`
 --
 
@@ -4776,7 +6524,7 @@ INSERT INTO `role_permission` (`role_permission_id`, `role_id`, `role_name`, `me
 (45, 1, 'Administrator', 36, 'Civil Status', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:28:25', '2024-11-25 15:28:25', 2),
 (46, 1, 'Administrator', 37, 'Educational Stage', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:28:58', '2024-11-25 15:28:58', 2),
 (47, 1, 'Administrator', 38, 'Gender', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:29:29', '2024-11-25 15:29:29', 2),
-(48, 1, 'Administrator', 39, 'ID Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:30:04', '2024-11-25 15:30:04', 2),
+(48, 1, 'Administrator', 39, 'Credential Type', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:30:04', '2024-11-25 15:30:04', 2),
 (49, 1, 'Administrator', 40, 'Relationship', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:30:43', '2024-11-25 15:30:43', 2),
 (50, 1, 'Administrator', 41, 'Religion', 1, 1, 1, 1, 1, 1, 1, '2024-11-25 15:31:25', '2024-11-25 15:31:25', 2),
 (51, 1, 'Administrator', 42, 'HR Configurations', 1, 0, 0, 0, 0, 0, 0, '2024-11-25 15:33:39', '2024-11-25 15:33:39', 2),
@@ -5245,6 +6993,14 @@ ALTER TABLE `bank_account_type`
   ADD KEY `bank_account_type_index_bank_account_type_id` (`bank_account_type_id`);
 
 --
+-- Indexes for table `blood_type`
+--
+ALTER TABLE `blood_type`
+  ADD PRIMARY KEY (`blood_type_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `blood_type_index_blood_type_id` (`blood_type_id`);
+
+--
 -- Indexes for table `city`
 --
 ALTER TABLE `city`
@@ -5253,6 +7009,14 @@ ALTER TABLE `city`
   ADD KEY `city_index_city_id` (`city_id`),
   ADD KEY `city_index_state_id` (`state_id`),
   ADD KEY `city_index_country_id` (`country_id`);
+
+--
+-- Indexes for table `civil_status`
+--
+ALTER TABLE `civil_status`
+  ADD PRIMARY KEY (`civil_status_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `civil_status_index_civil_status_id` (`civil_status_id`);
 
 --
 -- Indexes for table `company`
@@ -5283,12 +7047,38 @@ ALTER TABLE `country`
   ADD KEY `country_index_country_id` (`country_id`);
 
 --
+-- Indexes for table `credential_type`
+--
+ALTER TABLE `credential_type`
+  ADD PRIMARY KEY (`credential_type_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `credential_type_index_credential_type_id` (`credential_type_id`);
+
+--
 -- Indexes for table `currency`
 --
 ALTER TABLE `currency`
   ADD PRIMARY KEY (`currency_id`),
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `currency_index_currency_id` (`currency_id`);
+
+--
+-- Indexes for table `department`
+--
+ALTER TABLE `department`
+  ADD PRIMARY KEY (`department_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `department_index_department_id` (`department_id`),
+  ADD KEY `department_index_parent_department_id` (`parent_department_id`),
+  ADD KEY `department_index_manager_id` (`manager_id`);
+
+--
+-- Indexes for table `educational_stage`
+--
+ALTER TABLE `educational_stage`
+  ADD PRIMARY KEY (`educational_stage_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `educational_stage_index_educational_stage_id` (`educational_stage_id`);
 
 --
 -- Indexes for table `email_setting`
@@ -5314,6 +7104,30 @@ ALTER TABLE `file_type`
   ADD PRIMARY KEY (`file_type_id`),
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `file_type_index_file_type_id` (`file_type_id`);
+
+--
+-- Indexes for table `gender`
+--
+ALTER TABLE `gender`
+  ADD PRIMARY KEY (`gender_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `gender_index_gender_id` (`gender_id`);
+
+--
+-- Indexes for table `language`
+--
+ALTER TABLE `language`
+  ADD PRIMARY KEY (`language_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `language_index_language_id` (`language_id`);
+
+--
+-- Indexes for table `language_proficiency`
+--
+ALTER TABLE `language_proficiency`
+  ADD PRIMARY KEY (`language_proficiency_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `language_proficiency_index_language_proficiency_id` (`language_proficiency_id`);
 
 --
 -- Indexes for table `login_session`
@@ -5385,6 +7199,22 @@ ALTER TABLE `password_history`
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `password_history_index_password_history_id` (`password_history_id`),
   ADD KEY `password_history_index_user_account_id` (`user_account_id`);
+
+--
+-- Indexes for table `relationship`
+--
+ALTER TABLE `relationship`
+  ADD PRIMARY KEY (`relationship_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `relationship_index_relationship_id` (`relationship_id`);
+
+--
+-- Indexes for table `religion`
+--
+ALTER TABLE `religion`
+  ADD PRIMARY KEY (`religion_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `religion_index_religion_id` (`religion_id`);
 
 --
 -- Indexes for table `role`
@@ -5508,7 +7338,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=335;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=610;
 
 --
 -- AUTO_INCREMENT for table `bank`
@@ -5523,10 +7353,22 @@ ALTER TABLE `bank_account_type`
   MODIFY `bank_account_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
+-- AUTO_INCREMENT for table `blood_type`
+--
+ALTER TABLE `blood_type`
+  MODIFY `blood_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT for table `city`
 --
 ALTER TABLE `city`
   MODIFY `city_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `civil_status`
+--
+ALTER TABLE `civil_status`
+  MODIFY `civil_status_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `company`
@@ -5547,10 +7389,28 @@ ALTER TABLE `country`
   MODIFY `country_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `credential_type`
+--
+ALTER TABLE `credential_type`
+  MODIFY `credential_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+
+--
 -- AUTO_INCREMENT for table `currency`
 --
 ALTER TABLE `currency`
   MODIFY `currency_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `department`
+--
+ALTER TABLE `department`
+  MODIFY `department_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `educational_stage`
+--
+ALTER TABLE `educational_stage`
+  MODIFY `educational_stage_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `email_setting`
@@ -5569,6 +7429,24 @@ ALTER TABLE `file_extension`
 --
 ALTER TABLE `file_type`
   MODIFY `file_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `gender`
+--
+ALTER TABLE `gender`
+  MODIFY `gender_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `language`
+--
+ALTER TABLE `language`
+  MODIFY `language_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
+
+--
+-- AUTO_INCREMENT for table `language_proficiency`
+--
+ALTER TABLE `language_proficiency`
+  MODIFY `language_proficiency_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `login_session`
@@ -5617,6 +7495,18 @@ ALTER TABLE `notification_setting_system_template`
 --
 ALTER TABLE `password_history`
   MODIFY `password_history_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `relationship`
+--
+ALTER TABLE `relationship`
+  MODIFY `relationship_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `religion`
+--
+ALTER TABLE `religion`
+  MODIFY `religion_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `role`
@@ -5719,12 +7609,24 @@ ALTER TABLE `bank_account_type`
   ADD CONSTRAINT `bank_account_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
+-- Constraints for table `blood_type`
+--
+ALTER TABLE `blood_type`
+  ADD CONSTRAINT `blood_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
 -- Constraints for table `city`
 --
 ALTER TABLE `city`
   ADD CONSTRAINT `city_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`),
   ADD CONSTRAINT `city_ibfk_2` FOREIGN KEY (`state_id`) REFERENCES `state` (`state_id`),
   ADD CONSTRAINT `city_ibfk_3` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
+
+--
+-- Constraints for table `civil_status`
+--
+ALTER TABLE `civil_status`
+  ADD CONSTRAINT `civil_status_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `company`
@@ -5748,10 +7650,28 @@ ALTER TABLE `country`
   ADD CONSTRAINT `country_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
+-- Constraints for table `credential_type`
+--
+ALTER TABLE `credential_type`
+  ADD CONSTRAINT `credential_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
 -- Constraints for table `currency`
 --
 ALTER TABLE `currency`
   ADD CONSTRAINT `currency_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `department`
+--
+ALTER TABLE `department`
+  ADD CONSTRAINT `department_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `educational_stage`
+--
+ALTER TABLE `educational_stage`
+  ADD CONSTRAINT `educational_stage_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `email_setting`
@@ -5770,6 +7690,24 @@ ALTER TABLE `file_extension`
 --
 ALTER TABLE `file_type`
   ADD CONSTRAINT `file_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `gender`
+--
+ALTER TABLE `gender`
+  ADD CONSTRAINT `gender_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `language`
+--
+ALTER TABLE `language`
+  ADD CONSTRAINT `language_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `language_proficiency`
+--
+ALTER TABLE `language_proficiency`
+  ADD CONSTRAINT `language_proficiency_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `login_session`
@@ -5824,6 +7762,18 @@ ALTER TABLE `notification_setting_system_template`
 ALTER TABLE `password_history`
   ADD CONSTRAINT `password_history_ibfk_1` FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`user_account_id`),
   ADD CONSTRAINT `password_history_ibfk_2` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `relationship`
+--
+ALTER TABLE `relationship`
+  ADD CONSTRAINT `relationship_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `religion`
+--
+ALTER TABLE `religion`
+  ADD CONSTRAINT `religion_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `role`

@@ -3,12 +3,12 @@
 
     $(function() {
         if($('#language-form').length){
-            addressTypeForm();
+            languageForm();
         }
     });
 })(jQuery);
 
-function addressTypeForm(){
+function languageForm(){
     $('#language-form').validate({
         rules: {
             language_name: {
@@ -34,7 +34,7 @@ function addressTypeForm(){
             $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
-            const transaction = 'add address type';
+            const transaction = 'add language';
             const page_link = document.getElementById('page-link').getAttribute('href');
           
             $.ajax({
@@ -48,7 +48,7 @@ function addressTypeForm(){
                 success: function (response) {
                     if (response.success) {
                         setNotification(response.title, response.message, response.messageType);
-                        window.location = page_link + '&id=' + response.addressTypeID;
+                        window.location = page_link + '&id=' + response.languageID;
                     }
                     else {
                         if (response.isInactive || response.notExist || response.userInactive || response.userLocked || response.sessionExpired) {

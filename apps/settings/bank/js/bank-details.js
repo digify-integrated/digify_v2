@@ -8,10 +8,6 @@
             bankForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get bank details');
-        });
-
         $(document).on('click','#delete-bank',function() {
             const bank_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 

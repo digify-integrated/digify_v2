@@ -1,7 +1,7 @@
 <div class="card mb-10">
     <div class="card-header border-0">
         <div class="card-title m-0">
-            <h3 class="fw-bold m-0">Address Type Details</h3>
+            <h3 class="fw-bold m-0">Language Details</h3>
         </div>
         <?php
             if ($deleteAccess['total'] > 0) {

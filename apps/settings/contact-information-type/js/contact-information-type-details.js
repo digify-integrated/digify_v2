@@ -8,10 +8,6 @@
             contactInformationTypeForm();
         }
 
-        $(document).on('click','#edit-details',function() {
-            displayDetails('get contact information type details');
-        });
-
         $(document).on('click','#delete-contact-information-type',function() {
             const contact_information_type_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
