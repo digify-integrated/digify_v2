@@ -233,23 +233,6 @@ class ContactInformationTypeController {
             exit;
         }
 
-        $contactInformationTypeDetails = $this->contactInformationTypeModel->getContactInformationType($contactInformationTypeID);
-        $appLogoPath = !empty($contactInformationTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $contactInformationTypeDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Contact Information Type',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->contactInformationTypeModel->deleteContactInformationType($contactInformationTypeID);
                 
         $response = [
@@ -278,23 +261,6 @@ class ContactInformationTypeController {
                 $total = $checkContactInformationTypeExist['total'] ?? 0;
 
                 if($total > 0){
-                    $contactInformationTypeDetails = $this->contactInformationTypeModel->getContactInformationType($contactInformationTypeID);
-                    $appLogoPath = !empty($contactInformationTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $contactInformationTypeDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Contact Information Types',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->contactInformationTypeModel->deleteContactInformationType($contactInformationTypeID);
                 }
             }

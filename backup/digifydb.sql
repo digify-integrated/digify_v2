@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 27, 2024 at 10:28 AM
+-- Generation Time: Nov 28, 2024 at 10:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -290,6 +290,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkDepartmentExist` (IN `p_depart
     WHERE department_id = p_department_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `checkDepartureReasonExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkDepartureReasonExist` (IN `p_departure_reason_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM departure_reason
+    WHERE departure_reason_id = p_departure_reason_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `checkEducationalStageExist`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `checkEducationalStageExist` (IN `p_educational_stage_id` INT)   BEGIN
 	SELECT COUNT(*) AS total
@@ -302,6 +309,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkEmailSettingExist` (IN `p_emai
 	SELECT COUNT(*) AS total
     FROM email_setting
     WHERE email_setting_id = p_email_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkEmploymentLocationTypeExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkEmploymentLocationTypeExist` (IN `p_employment_location_type_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM employment_location_type
+    WHERE employment_location_type_id = p_employment_location_type_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkEmploymentTypeExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkEmploymentTypeExist` (IN `p_employment_type_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM employment_type
+    WHERE employment_type_id = p_employment_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkFileExtensionExist`$$
@@ -323,6 +344,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkGenderExist` (IN `p_gender_id`
 	SELECT COUNT(*) AS total
     FROM gender
     WHERE gender_id = p_gender_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkJobPositionExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkJobPositionExist` (IN `p_job_position_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM job_position
+    WHERE job_position_id = p_job_position_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkLanguageExist`$$
@@ -481,6 +509,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkUserAccountUsernameExist` (IN 
 	SELECT COUNT(*) AS total
     FROM user_account
     WHERE user_account_id != p_user_account_id AND username = p_username;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkWorkLocationExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkWorkLocationExist` (IN `p_work_location_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM work_location
+    WHERE work_location_id = p_work_location_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `deleteAddressType`$$
@@ -681,6 +716,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteDepartment` (IN `p_department
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `deleteDepartureReason`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteDepartureReason` (IN `p_departure_reason_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM departure_reason WHERE departure_reason_id = p_departure_reason_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `deleteEducationalStage`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteEducationalStage` (IN `p_educational_stage_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -705,6 +754,34 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteEmailSetting` (IN `p_email_se
     START TRANSACTION;
 
     DELETE FROM email_setting WHERE email_setting_id = p_email_setting_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteEmploymentLocationType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteEmploymentLocationType` (IN `p_employment_location_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM employment_location_type WHERE employment_location_type_id = p_employment_location_type_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteEmploymentType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteEmploymentType` (IN `p_employment_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM employment_type WHERE employment_type_id = p_employment_type_id;
 
     COMMIT;
 END$$
@@ -748,6 +825,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteGender` (IN `p_gender_id` INT
     START TRANSACTION;
 
     DELETE FROM gender WHERE gender_id = p_gender_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteJobPosition`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteJobPosition` (IN `p_job_position_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM job_position WHERE job_position_id = p_job_position_id;
 
     COMMIT;
 END$$
@@ -1012,6 +1103,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteUserAccount` (IN `p_user_acco
 
     DELETE FROM role_user_account WHERE user_account_id = p_user_account_id;
     DELETE FROM user_account WHERE user_account_id = p_user_account_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `deleteWorkLocation`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `deleteWorkLocation` (IN `p_work_location_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    DELETE FROM work_location WHERE work_location_id = p_work_location_id;
 
     COMMIT;
 END$$
@@ -1299,6 +1404,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateDepartmentTable` (IN `p_fil
     DEALLOCATE PREPARE stmt;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateDepartureReasonOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateDepartureReasonOptions` ()   BEGIN
+	SELECT departure_reason_id, departure_reason_name 
+    FROM departure_reason 
+    ORDER BY departure_reason_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateDepartureReasonTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateDepartureReasonTable` ()   BEGIN
+	SELECT departure_reason_id, departure_reason_name
+    FROM departure_reason 
+    ORDER BY departure_reason_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `generateEducationalStageOptions`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEducationalStageOptions` ()   BEGIN
 	SELECT educational_stage_id, educational_stage_name 
@@ -1325,6 +1444,34 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmailSettingTable` ()   BEG
 	SELECT email_setting_id, email_setting_name, email_setting_description
     FROM email_setting 
     ORDER BY email_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateEmploymentLocationTypeOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmploymentLocationTypeOptions` ()   BEGIN
+	SELECT employment_location_type_id, employment_location_type_name 
+    FROM employment_location_type 
+    ORDER BY employment_location_type_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateEmploymentLocationTypeTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmploymentLocationTypeTable` ()   BEGIN
+	SELECT employment_location_type_id, employment_location_type_name
+    FROM employment_location_type 
+    ORDER BY employment_location_type_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateEmploymentTypeOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmploymentTypeOptions` ()   BEGIN
+	SELECT employment_type_id, employment_type_name 
+    FROM employment_type 
+    ORDER BY employment_type_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateEmploymentTypeTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmploymentTypeTable` ()   BEGIN
+	SELECT employment_type_id, employment_type_name
+    FROM employment_type 
+    ORDER BY employment_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateExportOption`$$
@@ -1400,6 +1547,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateInternalNotes` (IN `p_table
     FROM internal_notes
     WHERE table_name = p_table_name AND reference_id  = p_reference_id
     ORDER BY internal_note_date DESC;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateJobPositionOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateJobPositionOptions` ()   BEGIN
+	SELECT job_position_id, job_position_name 
+    FROM job_position 
+    ORDER BY job_position_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateJobPositionTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateJobPositionTable` ()   BEGIN
+	SELECT job_position_id, job_position_name
+    FROM job_position 
+    ORDER BY job_position_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateLanguageOptions`$$
@@ -1779,6 +1940,50 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateUserAccountTable` ()   BEGI
     ORDER BY user_account_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `generateWorkLocationOptions`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateWorkLocationOptions` ()   BEGIN
+	SELECT work_location_id, work_location_name 
+    FROM work_location 
+    ORDER BY work_location_name;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateWorkLocationTable`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateWorkLocationTable` (IN `p_filter_by_city` TEXT, IN `p_filter_by_state` TEXT, IN `p_filter_by_country` TEXT)   BEGIN
+    DECLARE query TEXT;
+    DECLARE filter_conditions TEXT DEFAULT '';
+
+    SET query = 'SELECT work_location_id, work_location_name, address, city_name, state_name, country_name 
+                FROM work_location ';
+
+    IF p_filter_by_city IS NOT NULL AND p_filter_by_city <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' city_id IN (', p_filter_by_city, ')');
+    END IF;
+
+    IF p_filter_by_state IS NOT NULL AND p_filter_by_state <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+         SET filter_conditions = CONCAT(filter_conditions, ' state_id IN (', p_filter_by_state, ')');
+    END IF;
+
+    IF p_filter_by_country IS NOT NULL AND p_filter_by_country <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+         SET filter_conditions = CONCAT(filter_conditions, ' country_id IN (', p_filter_by_country, ')');
+    END IF;
+
+    IF filter_conditions <> '' THEN
+        SET query = CONCAT(query, ' WHERE ', filter_conditions);
+    END IF;
+
+    SET query = CONCAT(query, ' ORDER BY work_location_name');
+
+    PREPARE stmt FROM query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END$$
+
 DROP PROCEDURE IF EXISTS `getAddressType`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getAddressType` (IN `p_address_type_id` INT)   BEGIN
 	SELECT * FROM address_type
@@ -1863,6 +2068,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getDepartment` (IN `p_department_id
 	WHERE department_id = p_department_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getDepartureReason`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getDepartureReason` (IN `p_departure_reason_id` INT)   BEGIN
+	SELECT * FROM departure_reason
+	WHERE departure_reason_id = p_departure_reason_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getEducationalStage`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getEducationalStage` (IN `p_educational_stage_id` INT)   BEGIN
 	SELECT * FROM educational_stage
@@ -1879,6 +2090,18 @@ DROP PROCEDURE IF EXISTS `getEmailSetting`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmailSetting` (IN `p_email_setting_id` INT)   BEGIN
 	SELECT * FROM email_setting
 	WHERE email_setting_id = p_email_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getEmploymentLocationType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmploymentLocationType` (IN `p_employment_location_type_id` INT)   BEGIN
+	SELECT * FROM employment_location_type
+	WHERE employment_location_type_id = p_employment_location_type_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getEmploymentType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmploymentType` (IN `p_employment_type_id` INT)   BEGIN
+	SELECT * FROM employment_type
+	WHERE employment_type_id = p_employment_type_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getFileExtension`$$
@@ -1903,6 +2126,12 @@ DROP PROCEDURE IF EXISTS `getInternalNotesAttachment`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getInternalNotesAttachment` (IN `p_internal_notes_id` INT)   BEGIN
 	SELECT * FROM internal_notes_attachment
 	WHERE internal_notes_id = p_internal_notes_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getJobPosition`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getJobPosition` (IN `p_job_position_id` INT)   BEGIN
+	SELECT * FROM job_position
+	WHERE job_position_id = p_job_position_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `getLanguage`$$
@@ -2039,6 +2268,12 @@ DROP PROCEDURE IF EXISTS `getUserAccount`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getUserAccount` (IN `p_user_account_id` INT)   BEGIN
 	SELECT * FROM user_account
 	WHERE user_account_id = p_user_account_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `getWorkLocation`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getWorkLocation` (IN `p_work_location_id` INT)   BEGIN
+	SELECT * FROM work_location
+	WHERE work_location_id = p_work_location_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `insertLoginSession`$$
@@ -2307,6 +2542,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCity` (IN `p_city_id` INT, IN `
         
         SET p_new_city_id = LAST_INSERT_ID();
     ELSE        
+        UPDATE work_location
+        SET city_name = p_city_name,
+            last_log_by = p_last_log_by
+        WHERE city_id = p_city_id;
+
         UPDATE city
         SET city_name = p_city_name,
             state_id = p_state_id,
@@ -2439,6 +2679,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCountry` (IN `p_country_id` INT
         SET country_name = p_country_name,
             last_log_by = p_last_log_by
         WHERE country_id = p_country_id;
+
+        UPDATE work_location
+        SET country_name = p_country_name,
+            last_log_by = p_last_log_by
+        WHERE country_id = p_country_id;
         
         UPDATE country
         SET country_name = p_country_name,
@@ -2537,6 +2782,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveDepartment` (IN `p_department_i
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `saveDepartureReason`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveDepartureReason` (IN `p_departure_reason_id` INT, IN `p_departure_reason_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_departure_reason_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_departure_reason_id IS NULL OR NOT EXISTS (SELECT 1 FROM departure_reason WHERE departure_reason_id = p_departure_reason_id) THEN
+        INSERT INTO departure_reason (departure_reason_name, last_log_by) 
+        VALUES(p_departure_reason_name, p_last_log_by);
+        
+        SET p_new_departure_reason_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE departure_reason
+        SET departure_reason_name = p_departure_reason_name,
+            last_log_by = p_last_log_by
+        WHERE departure_reason_id = p_departure_reason_id;
+
+        SET p_new_departure_reason_id = p_departure_reason_id;
+    END IF;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `saveEducationalStage`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `saveEducationalStage` (IN `p_educational_stage_id` INT, IN `p_educational_stage_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_educational_stage_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -2594,6 +2865,58 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveEmailSetting` (IN `p_email_sett
         WHERE email_setting_id = p_email_setting_id;
 
         SET p_new_email_setting_id = p_email_setting_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveEmploymentLocationType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveEmploymentLocationType` (IN `p_employment_location_type_id` INT, IN `p_employment_location_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_employment_location_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_employment_location_type_id IS NULL OR NOT EXISTS (SELECT 1 FROM employment_location_type WHERE employment_location_type_id = p_employment_location_type_id) THEN
+        INSERT INTO employment_location_type (employment_location_type_name, last_log_by) 
+        VALUES(p_employment_location_type_name, p_last_log_by);
+        
+        SET p_new_employment_location_type_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE employment_location_type
+        SET employment_location_type_name = p_employment_location_type_name,
+            last_log_by = p_last_log_by
+        WHERE employment_location_type_id = p_employment_location_type_id;
+
+        SET p_new_employment_location_type_id = p_employment_location_type_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveEmploymentType`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveEmploymentType` (IN `p_employment_type_id` INT, IN `p_employment_type_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_employment_type_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_employment_type_id IS NULL OR NOT EXISTS (SELECT 1 FROM employment_type WHERE employment_type_id = p_employment_type_id) THEN
+        INSERT INTO employment_type (employment_type_name, last_log_by) 
+        VALUES(p_employment_type_name, p_last_log_by);
+        
+        SET p_new_employment_type_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE employment_type
+        SET employment_type_name = p_employment_type_name,
+            last_log_by = p_last_log_by
+        WHERE employment_type_id = p_employment_type_id;
+
+        SET p_new_employment_type_id = p_employment_type_id;
     END IF;
 
     COMMIT;
@@ -2696,6 +3019,32 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveImport` (IN `p_table_name` VARC
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveJobPosition`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveJobPosition` (IN `p_job_position_id` INT, IN `p_job_position_name` VARCHAR(100), IN `p_last_log_by` INT, OUT `p_new_job_position_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_job_position_id IS NULL OR NOT EXISTS (SELECT 1 FROM job_position WHERE job_position_id = p_job_position_id) THEN
+        INSERT INTO job_position (job_position_name, last_log_by) 
+        VALUES(p_job_position_name, p_last_log_by);
+        
+        SET p_new_job_position_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE job_position
+        SET job_position_name = p_job_position_name,
+            last_log_by = p_last_log_by
+        WHERE job_position_id = p_job_position_id;
+
+        SET p_new_job_position_id = p_job_position_id;
+    END IF;
+
+    COMMIT;
 END$$
 
 DROP PROCEDURE IF EXISTS `saveLanguage`$$
@@ -2972,8 +3321,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveState` (IN `p_state_id` INT, IN
         SET state_name = p_state_name,
             last_log_by = p_last_log_by
         WHERE state_id = p_state_id;
-        
 
+        UPDATE work_location
+        SET state_name = p_state_name,
+            last_log_by = p_last_log_by
+        WHERE state_id = p_state_id;
+        
         UPDATE state
         SET state_name = p_state_name,
             country_id = p_country_id,
@@ -3119,6 +3472,42 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveUploadSetting` (IN `p_upload_se
         WHERE upload_setting_id = p_upload_setting_id;
 
         SET p_new_upload_setting_id = p_upload_setting_id;
+    END IF;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `saveWorkLocation`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveWorkLocation` (IN `p_work_location_id` INT, IN `p_work_location_name` VARCHAR(100), IN `p_address` VARCHAR(1000), IN `p_city_id` INT, IN `p_city_name` VARCHAR(100), IN `p_state_id` INT, IN `p_state_name` VARCHAR(100), IN `p_country_id` INT, IN `p_country_name` VARCHAR(100), IN `p_phone` VARCHAR(20), IN `p_telephone` VARCHAR(20), IN `p_email` VARCHAR(255), IN `p_last_log_by` INT, OUT `p_new_work_location_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    IF p_work_location_id IS NULL OR NOT EXISTS (SELECT 1 FROM work_location WHERE work_location_id = p_work_location_id) THEN
+        INSERT INTO work_location (work_location_name, address, city_id, city_name, state_id, state_name, country_id, country_name, phone, telephone, email, last_log_by) 
+        VALUES(p_work_location_name, p_address, p_city_id, p_city_name, p_state_id, p_state_name, p_country_id, p_country_name, p_phone, p_telephone, p_email, p_last_log_by);
+        
+        SET p_new_work_location_id = LAST_INSERT_ID();
+    ELSE
+        UPDATE work_location
+        SET work_location_name = p_work_location_name,
+            address = p_address,
+            city_id = p_city_id,
+            city_name = p_city_name,
+            state_id = p_state_id,
+            state_name = p_state_name,
+            country_id = p_country_id,
+            country_name = p_country_name,
+            phone = p_phone,
+            telephone = p_telephone,
+            email = p_email,
+            last_log_by = p_last_log_by
+        WHERE work_location_id = p_work_location_id;
+
+        SET p_new_work_location_id = p_work_location_id;
     END IF;
 
     COMMIT;
@@ -4381,7 +4770,63 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (606, 'department', 2, 'Department changed.<br/><br/>Department Name: asdasdasd -> asdasdasdasdasdasd<br/>', 2, '2024-11-27 17:03:47', '2024-11-27 17:03:47'),
 (607, 'department', 2, 'Department changed.<br/><br/>Department Name: asdasdasdasdasdasd -> asdasdasdasdasdasdasdasdasd<br/>', 2, '2024-11-27 17:24:19', '2024-11-27 17:24:19'),
 (608, 'department', 2, 'Department changed.<br/><br/>Department Name: asdasdasdasdasdasdasdasdasd -> asdasdasdasdasdasdasdasdasdasdasdasdasd<br/>', 2, '2024-11-27 17:24:47', '2024-11-27 17:24:47'),
-(609, 'department', 2, 'Department changed.<br/><br/>Parent Department:  -> asdasdasdasdasd<br/>', 2, '2024-11-27 17:28:28', '2024-11-27 17:28:28');
+(609, 'department', 2, 'Department changed.<br/><br/>Parent Department:  -> asdasdasdasdasd<br/>', 2, '2024-11-27 17:28:28', '2024-11-27 17:28:28'),
+(610, 'department', 3, 'Department created.', 2, '2024-11-28 09:44:54', '2024-11-28 09:44:54'),
+(611, 'department', 3, 'Department changed.<br/><br/>Department Name: test -> testtest<br/>', 2, '2024-11-28 09:44:57', '2024-11-28 09:44:57'),
+(612, 'department', 1, 'Department changed.<br/><br/>Department Name: asdasdasdasdasd -> asdasdasdasdasdsadasd<br/>Parent Department: testtest -> testtest<br/>', 2, '2024-11-28 09:55:27', '2024-11-28 09:55:27'),
+(613, 'department', 4, 'Department created.', 2, '2024-11-28 09:56:27', '2024-11-28 09:56:27'),
+(614, 'department', 4, 'Department changed.<br/><br/>Department Name: test -> testtest<br/>', 2, '2024-11-28 09:56:31', '2024-11-28 09:56:31'),
+(615, 'department', 5, 'Department created.', 2, '2024-11-28 09:56:40', '2024-11-28 09:56:40'),
+(616, 'department', 5, 'Department changed.<br/><br/>Department Name: waea -> waeaasdad<br/>Parent Department: testtest -> testtest<br/>', 2, '2024-11-28 09:56:47', '2024-11-28 09:56:47'),
+(617, 'department', 5, 'Department changed.<br/><br/>Parent Department: testtest -> <br/>', 2, '2024-11-28 10:00:25', '2024-11-28 10:00:25'),
+(618, 'department', 5, 'Department changed.<br/><br/>Parent Department:  -> testtest<br/>', 2, '2024-11-28 10:00:30', '2024-11-28 10:00:30'),
+(619, 'department', 4, 'Department created.', 2, '2024-11-28 10:23:31', '2024-11-28 10:23:31'),
+(620, 'department', 5, 'Department created.', 2, '2024-11-28 10:23:31', '2024-11-28 10:23:31'),
+(621, 'departure_reason', 15, 'Departure reason created.', 2, '2024-11-28 11:49:17', '2024-11-28 11:49:17'),
+(622, 'departure_reason', 15, 'Departure reason changed.<br/><br/>Departure Reason Name: test -> testtest<br/>', 2, '2024-11-28 11:49:19', '2024-11-28 11:49:19'),
+(623, 'departure_reason', 1, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(624, 'departure_reason', 2, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(625, 'departure_reason', 3, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(626, 'departure_reason', 4, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(627, 'departure_reason', 5, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(628, 'departure_reason', 6, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(629, 'departure_reason', 7, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(630, 'departure_reason', 8, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(631, 'departure_reason', 9, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(632, 'departure_reason', 10, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(633, 'departure_reason', 11, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(634, 'departure_reason', 12, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(635, 'departure_reason', 13, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(636, 'departure_reason', 14, 'Departure reason created.', 1, '2024-11-28 11:49:45', '2024-11-28 11:49:45'),
+(637, 'employment_type', 10, 'Employment Type created.', 2, '2024-11-28 12:08:35', '2024-11-28 12:08:35'),
+(638, 'employment_type', 10, 'Employment Type changed.<br/><br/>Employment Type Name: test -> testtest<br/>', 2, '2024-11-28 12:08:39', '2024-11-28 12:08:39'),
+(639, 'employment_type', 1, 'Employment Type created.', 1, '2024-11-28 12:09:00', '2024-11-28 12:09:00'),
+(640, 'employment_type', 2, 'Employment Type created.', 1, '2024-11-28 12:09:00', '2024-11-28 12:09:00'),
+(641, 'employment_type', 3, 'Employment Type created.', 1, '2024-11-28 12:09:00', '2024-11-28 12:09:00'),
+(642, 'employment_type', 4, 'Employment Type created.', 1, '2024-11-28 12:09:00', '2024-11-28 12:09:00'),
+(643, 'employment_type', 5, 'Employment Type created.', 1, '2024-11-28 12:09:00', '2024-11-28 12:09:00'),
+(644, 'employment_type', 6, 'Employment Type created.', 1, '2024-11-28 12:09:00', '2024-11-28 12:09:00'),
+(645, 'employment_type', 7, 'Employment Type created.', 1, '2024-11-28 12:09:00', '2024-11-28 12:09:00'),
+(646, 'employment_type', 8, 'Employment Type created.', 1, '2024-11-28 12:09:00', '2024-11-28 12:09:00'),
+(647, 'employment_type', 9, 'Employment Type created.', 1, '2024-11-28 12:09:00', '2024-11-28 12:09:00'),
+(648, 'employment_location_type', 10, 'Employment location type created.', 2, '2024-11-28 13:02:31', '2024-11-28 13:02:31'),
+(649, 'employment_location_type', 10, 'Employment location type changed.<br/><br/>Employment Location Type Name: asdasd -> asdasdasdasd<br/>', 2, '2024-11-28 13:02:34', '2024-11-28 13:02:34'),
+(650, 'employment_location_type', 1, 'Employment location type created.', 1, '2024-11-28 13:04:17', '2024-11-28 13:04:17'),
+(651, 'employment_location_type', 2, 'Employment location type created.', 1, '2024-11-28 13:04:17', '2024-11-28 13:04:17'),
+(652, 'employment_location_type', 3, 'Employment location type created.', 1, '2024-11-28 13:04:17', '2024-11-28 13:04:17'),
+(653, 'employment_location_type', 4, 'Employment location type created.', 1, '2024-11-28 13:04:17', '2024-11-28 13:04:17'),
+(654, 'employment_location_type', 5, 'Employment location type created.', 1, '2024-11-28 13:04:17', '2024-11-28 13:04:17'),
+(655, 'employment_location_type', 6, 'Employment location type created.', 1, '2024-11-28 13:04:17', '2024-11-28 13:04:17'),
+(656, 'employment_location_type', 7, 'Employment location type created.', 1, '2024-11-28 13:04:17', '2024-11-28 13:04:17'),
+(657, 'employment_location_type', 8, 'Employment location type created.', 1, '2024-11-28 13:04:17', '2024-11-28 13:04:17'),
+(658, 'employment_location_type', 9, 'Employment location type created.', 1, '2024-11-28 13:04:17', '2024-11-28 13:04:17'),
+(659, 'job_position', 1, 'Job position created.', 2, '2024-11-28 14:02:45', '2024-11-28 14:02:45'),
+(660, 'job_position', 1, 'Job position changed.<br/><br/>Job Position Name: test -> testtest<br/>', 2, '2024-11-28 14:02:50', '2024-11-28 14:02:50'),
+(661, 'job_position', 2, 'Job position created.', 2, '2024-11-28 14:02:58', '2024-11-28 14:02:58'),
+(662, 'job_position', 1, 'Job position created.', 2, '2024-11-28 14:04:07', '2024-11-28 14:04:07'),
+(663, 'work_location', 1, 'Work location created.', 2, '2024-11-28 15:39:33', '2024-11-28 15:39:33'),
+(664, 'work_location', 1, 'Work location changed.<br/><br/>Work Location Name: test -> testasd<br/>Address: test -> testasd<br/>City: test -> test2<br/>Phone: test -> testasd<br/>Telephone: test -> testasd<br/>Email: test@gmail.com -> testasdasd@gmail.com<br/>', 2, '2024-11-28 15:40:02', '2024-11-28 15:40:02'),
+(665, 'work_location', 2, 'Work location created.', 2, '2024-11-28 15:47:21', '2024-11-28 15:47:21');
 
 -- --------------------------------------------------------
 
@@ -5106,8 +5551,8 @@ CREATE TABLE `department` (
 --
 
 INSERT INTO `department` (`department_id`, `department_name`, `parent_department_id`, `parent_department_name`, `manager_id`, `manager_name`, `created_date`, `last_log_by`) VALUES
-(1, 'asdasdasdasdasd', 2, 'asdasdasdasdasdasd', 0, '', '2024-11-27 16:50:57', 2),
-(2, 'asdasdasdasdasdasdasdasdasdasdasdasdasd', 1, 'asdasdasdasdasd', 0, '', '2024-11-27 16:58:22', 2);
+(4, 'testtest', 0, '', 0, '', '2024-11-28 09:56:27', 2),
+(5, 'waeaasdad', 4, 'testtest', 0, '', '2024-11-28 09:56:40', 2);
 
 --
 -- Triggers `department`
@@ -5142,6 +5587,70 @@ CREATE TRIGGER `department_trigger_update` AFTER UPDATE ON `department` FOR EACH
     IF audit_log <> 'Department changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('department', NEW.department_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `departure_reason`
+--
+
+DROP TABLE IF EXISTS `departure_reason`;
+CREATE TABLE `departure_reason` (
+  `departure_reason_id` int(10) UNSIGNED NOT NULL,
+  `departure_reason_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `departure_reason`
+--
+
+INSERT INTO `departure_reason` (`departure_reason_id`, `departure_reason_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Resigned', '2024-11-28 11:42:38', 1),
+(2, 'Terminated', '2024-11-28 11:42:38', 1),
+(3, 'Retired', '2024-11-28 11:42:38', 1),
+(4, 'Laid Off', '2024-11-28 11:42:38', 1),
+(5, 'End of Contract', '2024-11-28 11:42:38', 1),
+(6, 'Redundancy', '2024-11-28 11:42:38', 1),
+(7, 'Death', '2024-11-28 11:42:38', 1),
+(8, 'Disability', '2024-11-28 11:42:38', 1),
+(9, 'Pregnancy', '2024-11-28 11:42:38', 1),
+(10, 'Maternity Leave', '2024-11-28 11:42:38', 1),
+(11, 'Paternity Leave', '2024-11-28 11:42:38', 1),
+(12, 'Study Leave', '2024-11-28 11:42:38', 1),
+(13, 'Sabbatical', '2024-11-28 11:42:38', 1),
+(14, 'Career Break', '2024-11-28 11:42:38', 1);
+
+--
+-- Triggers `departure_reason`
+--
+DROP TRIGGER IF EXISTS `departure_reason_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `departure_reason_trigger_insert` AFTER INSERT ON `departure_reason` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Departure reason created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('departure_reason', NEW.departure_reason_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `departure_reason_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `departure_reason_trigger_update` AFTER UPDATE ON `departure_reason` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Departure reason changed.<br/><br/>';
+
+    IF NEW.departure_reason_name <> OLD.departure_reason_name THEN
+        SET audit_log = CONCAT(audit_log, "Departure Reason Name: ", OLD.departure_reason_name, " -> ", NEW.departure_reason_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Departure reason changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('departure_reason', NEW.departure_reason_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -5298,6 +5807,124 @@ CREATE TRIGGER `email_setting_trigger_update` AFTER UPDATE ON `email_setting` FO
     IF audit_log <> 'Email setting changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('email_setting', NEW.email_setting_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employment_location_type`
+--
+
+DROP TABLE IF EXISTS `employment_location_type`;
+CREATE TABLE `employment_location_type` (
+  `employment_location_type_id` int(10) UNSIGNED NOT NULL,
+  `employment_location_type_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employment_location_type`
+--
+
+INSERT INTO `employment_location_type` (`employment_location_type_id`, `employment_location_type_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Head Office', '2024-11-28 13:02:26', 1),
+(2, 'Branch Office', '2024-11-28 13:02:26', 1),
+(3, 'Remote Work', '2024-11-28 13:02:26', 1),
+(4, 'Client Site', '2024-11-28 13:02:26', 1),
+(5, 'Factory', '2024-11-28 13:02:26', 1),
+(6, 'Warehouse', '2024-11-28 13:02:26', 1),
+(7, 'Retail Store', '2024-11-28 13:02:26', 1),
+(8, 'Home Office', '2024-11-28 13:02:26', 1),
+(9, 'Field Work', '2024-11-28 13:02:26', 1);
+
+--
+-- Triggers `employment_location_type`
+--
+DROP TRIGGER IF EXISTS `employment_location_type_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `employment_location_type_trigger_insert` AFTER INSERT ON `employment_location_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Employment location type created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('employment_location_type', NEW.employment_location_type_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `employment_location_type_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `employment_location_type_trigger_update` AFTER UPDATE ON `employment_location_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Employment location type changed.<br/><br/>';
+
+    IF NEW.employment_location_type_name <> OLD.employment_location_type_name THEN
+        SET audit_log = CONCAT(audit_log, "Employment Location Type Name: ", OLD.employment_location_type_name, " -> ", NEW.employment_location_type_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Employment location type changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('employment_location_type', NEW.employment_location_type_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employment_type`
+--
+
+DROP TABLE IF EXISTS `employment_type`;
+CREATE TABLE `employment_type` (
+  `employment_type_id` int(10) UNSIGNED NOT NULL,
+  `employment_type_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employment_type`
+--
+
+INSERT INTO `employment_type` (`employment_type_id`, `employment_type_name`, `created_date`, `last_log_by`) VALUES
+(1, 'Full-time', '2024-11-28 12:03:42', 1),
+(2, 'Part-time', '2024-11-28 12:03:42', 1),
+(3, 'Contract', '2024-11-28 12:03:42', 1),
+(4, 'Internship', '2024-11-28 12:03:42', 1),
+(5, 'Freelance', '2024-11-28 12:03:42', 1),
+(6, 'Temporary', '2024-11-28 12:03:42', 1),
+(7, 'Seasonal', '2024-11-28 12:03:42', 1),
+(8, 'Apprenticeship', '2024-11-28 12:03:42', 1),
+(9, 'Volunteer', '2024-11-28 12:03:42', 1);
+
+--
+-- Triggers `employment_type`
+--
+DROP TRIGGER IF EXISTS `employment_type_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `employment_type_trigger_insert` AFTER INSERT ON `employment_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Employment Type created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('employment_type', NEW.employment_type_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `employment_type_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `employment_type_trigger_update` AFTER UPDATE ON `employment_type` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Employment Type changed.<br/><br/>';
+
+    IF NEW.employment_type_name <> OLD.employment_type_name THEN
+        SET audit_log = CONCAT(audit_log, "Employment Type Name: ", OLD.employment_type_name, " -> ", NEW.employment_type_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Employment Type changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('employment_type', NEW.employment_type_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -5575,6 +6202,57 @@ CREATE TRIGGER `gender_trigger_update` AFTER UPDATE ON `gender` FOR EACH ROW BEG
     IF audit_log <> 'Gender changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('gender', NEW.gender_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `job_position`
+--
+
+DROP TABLE IF EXISTS `job_position`;
+CREATE TABLE `job_position` (
+  `job_position_id` int(10) UNSIGNED NOT NULL,
+  `job_position_name` varchar(100) NOT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `job_position`
+--
+
+INSERT INTO `job_position` (`job_position_id`, `job_position_name`, `created_date`, `last_log_by`) VALUES
+(1, 'testtest', '2024-11-28 14:02:45', 2);
+
+--
+-- Triggers `job_position`
+--
+DROP TRIGGER IF EXISTS `job_position_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `job_position_trigger_insert` AFTER INSERT ON `job_position` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Job position created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('job_position', NEW.job_position_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `job_position_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `job_position_trigger_update` AFTER UPDATE ON `job_position` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Job position changed.<br/><br/>';
+
+    IF NEW.job_position_name <> OLD.job_position_name THEN
+        SET audit_log = CONCAT(audit_log, "Job Position Name: ", OLD.job_position_name, " -> ", NEW.job_position_name, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Job position changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('job_position', NEW.job_position_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -6022,13 +6700,12 @@ INSERT INTO `menu_item` (`menu_item_id`, `menu_item_name`, `menu_item_url`, `men
 (40, 'Relationship', 'relationship.php', '', 1, 'Settings', 34, 'Profile Attribute', 'relationship', 18, '2024-11-25 15:30:39', 2),
 (41, 'Religion', 'religion.php', '', 1, 'Settings', 34, 'Profile Attribute', 'religion', 19, '2024-11-25 15:31:21', 2),
 (42, 'HR Configurations', '', '', 2, 'Employee', NULL, '', '', 99, '2024-11-25 15:33:34', 2),
-(43, 'Department', 'department.php', 'ki-outline ki-data', 2, 'Employee', 42, 'HR Configurations', '', 4, '2024-11-25 15:36:29', 2),
-(44, 'Departure Reason', 'departure-reason.php', 'ki-outline ki-user-square', 2, 'Employee', 42, 'HR Configurations', '', 4, '2024-11-25 15:38:31', 2),
-(45, 'Employment Location Type', 'employment-location-type.php', 'ki-outline ki-route', 2, 'Employee', 42, 'HR Configurations', '', 5, '2024-11-25 15:39:48', 2),
-(46, 'Employment Type', 'employment-type.php', 'ki-outline ki-briefcase', 2, 'Employee', 42, 'HR Configurations', '', 5, '2024-11-25 15:40:40', 2),
-(47, 'Job Position', 'job-position.php', 'ki-outline ki-questionnaire-tablet', 2, 'Employee', 42, 'HR Configurations', '', 10, '2024-11-25 15:42:05', 2),
-(48, 'Work Location', 'work-location.php', 'ki-outline ki-geolocation', 2, 'Employee', 42, 'HR Configurations', '', 23, '2024-11-25 15:43:23', 2),
-(49, 'Work Schedule Type', 'work-schedule-type.php', 'ki-outline ki-brifecase-timer', 2, 'Employee', 42, 'HR Configurations', '', 23, '2024-11-25 15:45:02', 2),
+(43, 'Department', 'department.php', 'ki-outline ki-data', 2, 'Employee', 42, 'HR Configurations', 'department', 4, '2024-11-25 15:36:29', 2),
+(44, 'Departure Reason', 'departure-reason.php', 'ki-outline ki-user-square', 2, 'Employee', 42, 'HR Configurations', 'departure_reason', 4, '2024-11-25 15:38:31', 2),
+(45, 'Employment Location Type', 'employment-location-type.php', 'ki-outline ki-route', 2, 'Employee', 42, 'HR Configurations', 'employment_location_type', 5, '2024-11-25 15:39:48', 2),
+(46, 'Employment Type', 'employment-type.php', 'ki-outline ki-briefcase', 2, 'Employee', 42, 'HR Configurations', 'employment_type', 5, '2024-11-25 15:40:40', 2),
+(47, 'Job Position', 'job-position.php', 'ki-outline ki-questionnaire-tablet', 2, 'Employee', 42, 'HR Configurations', 'job_position', 10, '2024-11-25 15:42:05', 2),
+(48, 'Work Location', 'work-location.php', 'ki-outline ki-geolocation', 2, 'Employee', 42, 'HR Configurations', 'work_location', 23, '2024-11-25 15:43:23', 2),
 (50, 'Work Schedule', 'work-schedule.php', '', 2, 'Employee', 0, '', '', 23, '2024-11-25 15:45:48', 2);
 
 -- --------------------------------------------------------
@@ -6945,6 +7622,88 @@ END
 $$
 DELIMITER ;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `work_location`
+--
+
+DROP TABLE IF EXISTS `work_location`;
+CREATE TABLE `work_location` (
+  `work_location_id` int(10) UNSIGNED NOT NULL,
+  `work_location_name` varchar(100) NOT NULL,
+  `address` varchar(1000) DEFAULT NULL,
+  `city_id` int(10) UNSIGNED NOT NULL,
+  `city_name` varchar(100) NOT NULL,
+  `state_id` int(10) UNSIGNED NOT NULL,
+  `state_name` varchar(100) NOT NULL,
+  `country_id` int(10) UNSIGNED NOT NULL,
+  `country_name` varchar(100) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `telephone` varchar(20) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Triggers `work_location`
+--
+DROP TRIGGER IF EXISTS `work_location_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `work_location_trigger_insert` AFTER INSERT ON `work_location` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Work location created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('work_location', NEW.work_location_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `work_location_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `work_location_trigger_update` AFTER UPDATE ON `work_location` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Work location changed.<br/><br/>';
+
+    IF NEW.work_location_name <> OLD.work_location_name THEN
+        SET audit_log = CONCAT(audit_log, "Work Location Name: ", OLD.work_location_name, " -> ", NEW.work_location_name, "<br/>");
+    END IF;
+
+    IF NEW.address <> OLD.address THEN
+        SET audit_log = CONCAT(audit_log, "Address: ", OLD.address, " -> ", NEW.address, "<br/>");
+    END IF;
+
+    IF NEW.city_name <> OLD.city_name THEN
+        SET audit_log = CONCAT(audit_log, "City: ", OLD.city_name, " -> ", NEW.city_name, "<br/>");
+    END IF;
+
+    IF NEW.state_name <> OLD.state_name THEN
+        SET audit_log = CONCAT(audit_log, "State: ", OLD.state_name, " -> ", NEW.state_name, "<br/>");
+    END IF;
+
+    IF NEW.country_name <> OLD.country_name THEN
+        SET audit_log = CONCAT(audit_log, "Country: ", OLD.country_name, " -> ", NEW.country_name, "<br/>");
+    END IF;
+
+    IF NEW.phone <> OLD.phone THEN
+        SET audit_log = CONCAT(audit_log, "Phone: ", OLD.phone, " -> ", NEW.phone, "<br/>");
+    END IF;
+
+    IF NEW.telephone <> OLD.telephone THEN
+        SET audit_log = CONCAT(audit_log, "Telephone: ", OLD.telephone, " -> ", NEW.telephone, "<br/>");
+    END IF;
+
+    IF NEW.email <> OLD.email THEN
+        SET audit_log = CONCAT(audit_log, "Email: ", OLD.email, " -> ", NEW.email, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Work location changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('work_location', NEW.work_location_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
 --
 -- Indexes for dumped tables
 --
@@ -7073,6 +7832,14 @@ ALTER TABLE `department`
   ADD KEY `department_index_manager_id` (`manager_id`);
 
 --
+-- Indexes for table `departure_reason`
+--
+ALTER TABLE `departure_reason`
+  ADD PRIMARY KEY (`departure_reason_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `departure_reason_index_departure_reason_id` (`departure_reason_id`);
+
+--
 -- Indexes for table `educational_stage`
 --
 ALTER TABLE `educational_stage`
@@ -7087,6 +7854,22 @@ ALTER TABLE `email_setting`
   ADD PRIMARY KEY (`email_setting_id`),
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `email_setting_index_email_setting_id` (`email_setting_id`);
+
+--
+-- Indexes for table `employment_location_type`
+--
+ALTER TABLE `employment_location_type`
+  ADD PRIMARY KEY (`employment_location_type_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `employment_location_type_index_employment_location_type_id` (`employment_location_type_id`);
+
+--
+-- Indexes for table `employment_type`
+--
+ALTER TABLE `employment_type`
+  ADD PRIMARY KEY (`employment_type_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `employment_type_index_employment_type_id` (`employment_type_id`);
 
 --
 -- Indexes for table `file_extension`
@@ -7112,6 +7895,14 @@ ALTER TABLE `gender`
   ADD PRIMARY KEY (`gender_id`),
   ADD KEY `last_log_by` (`last_log_by`),
   ADD KEY `gender_index_gender_id` (`gender_id`);
+
+--
+-- Indexes for table `job_position`
+--
+ALTER TABLE `job_position`
+  ADD PRIMARY KEY (`job_position_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `job_position_index_job_position_id` (`job_position_id`);
 
 --
 -- Indexes for table `language`
@@ -7319,6 +8110,17 @@ ALTER TABLE `user_account`
   ADD KEY `user_account_index_email` (`email`);
 
 --
+-- Indexes for table `work_location`
+--
+ALTER TABLE `work_location`
+  ADD PRIMARY KEY (`work_location_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `work_location_index_work_location_id` (`work_location_id`),
+  ADD KEY `work_location_index_city_id` (`city_id`),
+  ADD KEY `work_location_index_state_id` (`state_id`),
+  ADD KEY `work_location_index_country_id` (`country_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -7338,7 +8140,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=610;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=666;
 
 --
 -- AUTO_INCREMENT for table `bank`
@@ -7404,7 +8206,13 @@ ALTER TABLE `currency`
 -- AUTO_INCREMENT for table `department`
 --
 ALTER TABLE `department`
-  MODIFY `department_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `department_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `departure_reason`
+--
+ALTER TABLE `departure_reason`
+  MODIFY `departure_reason_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `educational_stage`
@@ -7417,6 +8225,18 @@ ALTER TABLE `educational_stage`
 --
 ALTER TABLE `email_setting`
   MODIFY `email_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `employment_location_type`
+--
+ALTER TABLE `employment_location_type`
+  MODIFY `employment_location_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `employment_type`
+--
+ALTER TABLE `employment_type`
+  MODIFY `employment_type_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `file_extension`
@@ -7435,6 +8255,12 @@ ALTER TABLE `file_type`
 --
 ALTER TABLE `gender`
   MODIFY `gender_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `job_position`
+--
+ALTER TABLE `job_position`
+  MODIFY `job_position_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `language`
@@ -7575,6 +8401,12 @@ ALTER TABLE `user_account`
   MODIFY `user_account_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `work_location`
+--
+ALTER TABLE `work_location`
+  MODIFY `work_location_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -7668,6 +8500,12 @@ ALTER TABLE `department`
   ADD CONSTRAINT `department_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
+-- Constraints for table `departure_reason`
+--
+ALTER TABLE `departure_reason`
+  ADD CONSTRAINT `departure_reason_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
 -- Constraints for table `educational_stage`
 --
 ALTER TABLE `educational_stage`
@@ -7678,6 +8516,18 @@ ALTER TABLE `educational_stage`
 --
 ALTER TABLE `email_setting`
   ADD CONSTRAINT `email_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `employment_location_type`
+--
+ALTER TABLE `employment_location_type`
+  ADD CONSTRAINT `employment_location_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `employment_type`
+--
+ALTER TABLE `employment_type`
+  ADD CONSTRAINT `employment_type_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `file_extension`
@@ -7696,6 +8546,12 @@ ALTER TABLE `file_type`
 --
 ALTER TABLE `gender`
   ADD CONSTRAINT `gender_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `job_position`
+--
+ALTER TABLE `job_position`
+  ADD CONSTRAINT `job_position_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `language`
@@ -7829,6 +8685,15 @@ ALTER TABLE `upload_setting`
 --
 ALTER TABLE `user_account`
   ADD CONSTRAINT `user_account_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `work_location`
+--
+ALTER TABLE `work_location`
+  ADD CONSTRAINT `work_location_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`),
+  ADD CONSTRAINT `work_location_ibfk_2` FOREIGN KEY (`city_id`) REFERENCES `city` (`city_id`),
+  ADD CONSTRAINT `work_location_ibfk_3` FOREIGN KEY (`state_id`) REFERENCES `state` (`state_id`),
+  ADD CONSTRAINT `work_location_ibfk_4` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -233,23 +233,6 @@ class BloodTypeController {
             exit;
         }
 
-        $bloodTypeDetails = $this->bloodTypeModel->getBloodType($bloodTypeID);
-        $appLogoPath = !empty($bloodTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $bloodTypeDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Blood Type',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->bloodTypeModel->deleteBloodType($bloodTypeID);
                 
         $response = [
@@ -278,23 +261,6 @@ class BloodTypeController {
                 $total = $checkBloodTypeExist['total'] ?? 0;
 
                 if($total > 0){
-                    $bloodTypeDetails = $this->bloodTypeModel->getBloodType($bloodTypeID);
-                    $appLogoPath = !empty($bloodTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $bloodTypeDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Blood Types',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->bloodTypeModel->deleteBloodType($bloodTypeID);
                 }
             }

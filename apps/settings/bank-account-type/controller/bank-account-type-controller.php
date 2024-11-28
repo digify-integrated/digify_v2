@@ -233,23 +233,6 @@ class BankAccountTypeController {
             exit;
         }
 
-        $bankAccountTypeDetails = $this->bankAccountTypeModel->getBankAccountType($bankAccountTypeID);
-        $appLogoPath = !empty($bankAccountTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $bankAccountTypeDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Bank Account Type',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->bankAccountTypeModel->deleteBankAccountType($bankAccountTypeID);
                 
         $response = [
@@ -278,23 +261,6 @@ class BankAccountTypeController {
                 $total = $checkBankAccountTypeExist['total'] ?? 0;
 
                 if($total > 0){
-                    $bankAccountTypeDetails = $this->bankAccountTypeModel->getBankAccountType($bankAccountTypeID);
-                    $appLogoPath = !empty($bankAccountTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $bankAccountTypeDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Bank Account Types',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->bankAccountTypeModel->deleteBankAccountType($bankAccountTypeID);
                 }
             }

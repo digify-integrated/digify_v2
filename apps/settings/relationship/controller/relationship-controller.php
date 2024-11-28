@@ -233,23 +233,6 @@ class RelationshipController {
             exit;
         }
 
-        $relationshipDetails = $this->relationshipModel->getRelationship($relationshipID);
-        $appLogoPath = !empty($relationshipDetails['app_logo']) ? str_replace('../', '../../../../apps/', $relationshipDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Relationship',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->relationshipModel->deleteRelationship($relationshipID);
                 
         $response = [
@@ -277,24 +260,7 @@ class RelationshipController {
                 $checkRelationshipExist = $this->relationshipModel->checkRelationshipExist($relationshipID);
                 $total = $checkRelationshipExist['total'] ?? 0;
 
-                if($total > 0){
-                    $relationshipDetails = $this->relationshipModel->getRelationship($relationshipID);
-                    $appLogoPath = !empty($relationshipDetails['app_logo']) ? str_replace('../', '../../../../apps/', $relationshipDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Relationships',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
+                if($total > 0){                    
                     $this->relationshipModel->deleteRelationship($relationshipID);
                 }
             }

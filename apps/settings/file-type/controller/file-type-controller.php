@@ -233,23 +233,6 @@ class FileTypeController {
             exit;
         }
 
-        $fileTypeDetails = $this->fileTypeModel->getFileType($fileTypeID);
-        $appLogoPath = !empty($fileTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $fileTypeDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete File Type',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->fileTypeModel->deleteFileType($fileTypeID);
                 
         $response = [
@@ -278,23 +261,6 @@ class FileTypeController {
                 $total = $checkFileTypeExist['total'] ?? 0;
 
                 if($total > 0){
-                    $fileTypeDetails = $this->fileTypeModel->getFileType($fileTypeID);
-                    $appLogoPath = !empty($fileTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $fileTypeDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple File Types',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->fileTypeModel->deleteFileType($fileTypeID);
                 }
             }

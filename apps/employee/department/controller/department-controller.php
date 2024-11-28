@@ -145,11 +145,11 @@ class DepartmentController {
 
         $userID = $_SESSION['user_account_id'];
         $departmentName = filter_input(INPUT_POST, 'department_name', FILTER_SANITIZE_STRING);
-        $parentDepartmentID = filter_input(INPUT_POST, 'parent_department_id', FILTER_SANITIZE_STRING);
+        $parentDepartmentID = filter_input(INPUT_POST, 'parent_department_id', FILTER_VALIDATE_INT);
         $managerID = filter_input(INPUT_POST, 'manager_id', FILTER_VALIDATE_INT);
 
         $parentDepartmentDetails = $this->departmentModel->getDepartment($parentDepartmentID);
-        $parentDepartmentName = $parentDepartmentDetails['department_name'] ?? null;
+        $parentDepartmentName = $parentDepartmentDetails['department_name'] ?? '';
         
         $departmentID = $this->departmentModel->saveDepartment(null, $departmentName, $parentDepartmentID, $parentDepartmentName, $managerID, '', $userID);
     
@@ -179,7 +179,7 @@ class DepartmentController {
         $userID = $_SESSION['user_account_id'];
         $departmentID = filter_input(INPUT_POST, 'department_id', FILTER_VALIDATE_INT);
         $departmentName = filter_input(INPUT_POST, 'department_name', FILTER_SANITIZE_STRING);
-        $parentDepartmentID = filter_input(INPUT_POST, 'parent_department_id', FILTER_SANITIZE_STRING);
+        $parentDepartmentID = filter_input(INPUT_POST, 'parent_department_id', FILTER_VALIDATE_INT);
         $managerID = filter_input(INPUT_POST, 'manager_id', FILTER_VALIDATE_INT);
     
         $checkDepartmentExist = $this->departmentModel->checkDepartmentExist($departmentID);
@@ -199,7 +199,7 @@ class DepartmentController {
         }
 
         $parentDepartmentDetails = $this->departmentModel->getDepartment($parentDepartmentID);
-        $parentDepartmentName = $parentDepartmentDetails['department_name'] ?? null;
+        $parentDepartmentName = $parentDepartmentDetails['department_name'] ?? '';
         
         $this->departmentModel->saveDepartment($departmentID, $departmentName, $parentDepartmentID, $parentDepartmentName, $managerID, '', $userID);
             

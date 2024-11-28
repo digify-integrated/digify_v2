@@ -56,6 +56,11 @@ BEGIN
         SET state_name = p_state_name,
             last_log_by = p_last_log_by
         WHERE state_id = p_state_id;
+
+        UPDATE work_location
+        SET state_name = p_state_name,
+            last_log_by = p_last_log_by
+        WHERE state_id = p_state_id;
         
         UPDATE state
         SET state_name = p_state_name,

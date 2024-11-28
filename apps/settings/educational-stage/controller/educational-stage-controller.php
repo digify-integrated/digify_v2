@@ -233,23 +233,6 @@ class EducationalStageController {
             exit;
         }
 
-        $educationalStageDetails = $this->educationalStageModel->getEducationalStage($educationalStageID);
-        $appLogoPath = !empty($educationalStageDetails['app_logo']) ? str_replace('../', '../../../../apps/', $educationalStageDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Educational Stage',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->educationalStageModel->deleteEducationalStage($educationalStageID);
                 
         $response = [
@@ -278,23 +261,6 @@ class EducationalStageController {
                 $total = $checkEducationalStageExist['total'] ?? 0;
 
                 if($total > 0){
-                    $educationalStageDetails = $this->educationalStageModel->getEducationalStage($educationalStageID);
-                    $appLogoPath = !empty($educationalStageDetails['app_logo']) ? str_replace('../', '../../../../apps/', $educationalStageDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Educational Stages',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->educationalStageModel->deleteEducationalStage($educationalStageID);
                 }
             }

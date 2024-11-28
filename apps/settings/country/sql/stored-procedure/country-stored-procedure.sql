@@ -61,6 +61,11 @@ BEGIN
         SET country_name = p_country_name,
             last_log_by = p_last_log_by
         WHERE country_id = p_country_id;
+
+        UPDATE work_location
+        SET country_name = p_country_name,
+            last_log_by = p_last_log_by
+        WHERE country_id = p_country_id;
         
         UPDATE country
         SET country_name = p_country_name,

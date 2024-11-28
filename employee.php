@@ -34,16 +34,16 @@
                             <div id="kt_app_content" class="app-content flex-column-fluid">
                                 <?php 
                                     if($newRecord){
-                                        require_once('./apps/settings/city/view/_city_new.php');
+                                        require_once('./apps/employee/employee/view/_employee_new.php');
                                     }
                                     else if(!empty($detailID)){
-                                        require_once('./apps/settings/city/view/_city_details.php');
+                                        require_once('./apps/employee/employee/view/_employee_details.php');
                                     }
                                     else if(isset($_GET['import']) && !empty($_GET['import'])){
                                         require_once('./components/view/_import.php');
                                     }
                                     else{
-                                        require_once('./apps/settings/city/view/_city.php');
+                                        require_once('./apps/employee/employee/view/_employee.php');
                                     }
                                 ?>
                             </div>
@@ -61,13 +61,13 @@
 
     <?php
         $version = rand();
-        $scriptFile = './apps/settings/employee/js/employee.js';
+        $scriptFile = './apps/employee/employee/js/employee.js';
 
         if ($newRecord) {
-            $scriptFile = './apps/settings/employee/js/employee-new.js';
+            $scriptFile = './apps/employee/employee/js/employee-new.js';
         }
         elseif (!empty($detailID)) {
-            $scriptFile = './apps/settings/employee/js/employee-details.js';
+            $scriptFile = './apps/employee/employee/js/employee-details.js';
         }
         elseif (isset($_GET['import']) && !empty($_GET['import'])) {
             $scriptFile = './components/js/import.js'; 

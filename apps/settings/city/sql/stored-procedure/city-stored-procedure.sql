@@ -54,6 +54,11 @@ BEGIN
         
         SET p_new_city_id = LAST_INSERT_ID();
     ELSE        
+        UPDATE work_location
+        SET city_name = p_city_name,
+            last_log_by = p_last_log_by
+        WHERE city_id = p_city_id;
+
         UPDATE city
         SET city_name = p_city_name,
             state_id = p_state_id,

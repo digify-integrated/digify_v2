@@ -232,24 +232,7 @@ class GenderController {
             echo json_encode($response);
             exit;
         }
-
-        $genderDetails = $this->genderModel->getGender($genderID);
-        $appLogoPath = !empty($genderDetails['app_logo']) ? str_replace('../', '../../../../apps/', $genderDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Gender',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
+        
         $this->genderModel->deleteGender($genderID);
                 
         $response = [
@@ -278,23 +261,6 @@ class GenderController {
                 $total = $checkGenderExist['total'] ?? 0;
 
                 if($total > 0){
-                    $genderDetails = $this->genderModel->getGender($genderID);
-                    $appLogoPath = !empty($genderDetails['app_logo']) ? str_replace('../', '../../../../apps/', $genderDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Genders',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->genderModel->deleteGender($genderID);
                 }
             }

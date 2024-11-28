@@ -233,23 +233,6 @@ class ReligionController {
             exit;
         }
 
-        $religionDetails = $this->religionModel->getReligion($religionID);
-        $appLogoPath = !empty($religionDetails['app_logo']) ? str_replace('../', '../../../../apps/', $religionDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Religion',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->religionModel->deleteReligion($religionID);
                 
         $response = [
@@ -278,23 +261,6 @@ class ReligionController {
                 $total = $checkReligionExist['total'] ?? 0;
 
                 if($total > 0){
-                    $religionDetails = $this->religionModel->getReligion($religionID);
-                    $appLogoPath = !empty($religionDetails['app_logo']) ? str_replace('../', '../../../../apps/', $religionDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Religions',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->religionModel->deleteReligion($religionID);
                 }
             }

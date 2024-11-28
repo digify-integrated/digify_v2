@@ -233,23 +233,6 @@ class CivilStatusController {
             exit;
         }
 
-        $civilStatusDetails = $this->civilStatusModel->getCivilStatus($civilStatusID);
-        $appLogoPath = !empty($civilStatusDetails['app_logo']) ? str_replace('../', '../../../../apps/', $civilStatusDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Civil Status',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->civilStatusModel->deleteCivilStatus($civilStatusID);
                 
         $response = [
@@ -278,23 +261,6 @@ class CivilStatusController {
                 $total = $checkCivilStatusExist['total'] ?? 0;
 
                 if($total > 0){
-                    $civilStatusDetails = $this->civilStatusModel->getCivilStatus($civilStatusID);
-                    $appLogoPath = !empty($civilStatusDetails['app_logo']) ? str_replace('../', '../../../../apps/', $civilStatusDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Civil Statuss',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->civilStatusModel->deleteCivilStatus($civilStatusID);
                 }
             }

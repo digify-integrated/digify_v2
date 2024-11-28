@@ -233,23 +233,6 @@ class CredentialTypeController {
             exit;
         }
 
-        $credentialTypeDetails = $this->credentialTypeModel->getCredentialType($credentialTypeID);
-        $appLogoPath = !empty($credentialTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $credentialTypeDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Credential Type',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->credentialTypeModel->deleteCredentialType($credentialTypeID);
                 
         $response = [
@@ -278,23 +261,6 @@ class CredentialTypeController {
                 $total = $checkCredentialTypeExist['total'] ?? 0;
 
                 if($total > 0){
-                    $credentialTypeDetails = $this->credentialTypeModel->getCredentialType($credentialTypeID);
-                    $appLogoPath = !empty($credentialTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $credentialTypeDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Credential Types',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->credentialTypeModel->deleteCredentialType($credentialTypeID);
                 }
             }

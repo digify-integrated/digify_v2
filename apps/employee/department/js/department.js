@@ -97,7 +97,8 @@
         });
 
         $(document).on('click', '#reset-filter', function() {
-            $('#file_type_filter').val(null).trigger('change');
+            $('#parent_department_filter').val(null).trigger('change');
+            $('#manager_filter').val(null).trigger('change');
             
             departmentTable('#department-table');
         });

@@ -232,24 +232,7 @@ class LanguageController {
             echo json_encode($response);
             exit;
         }
-
-        $languageDetails = $this->languageModel->getLanguage($languageID);
-        $appLogoPath = !empty($languageDetails['app_logo']) ? str_replace('../', '../../../../apps/', $languageDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Language',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
+        
         $this->languageModel->deleteLanguage($languageID);
                 
         $response = [
@@ -278,23 +261,6 @@ class LanguageController {
                 $total = $checkLanguageExist['total'] ?? 0;
 
                 if($total > 0){
-                    $languageDetails = $this->languageModel->getLanguage($languageID);
-                    $appLogoPath = !empty($languageDetails['app_logo']) ? str_replace('../', '../../../../apps/', $languageDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Languages',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
                     $this->languageModel->deleteLanguage($languageID);
                 }
             }

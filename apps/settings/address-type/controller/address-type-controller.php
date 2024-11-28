@@ -233,23 +233,6 @@ class AddressTypeController {
             exit;
         }
 
-        $addressTypeDetails = $this->addressTypeModel->getAddressType($addressTypeID);
-        $appLogoPath = !empty($addressTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $addressTypeDetails['app_logo']) : null;
-
-        if(file_exists($appLogoPath)){
-            if (!unlink($appLogoPath)) {
-                $response = [
-                    'success' => false,
-                    'title' => 'Delete Address Type',
-                    'message' => 'The app logo cannot be deleted due to an error.',
-                    'messageType' => 'error'
-                ];
-                    
-                echo json_encode($response);
-                exit;
-            }
-        }
-
         $this->addressTypeModel->deleteAddressType($addressTypeID);
                 
         $response = [
@@ -277,24 +260,7 @@ class AddressTypeController {
                 $checkAddressTypeExist = $this->addressTypeModel->checkAddressTypeExist($addressTypeID);
                 $total = $checkAddressTypeExist['total'] ?? 0;
 
-                if($total > 0){
-                    $addressTypeDetails = $this->addressTypeModel->getAddressType($addressTypeID);
-                    $appLogoPath = !empty($addressTypeDetails['app_logo']) ? str_replace('../', '../../../../apps/', $addressTypeDetails['app_logo']) : null;
-
-                    if(file_exists($appLogoPath)){
-                        if (!unlink($appLogoPath)) {
-                            $response = [
-                                'success' => false,
-                                'title' => 'Delete Multiple Address Types',
-                                'message' => 'The app logo cannot be deleted due to an error.',
-                                'messageType' => 'error'
-                            ];
-                            
-                            echo json_encode($response);
-                            exit;
-                        }
-                    }
-                    
+                if($total > 0){                    
                     $this->addressTypeModel->deleteAddressType($addressTypeID);
                 }
             }

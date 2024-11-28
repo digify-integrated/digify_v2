@@ -134,7 +134,7 @@ function companyForm(){
                 required: 'Enter the display name'
             },
             address: {
-                required: 'Enter the display name'
+                required: 'Enter the address'
             },
             city_id: {
                 required: 'Choose the city'

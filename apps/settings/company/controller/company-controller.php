@@ -497,7 +497,7 @@ class CompanyController {
                         if (!unlink($companyLogoPath)) {
                             $response = [
                                 'success' => false,
-                                'title' => 'Delete Multiple Companys',
+                                'title' => 'Delete Multiple Companies',
                                 'message' => 'The company logo cannot be deleted due to an error.',
                                 'messageType' => 'error'
                             ];
@@ -513,8 +513,8 @@ class CompanyController {
                 
             $response = [
                 'success' => true,
-                'title' => 'Delete Multiple Companys',
-                'message' => 'The selected companys have been deleted successfully.',
+                'title' => 'Delete Multiple Companies',
+                'message' => 'The selected companies have been deleted successfully.',
                 'messageType' => 'success'
             ];
             
