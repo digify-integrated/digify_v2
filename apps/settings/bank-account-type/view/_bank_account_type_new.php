@@ -1,9 +1,6 @@
 <div class="card">
     <div class="card-header d-flex align-items-center">
         <h5 class="card-title mb-0">Bank Account Type Details</h5>
-        <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-            
-        </div>
     </div>
     <div class="card-body">
         <form id="bank-account-type-form" method="post" action="#">

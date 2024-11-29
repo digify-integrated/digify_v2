@@ -2,7 +2,7 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('parent employee options');
+        //generateDropdownOptions('parent employee options');
 
         displayDetails('get employee details');
 

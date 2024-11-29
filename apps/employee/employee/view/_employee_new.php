@@ -1,40 +1,48 @@
 <div class="card">
     <div class="card-header d-flex align-items-center">
         <h5 class="card-title mb-0">Employee Details</h5>
-        <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-            
-        </div>
     </div>
     <div class="card-body">
         <form id="employee-form" method="post" action="#">
-            <div class="fv-row mb-4">
-                <label class="fs-6 fw-semibold form-label mt-3" for="employee_name">
-                    <span class="required">Display Name</span>
-                </label>
-
-                <input type="text" class="form-control" id="employee_name" name="employee_name" maxlength="100" autocomplete="off">
-            </div>
-
             <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">
                 <div class="col">
                     <div class="fv-row mb-7">
-                        <label class="fs-6 fw-semibold form-label mt-3" for="parent_employee_id">
-                            Parent Employee
+                        <label class="fs-6 fw-semibold form-label mt-3" for="first_name">
+                            <span class="required">First Name</span>
                         </label>
 
-                        <select id="parent_employee_id" name="parent_employee_id" class="form-select" data-control="select2" data-allow-clear="false"></select>
+                        <input type="text" class="form-control" id="first_name" name="first_name" maxlength="300" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="last_name">
+                            <span class="required">Last Name</span>
+                        </label>
+
+                        <input type="text" class="form-control" id="last_name" name="last_name" maxlength="300" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 rol-cols-md-1 row-cols-lg-2">                
+                <div class="col">
+                    <div class="fv-row mb-7">
+                        <label class="fs-6 fw-semibold form-label mt-3" for="middle_name">
+                            Middle Name
+                        </label>
+
+                        <input type="text" class="form-control" id="middle_name" name="middle_name" maxlength="300" autocomplete="off">
                     </div>
                 </div>
                 
                 <div class="col">
                     <div class="fv-row mb-7">
-                        <label class="fs-6 fw-semibold form-label mt-3" for="manager_id">
-                            Manager
+                        <label class="fs-6 fw-semibold form-label mt-3" for="suffix">
+                            Suffix
                         </label>
 
-                        <select id="manager_id" name="manager_id" class="form-select" data-control="select2" data-allow-clear="false">\
-                            <option value="">--</option>
-                        </select>
+                        <input type="text" class="form-control" id="suffix" name="suffix" maxlength="10" autocomplete="off">
                     </div>
                 </div>
             </div>

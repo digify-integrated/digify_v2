@@ -2,8 +2,6 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('employee options');
-
         if($('#employee-form').length){
             employeeForm();
         }
@@ -13,13 +11,19 @@
 function employeeForm(){
     $('#employee-form').validate({
         rules: {
-            employee_name: {
+            first_name: {
+                required: true
+            },
+            last_name: {
                 required: true
             }
         },
         messages: {
-            employee_name: {
-                required: 'Enter the display name'
+            first_name: {
+                required: 'Enter the first name'
+            },
+            last_name: {
+                required: 'Enter the last name'
             }
         },
         errorPlacement: function(error, element) {
@@ -73,30 +77,4 @@ function employeeForm(){
             return false;
         }
     });
-}
-
-function generateDropdownOptions(type){
-    switch (type) {
-        case 'employee options':
-            
-            $.ajax({
-                url: 'apps/employee/employee/view/_employee_generation.php',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    type : type
-                },
-                success: function(response) {
-                    $('#parent_employee_id').select2({
-                        data: response
-                    }).on('change', function (e) {
-                        $(this).valid()
-                    });
-                },
-                error: function(xhr, status, error) {
-                    handleSystemError(xhr, status, error);
-                }
-            });
-            break;
-    }
 }

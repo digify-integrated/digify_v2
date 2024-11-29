@@ -1,9 +1,6 @@
 <div class="card">
     <div class="card-header d-flex align-items-center">
         <h5 class="card-title mb-0">Department Details</h5>
-        <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-            
-        </div>
     </div>
     <div class="card-body">
         <form id="department-form" method="post" action="#">
@@ -32,7 +29,7 @@
                             Manager
                         </label>
 
-                        <select id="manager_id" name="manager_id" class="form-select" data-control="select2" data-allow-clear="false">\
+                        <select id="manager_id" name="manager_id" class="form-select" data-control="select2" data-allow-clear="false">
                             <option value="">--</option>
                         </select>
                     </div>

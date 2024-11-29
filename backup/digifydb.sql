@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 28, 2024 at 10:30 AM
+-- Generation Time: Nov 29, 2024 at 10:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -2276,6 +2276,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getWorkLocation` (IN `p_work_locati
 	WHERE work_location_id = p_work_location_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `insertEmployee`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertEmployee` (IN `p_full_name` VARCHAR(1000), IN `p_first_name` VARCHAR(300), IN `p_middle_name` VARCHAR(300), IN `p_last_name` VARCHAR(300), IN `p_suffix` VARCHAR(10), IN `p_last_log_by` INT, OUT `p_new_employee_id` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    INSERT INTO employee (full_name, first_name, middle_name, last_name, suffix, last_log_by) 
+    VALUES(p_full_name, p_first_name, p_middle_name, p_last_name, p_suffix, p_last_log_by);
+        
+    SET p_new_employee_id = LAST_INSERT_ID();
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `insertLoginSession`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `insertLoginSession` (IN `p_user_account_id` INT, IN `p_location` VARCHAR(500), IN `p_login_status` VARCHAR(50), IN `p_device` VARCHAR(200), IN `p_ip_address` VARCHAR(50))   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -2753,7 +2770,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `saveCurrency` (IN `p_currency_id` I
 END$$
 
 DROP PROCEDURE IF EXISTS `saveDepartment`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `saveDepartment` (IN `p_department_id` INT, IN `p_department_name` VARCHAR(100), IN `p_parent_department_id` INT, IN `p_parent_department_name` VARCHAR(100), IN `p_manager_id` INT, IN `p_manager_name` VARCHAR(500), IN `p_last_log_by` INT, OUT `p_new_department_id` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveDepartment` (IN `p_department_id` INT, IN `p_department_name` VARCHAR(100), IN `p_parent_department_id` INT, IN `p_parent_department_name` VARCHAR(100), IN `p_manager_id` INT, IN `p_manager_name` VARCHAR(1000), IN `p_last_log_by` INT, OUT `p_new_department_id` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
@@ -4826,7 +4843,10 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (662, 'job_position', 1, 'Job position created.', 2, '2024-11-28 14:04:07', '2024-11-28 14:04:07'),
 (663, 'work_location', 1, 'Work location created.', 2, '2024-11-28 15:39:33', '2024-11-28 15:39:33'),
 (664, 'work_location', 1, 'Work location changed.<br/><br/>Work Location Name: test -> testasd<br/>Address: test -> testasd<br/>City: test -> test2<br/>Phone: test -> testasd<br/>Telephone: test -> testasd<br/>Email: test@gmail.com -> testasdasd@gmail.com<br/>', 2, '2024-11-28 15:40:02', '2024-11-28 15:40:02'),
-(665, 'work_location', 2, 'Work location created.', 2, '2024-11-28 15:47:21', '2024-11-28 15:47:21');
+(665, 'work_location', 2, 'Work location created.', 2, '2024-11-28 15:47:21', '2024-11-28 15:47:21'),
+(666, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-25 11:44:20 -> 2024-11-29 08:32:29<br/>', 2, '2024-11-29 08:32:29', '2024-11-29 08:32:29'),
+(667, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-29 08:32:29 -> 2024-11-29 11:00:08<br/>', 2, '2024-11-29 11:00:08', '2024-11-29 11:00:08'),
+(668, 'employee', 1, 'Employee created.', 2, '2024-11-29 16:03:49', '2024-11-29 16:03:49');
 
 -- --------------------------------------------------------
 
@@ -5541,18 +5561,10 @@ CREATE TABLE `department` (
   `parent_department_id` int(11) DEFAULT NULL,
   `parent_department_name` varchar(100) DEFAULT NULL,
   `manager_id` int(11) DEFAULT NULL,
-  `manager_name` varchar(100) DEFAULT NULL,
+  `manager_name` varchar(1000) DEFAULT NULL,
   `created_date` datetime DEFAULT current_timestamp(),
   `last_log_by` int(10) UNSIGNED DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `department`
---
-
-INSERT INTO `department` (`department_id`, `department_name`, `parent_department_id`, `parent_department_name`, `manager_id`, `manager_name`, `created_date`, `last_log_by`) VALUES
-(4, 'testtest', 0, '', 0, '', '2024-11-28 09:56:27', 2),
-(5, 'waeaasdad', 4, 'testtest', 0, '', '2024-11-28 09:56:40', 2);
 
 --
 -- Triggers `department`
@@ -5807,6 +5819,273 @@ CREATE TRIGGER `email_setting_trigger_update` AFTER UPDATE ON `email_setting` FO
     IF audit_log <> 'Email setting changed.<br/><br/>' THEN
         INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
         VALUES ('email_setting', NEW.email_setting_id, audit_log, NEW.last_log_by, NOW());
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee`
+--
+
+DROP TABLE IF EXISTS `employee`;
+CREATE TABLE `employee` (
+  `employee_id` int(10) UNSIGNED NOT NULL,
+  `full_name` varchar(1000) NOT NULL,
+  `first_name` varchar(300) NOT NULL,
+  `middle_name` varchar(300) DEFAULT NULL,
+  `last_name` varchar(300) NOT NULL,
+  `suffix` varchar(10) DEFAULT NULL,
+  `nickname` varchar(100) DEFAULT NULL,
+  `private_address` varchar(500) DEFAULT NULL,
+  `private_address_city_id` int(10) UNSIGNED DEFAULT NULL,
+  `private_address_city_name` varchar(100) DEFAULT NULL,
+  `private_address_state_id` int(10) UNSIGNED DEFAULT NULL,
+  `private_address_state_name` varchar(100) DEFAULT NULL,
+  `private_address_country_id` int(10) UNSIGNED DEFAULT NULL,
+  `private_address_country_name` varchar(100) DEFAULT NULL,
+  `private_phone` varchar(20) DEFAULT NULL,
+  `private_telephone` varchar(20) DEFAULT NULL,
+  `private_email` varchar(255) DEFAULT NULL,
+  `civil_status_id` int(10) UNSIGNED DEFAULT NULL,
+  `civil_status_name` varchar(100) DEFAULT NULL,
+  `dependents` int(11) DEFAULT 0,
+  `nationality_id` int(10) UNSIGNED DEFAULT NULL,
+  `nationality_name` varchar(100) DEFAULT NULL,
+  `gender_id` int(10) UNSIGNED DEFAULT NULL,
+  `gender_name` varchar(100) DEFAULT NULL,
+  `religion_id` int(10) UNSIGNED DEFAULT NULL,
+  `religion_name` varchar(100) DEFAULT NULL,
+  `blood_type_id` int(10) UNSIGNED DEFAULT NULL,
+  `blood_type_name` varchar(100) DEFAULT NULL,
+  `birthday` date DEFAULT NULL,
+  `place_of_birth` varchar(1000) DEFAULT NULL,
+  `home_work_distance` double DEFAULT 0,
+  `height` float DEFAULT NULL,
+  `weight` float DEFAULT NULL,
+  `employment_status` varchar(50) DEFAULT 'Active',
+  `company_id` int(10) UNSIGNED DEFAULT NULL,
+  `company_name` varchar(100) DEFAULT NULL,
+  `department_id` int(10) UNSIGNED DEFAULT NULL,
+  `department_name` varchar(100) DEFAULT NULL,
+  `job_position_id` int(10) UNSIGNED DEFAULT NULL,
+  `job_position_name` varchar(100) DEFAULT NULL,
+  `work_phone` varchar(20) DEFAULT NULL,
+  `work_telephone` varchar(20) DEFAULT NULL,
+  `work_email` varchar(255) DEFAULT NULL,
+  `manager_id` int(10) UNSIGNED DEFAULT NULL,
+  `manager_name` varchar(1000) DEFAULT NULL,
+  `work_location_id` int(10) UNSIGNED DEFAULT NULL,
+  `work_location_name` varchar(100) DEFAULT NULL,
+  `employment_type_id` int(10) UNSIGNED DEFAULT NULL,
+  `employment_type_name` varchar(100) DEFAULT NULL,
+  `pin_code` varchar(100) DEFAULT NULL,
+  `badge_id` varchar(100) DEFAULT NULL,
+  `on_board_date` date DEFAULT NULL,
+  `off_board_date` date DEFAULT NULL,
+  `time_off_approver_id` int(10) UNSIGNED DEFAULT NULL,
+  `time_off_approver_name` varchar(300) DEFAULT NULL,
+  `departure_reason_id` int(10) UNSIGNED DEFAULT NULL,
+  `departure_reason_name` varchar(100) DEFAULT NULL,
+  `detailed_departure_reason` varchar(5000) DEFAULT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employee`
+--
+
+INSERT INTO `employee` (`employee_id`, `full_name`, `first_name`, `middle_name`, `last_name`, `suffix`, `nickname`, `private_address`, `private_address_city_id`, `private_address_city_name`, `private_address_state_id`, `private_address_state_name`, `private_address_country_id`, `private_address_country_name`, `private_phone`, `private_telephone`, `private_email`, `civil_status_id`, `civil_status_name`, `dependents`, `nationality_id`, `nationality_name`, `gender_id`, `gender_name`, `religion_id`, `religion_name`, `blood_type_id`, `blood_type_name`, `birthday`, `place_of_birth`, `home_work_distance`, `height`, `weight`, `employment_status`, `company_id`, `company_name`, `department_id`, `department_name`, `job_position_id`, `job_position_name`, `work_phone`, `work_telephone`, `work_email`, `manager_id`, `manager_name`, `work_location_id`, `work_location_name`, `employment_type_id`, `employment_type_name`, `pin_code`, `badge_id`, `on_board_date`, `off_board_date`, `time_off_approver_id`, `time_off_approver_name`, `departure_reason_id`, `departure_reason_name`, `detailed_departure_reason`, `created_date`, `last_log_by`) VALUES
+(1, 'asdasd  asdasdas ', 'asdasd', '', 'asdasdas', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-29 16:03:49', 2);
+
+--
+-- Triggers `employee`
+--
+DROP TRIGGER IF EXISTS `employee_trigger_insert`;
+DELIMITER $$
+CREATE TRIGGER `employee_trigger_insert` AFTER INSERT ON `employee` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Employee created.';
+
+    INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+    VALUES ('employee', NEW.employee_id, audit_log, NEW.last_log_by, NOW());
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `employee_trigger_update`;
+DELIMITER $$
+CREATE TRIGGER `employee_trigger_update` AFTER UPDATE ON `employee` FOR EACH ROW BEGIN
+    DECLARE audit_log TEXT DEFAULT 'Employee changed.<br/><br/>';
+
+    IF NEW.full_name <> OLD.full_name THEN
+        SET audit_log = CONCAT(audit_log, "Full Name: ", OLD.full_name, " -> ", NEW.full_name, "<br/>");
+    END IF;
+
+    IF NEW.first_name <> OLD.first_name THEN
+        SET audit_log = CONCAT(audit_log, "First Name: ", OLD.first_name, " -> ", NEW.first_name, "<br/>");
+    END IF;
+
+    IF NEW.middle_name <> OLD.middle_name THEN
+        SET audit_log = CONCAT(audit_log, "Middle Name: ", OLD.middle_name, " -> ", NEW.middle_name, "<br/>");
+    END IF;
+
+    IF NEW.last_name <> OLD.last_name THEN
+        SET audit_log = CONCAT(audit_log, "Last Name: ", OLD.last_name, " -> ", NEW.last_name, "<br/>");
+    END IF;
+
+    IF NEW.suffix <> OLD.suffix THEN
+        SET audit_log = CONCAT(audit_log, "Suffix: ", OLD.suffix, " -> ", NEW.suffix, "<br/>");
+    END IF;
+
+    IF NEW.nickname <> OLD.nickname THEN
+        SET audit_log = CONCAT(audit_log, "Nickname: ", OLD.nickname, " -> ", NEW.nickname, "<br/>");
+    END IF;
+
+    IF NEW.private_address <> OLD.private_address THEN
+        SET audit_log = CONCAT(audit_log, "Private Address: ", OLD.private_address, " -> ", NEW.private_address, "<br/>");
+    END IF;
+
+    IF NEW.private_address_city_name <> OLD.private_address_city_name THEN
+        SET audit_log = CONCAT(audit_log, "Private Address City: ", OLD.private_address_city_name, " -> ", NEW.private_address_city_name, "<br/>");
+    END IF;
+
+    IF NEW.private_address_state_name <> OLD.private_address_state_name THEN
+        SET audit_log = CONCAT(audit_log, "Private Address State: ", OLD.private_address_state_name, " -> ", NEW.private_address_state_name, "<br/>");
+    END IF;
+
+    IF NEW.private_address_country_name <> OLD.private_address_country_name THEN
+        SET audit_log = CONCAT(audit_log, "Private Address Country: ", OLD.private_address_country_name, " -> ", NEW.private_address_country_name, "<br/>");
+    END IF;
+
+    IF NEW.private_phone <> OLD.private_phone THEN
+        SET audit_log = CONCAT(audit_log, "Private Phone: ", OLD.private_phone, " -> ", NEW.private_phone, "<br/>");
+    END IF;
+
+    IF NEW.private_telephone <> OLD.private_telephone THEN
+        SET audit_log = CONCAT(audit_log, "Private Telephone: ", OLD.private_telephone, " -> ", NEW.private_telephone, "<br/>");
+    END IF;
+
+    IF NEW.private_email <> OLD.private_email THEN
+        SET audit_log = CONCAT(audit_log, "Private Email: ", OLD.private_email, " -> ", NEW.private_email, "<br/>");
+    END IF;
+
+    IF NEW.civil_status_name <> OLD.civil_status_name THEN
+        SET audit_log = CONCAT(audit_log, "Civil Status: ", OLD.civil_status_name, " -> ", NEW.civil_status_name, "<br/>");
+    END IF;
+
+    IF NEW.dependents <> OLD.dependents THEN
+        SET audit_log = CONCAT(audit_log, "Dependents: ", OLD.dependents, " -> ", NEW.dependents, "<br/>");
+    END IF;
+
+    IF NEW.nationality_name <> OLD.nationality_name THEN
+        SET audit_log = CONCAT(audit_log, "Nationality: ", OLD.nationality_name, " -> ", NEW.nationality_name, "<br/>");
+    END IF;
+
+    IF NEW.gender_name <> OLD.gender_name THEN
+        SET audit_log = CONCAT(audit_log, "Gender: ", OLD.gender_name, " -> ", NEW.gender_name, "<br/>");
+    END IF;
+
+    IF NEW.religion_name <> OLD.religion_name THEN
+        SET audit_log = CONCAT(audit_log, "Religion: ", OLD.religion_name, " -> ", NEW.religion_name, "<br/>");
+    END IF;
+
+    IF NEW.blood_type_name <> OLD.blood_type_name THEN
+        SET audit_log = CONCAT(audit_log, "Blood Type: ", OLD.blood_type_name, " -> ", NEW.blood_type_name, "<br/>");
+    END IF;
+
+    IF NEW.birthday <> OLD.birthday THEN
+        SET audit_log = CONCAT(audit_log, "Birthday: ", OLD.birthday, " -> ", NEW.birthday, "<br/>");
+    END IF;
+
+    IF NEW.place_of_birth <> OLD.place_of_birth THEN
+        SET audit_log = CONCAT(audit_log, "Place of Birth: ", OLD.place_of_birth, " -> ", NEW.place_of_birth, "<br/>");
+    END IF;
+
+    IF NEW.home_work_distance <> OLD.home_work_distance THEN
+        SET audit_log = CONCAT(audit_log, "Home-Work Distance: ", OLD.home_work_distance, " km -> ", NEW.home_work_distance, " km<br/>");
+    END IF;
+
+    IF NEW.height <> OLD.height THEN
+        SET audit_log = CONCAT(audit_log, "Height: ", OLD.height, " cm -> ", NEW.height, " cm<br/>");
+    END IF;
+
+    IF NEW.weight <> OLD.weight THEN
+        SET audit_log = CONCAT(audit_log, "Weight: ", OLD.weight, " kg -> ", NEW.weight, " kg<br/>");
+    END IF;
+
+    IF NEW.employment_status <> OLD.employment_status THEN
+        SET audit_log = CONCAT(audit_log, "Employment Status: ", OLD.employment_status, " -> ", NEW.employment_status, "<br/>");
+    END IF;
+
+    IF NEW.company_name <> OLD.company_name THEN
+        SET audit_log = CONCAT(audit_log, "Company: ", OLD.company_name, " -> ", NEW.company_name, "<br/>");
+    END IF;
+
+    IF NEW.department_name <> OLD.department_name THEN
+        SET audit_log = CONCAT(audit_log, "Department: ", OLD.department_name, " -> ", NEW.department_name, "<br/>");
+    END IF;
+
+    IF NEW.job_position_name <> OLD.job_position_name THEN
+        SET audit_log = CONCAT(audit_log, "Job Position: ", OLD.job_position_name, " -> ", NEW.job_position_name, "<br/>");
+    END IF;
+
+    IF NEW.work_phone <> OLD.work_phone THEN
+        SET audit_log = CONCAT(audit_log, "Work Phone: ", OLD.work_phone, " -> ", NEW.work_phone, "<br/>");
+    END IF;
+
+    IF NEW.work_telephone <> OLD.work_telephone THEN
+        SET audit_log = CONCAT(audit_log, "Work Telephone: ", OLD.work_telephone, " -> ", NEW.work_telephone, "<br/>");
+    END IF;
+
+    IF NEW.work_email <> OLD.work_email THEN
+        SET audit_log = CONCAT(audit_log, "Work Email: ", OLD.work_email, " -> ", NEW.work_email, "<br/>");
+    END IF;
+
+    IF NEW.manager_name <> OLD.manager_name THEN
+        SET audit_log = CONCAT(audit_log, "Manager: ", OLD.manager_name, " -> ", NEW.manager_name, "<br/>");
+    END IF;
+
+    IF NEW.work_location_name <> OLD.work_location_name THEN
+        SET audit_log = CONCAT(audit_log, "Work Location: ", OLD.work_location_name, " -> ", NEW.work_location_name, "<br/>");
+    END IF;
+
+    IF NEW.employment_type_name <> OLD.employment_type_name THEN
+        SET audit_log = CONCAT(audit_log, "Employment Type: ", OLD.employment_type_name, " -> ", NEW.employment_type_name, "<br/>");
+    END IF;
+
+    IF NEW.pin_code <> OLD.pin_code THEN
+        SET audit_log = CONCAT(audit_log, "Pin Code: ", OLD.pin_code, " -> ", NEW.pin_code, "<br/>");
+    END IF;
+
+    IF NEW.badge_id <> OLD.badge_id THEN
+        SET audit_log = CONCAT(audit_log, "Badge ID: ", OLD.badge_id, " -> ", NEW.badge_id, "<br/>");
+    END IF;
+
+    IF NEW.on_board_date <> OLD.on_board_date THEN
+        SET audit_log = CONCAT(audit_log, "On-Board Date: ", OLD.on_board_date, " -> ", NEW.on_board_date, "<br/>");
+    END IF;
+
+    IF NEW.off_board_date <> OLD.off_board_date THEN
+        SET audit_log = CONCAT(audit_log, "Off-Board Date: ", OLD.off_board_date, " -> ", NEW.off_board_date, "<br/>");
+    END IF;
+
+    IF NEW.time_off_approver_name <> OLD.time_off_approver_name THEN
+        SET audit_log = CONCAT(audit_log, "Time-Off Approver: ", OLD.time_off_approver_name, " -> ", NEW.time_off_approver_name, "<br/>");
+    END IF;
+
+    IF NEW.departure_reason_name <> OLD.departure_reason_name THEN
+        SET audit_log = CONCAT(audit_log, "Departure Reason: ", OLD.departure_reason_name, " -> ", NEW.departure_reason_name, "<br/>");
+    END IF;
+
+    IF NEW.detailed_departure_reason <> OLD.detailed_departure_reason THEN
+        SET audit_log = CONCAT(audit_log, "Detailed Departure Reason: ", OLD.detailed_departure_reason, " -> ", NEW.detailed_departure_reason, "<br/>");
+    END IF;
+    
+    IF audit_log <> 'Employee changed.<br/><br/>' THEN
+        INSERT INTO audit_log (table_name, reference_id, log, changed_by, changed_at) 
+        VALUES ('employee', NEW.employee_id, audit_log, NEW.last_log_by, NOW());
     END IF;
 END
 $$
@@ -6566,7 +6845,9 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (22, 2, 'Manila, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-21 14:08:58'),
 (23, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-24 13:26:06'),
 (24, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-24 17:44:11'),
-(25, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-25 11:44:20');
+(25, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-25 11:44:20'),
+(26, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-29 08:32:29'),
+(27, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-29 11:00:08');
 
 -- --------------------------------------------------------
 
@@ -7562,7 +7843,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-25 11:44:20', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'MYOQcjJ5EPGwBwwF9ry7pXNWjpDiRv%2F%2Ff3PP3yJvus4%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-29 11:00:08', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'l2p5JFbWtXnyVqvDAycj29IZHA2dGhVcysaaumJn8J8%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -7856,6 +8137,25 @@ ALTER TABLE `email_setting`
   ADD KEY `email_setting_index_email_setting_id` (`email_setting_id`);
 
 --
+-- Indexes for table `employee`
+--
+ALTER TABLE `employee`
+  ADD PRIMARY KEY (`employee_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `employee_index_employee_id` (`employee_id`),
+  ADD KEY `employee_index_department_id` (`department_id`),
+  ADD KEY `employee_index_job_position_id` (`job_position_id`),
+  ADD KEY `employee_index_work_location_id` (`work_location_id`),
+  ADD KEY `employee_index_employment_type_id` (`employment_type_id`),
+  ADD KEY `employee_index_private_address_city_id` (`private_address_city_id`),
+  ADD KEY `employee_index_private_address_state_id` (`private_address_state_id`),
+  ADD KEY `employee_index_private_address_country_id` (`private_address_country_id`),
+  ADD KEY `employee_index_civil_status_id` (`civil_status_id`),
+  ADD KEY `employee_index_nationality_id` (`nationality_id`),
+  ADD KEY `employee_index_badge_id` (`badge_id`),
+  ADD KEY `employee_index_employment_status` (`employment_status`);
+
+--
 -- Indexes for table `employment_location_type`
 --
 ALTER TABLE `employment_location_type`
@@ -8140,7 +8440,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=666;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=669;
 
 --
 -- AUTO_INCREMENT for table `bank`
@@ -8206,7 +8506,7 @@ ALTER TABLE `currency`
 -- AUTO_INCREMENT for table `department`
 --
 ALTER TABLE `department`
-  MODIFY `department_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `department_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `departure_reason`
@@ -8225,6 +8525,12 @@ ALTER TABLE `educational_stage`
 --
 ALTER TABLE `email_setting`
   MODIFY `email_setting_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `employee`
+--
+ALTER TABLE `employee`
+  MODIFY `employee_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `employment_location_type`
@@ -8278,7 +8584,7 @@ ALTER TABLE `language_proficiency`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -8516,6 +8822,12 @@ ALTER TABLE `educational_stage`
 --
 ALTER TABLE `email_setting`
   ADD CONSTRAINT `email_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `employee`
+--
+ALTER TABLE `employee`
+  ADD CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `employment_location_type`

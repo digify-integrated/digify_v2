@@ -2,95 +2,17 @@
     'use strict';
 
     $(function() {        
+        let offset = 0;
+        const limit = 8;
+        let isFetching = false
+
         //generateDropdownOptions('employee options');
 
         if($('#employee-table').length){
-            //employeeTable('#employee-table');
+            employeeTable('#employee-table');
         }
 
-        if($('#employee-card').length){
-            let offset = 0;
-            const limit = 8;
-            let isFetching = false
-
-            function employeeCards(clearExisting) {
-                if (isFetching) return;
-                isFetching = true;
-            
-                const type = 'employee cards';
-                const page_id = $('#page-id').val();
-                const page_link = document.getElementById('page-link').getAttribute('href');            
-            
-                var search_value = $('#datatable-search').val();
-                var filter_by_company = $('#company_filter').val();
-                var filter_by_department = $('#department_filter').val();
-                var filter_by_job_position = $('#job_position_filter').val();
-                var filter_by_employee_status = $('#employee_status_filter').val();
-                var filter_by_employment_type = $('#employment_type_filter').val();
-                var filter_by_gender = $('#gender_filter').val();
-                var filter_by_civil_status = $('#civil_status_filter').val();
-            
-                $.ajax({
-                    type: 'POST',
-                    url: 'components/employee/view/_employee_generation.php',
-                    dataType: 'json',
-                    data: {
-                        page_id: page_id,
-                        page_link: page_link,
-                        limit: limit,
-                        offset: offset,
-                        search_value: search_value,
-                        filter_by_company: filter_by_company,
-                        filter_by_department: filter_by_department,
-                        filter_by_job_position: filter_by_job_position,
-                        filter_by_employee_status: filter_by_employee_status,
-                        filter_by_employment_type: filter_by_employment_type,
-                        filter_by_gender: filter_by_gender,
-                        filter_by_civil_status: filter_by_civil_status,
-                        type: type
-                    },
-                    beforeSend: function() {
-                        if (clearExisting) {
-                            $('#employee-card').empty();
-                            offset = 0;
-                        }
-                    },
-                    success: function(response) {
-                        response.forEach(card => {
-                            $('#employee-card').append(card.EMPLOYEE_CARD);
-                        });
-            
-                        offset += limit;
-                        isFetching = false;
-                    },
-                    error: function(xhr, status, error) {
-                        var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
-                        if (xhr.responseText) {
-                            fullErrorMessage += `, Response: ${xhr.responseText}`;
-                        }
-                        console.error(fullErrorMessage);
-                        isFetching = false;
-                    }
-                });
-            }
-            
-            $(window).scroll(function() {
-                if ($(window).scrollTop() + $(window).height() == $(document).height()) {
-                    employeeCards(false);
-                }
-            });
-            
-            $('#datatable-search').on('keyup', function() {
-                offset = 0;
-                employeeCards(true);
-            });
-            
-            $(document).on('click','#apply-filter',function() {
-                offset = 0;
-                employeeCards(true);            
-                $('#filter-offcanvas').offcanvas('hide');
-            });
-        
+        if($('#employee-card').length){        
             employeeCards(true);
         }
 
@@ -170,6 +92,9 @@
         $('#datatable-search').on('keyup', function () {
             var table = $('#employee-table').DataTable();
             table.search(this.value).draw();
+
+            offset = 0;
+            employeeCards(true);
         });
 
         $('#datatable-length').on('change', function() {
@@ -179,6 +104,9 @@
         });
 
         $(document).on('click','#apply-filter',function() {
+            offset = 0;
+            employeeCards(true);
+
             employeeTable('#employee-table');
         });
 
@@ -187,6 +115,76 @@
             $('#manager_filter').val(null).trigger('change');
             
             employeeTable('#employee-table');
+
+            offset = 0;
+            employeeCards(true);
+        });
+
+        function employeeCards(clearExisting) {
+            if (isFetching) return;
+            isFetching = true;
+        
+            const type = 'employee cards';
+            const page_id = $('#page-id').val();
+            const page_link = document.getElementById('page-link').getAttribute('href');
+        
+            var search_value = $('#datatable-search').val();
+            var filter_by_company = $('#company_filter').val();
+            var filter_by_department = $('#department_filter').val();
+            var filter_by_job_position = $('#job_position_filter').val();
+            var filter_by_employee_status = $('#employee_status_filter').val();
+            var filter_by_work_location = $('#work_location_filter').val();
+            var filter_by_employment_type = $('#employment_type_filter').val();
+            var filter_by_gender = $('#gender_filter').val();
+
+            $.ajax({
+                type: 'POST',
+                url: 'apps/employee/employee/view/_employee_generation.php',
+                dataType: 'json',
+                data: {
+                    page_id: page_id,
+                    page_link: page_link,
+                    limit: limit,
+                    offset: offset,
+                    search_value: search_value,
+                    filter_by_company: filter_by_company,
+                    filter_by_department: filter_by_department,
+                    filter_by_job_position: filter_by_job_position,
+                    filter_by_employee_status: filter_by_employee_status,
+                    filter_by_work_location: filter_by_work_location,
+                    filter_by_employment_type: filter_by_employment_type,
+                    filter_by_gender: filter_by_gender,
+                    type: type
+                },
+                beforeSend: function() {
+                    if (clearExisting) {
+                        $('#employee-card').empty();
+                        offset = 0;
+                    }
+                },
+                success: function(response) {
+                    response.forEach(card => {
+                        $('#employee-card').append(card.EMPLOYEE_CARD);
+                    });
+        
+                    offset += limit;
+                    isFetching = false;
+                },
+                error: function(xhr, status, error) {
+                    var fullErrorMessage = `XHR status: ${status}, Error: ${error}`;
+                    if (xhr.responseText) {
+                        fullErrorMessage += `, Response: ${xhr.responseText}`;
+                    }
+                    console.error(fullErrorMessage);
+                    isFetching = false;
+                }
+            });
+        }
+        
+        $(window).scroll(function() {
+            if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+                employeeCards(false);
+            }
         });
     });
 })(jQuery);

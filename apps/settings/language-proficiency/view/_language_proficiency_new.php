@@ -1,9 +1,6 @@
 <div class="card">
     <div class="card-header d-flex align-items-center">
         <h5 class="card-title mb-0">Language Proficiency Details</h5>
-        <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-            
-        </div>
     </div>
     <div class="card-body">
         <form id="language-proficiency-form" method="post" action="#">

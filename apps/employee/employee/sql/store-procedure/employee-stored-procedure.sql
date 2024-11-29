@@ -14,16 +14,15 @@ END //
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 
-/* Save Stored Procedure */
+/* Insert Stored Procedure */
 
-DROP PROCEDURE IF EXISTS saveEmployee//
-CREATE PROCEDURE saveEmployee(
-    IN p_employee_id INT, 
-    IN p_employee_name VARCHAR(100), 
-    IN p_parent_employee_id INT, 
-    IN p_parent_employee_name VARCHAR(100), 
-    IN p_manager_id INT, 
-    IN p_manager_name VARCHAR(500), 
+DROP PROCEDURE IF EXISTS insertEmployee//
+CREATE PROCEDURE insertEmployee(
+    IN p_full_name VARCHAR(1000),
+    IN p_first_name VARCHAR(300),
+    IN p_middle_name VARCHAR(300),
+    IN p_last_name VARCHAR(300),
+    IN p_suffix VARCHAR(10),
     IN p_last_log_by INT, 
     OUT p_new_employee_id INT
 )
@@ -35,23 +34,10 @@ BEGIN
 
     START TRANSACTION;
 
-    IF p_employee_id IS NULL OR NOT EXISTS (SELECT 1 FROM employee WHERE employee_id = p_employee_id) THEN
-        INSERT INTO employee (employee_name, parent_employee_id, parent_employee_name, manager_id, manager_name, last_log_by) 
-        VALUES(p_employee_name, p_parent_employee_id, p_parent_employee_name, p_manager_id, p_manager_name, p_last_log_by);
+    INSERT INTO employee (full_name, first_name, middle_name, last_name, suffix, last_log_by) 
+    VALUES(p_full_name, p_first_name, p_middle_name, p_last_name, p_suffix, p_last_log_by);
         
-        SET p_new_employee_id = LAST_INSERT_ID();
-    ELSE
-        UPDATE employee
-        SET employee_name = p_employee_name,
-            parent_employee_id = p_parent_employee_id,
-            parent_employee_name = p_parent_employee_name,
-            manager_id = p_manager_id,
-            manager_name = p_manager_name,
-            last_log_by = p_last_log_by
-        WHERE employee_id = p_employee_id;
-
-        SET p_new_employee_id = p_employee_id;
-    END IF;
+    SET p_new_employee_id = LAST_INSERT_ID();
 
     COMMIT;
 END //

@@ -1,9 +1,6 @@
 <div class="card">
     <div class="card-header d-flex align-items-center">
         <h5 class="card-title mb-0">Job Position Details</h5>
-        <div class="card-actions cursor-pointer ms-auto d-flex button-group">
-            
-        </div>
     </div>
     <div class="card-body">
         <form id="job-position-form" method="post" action="#">

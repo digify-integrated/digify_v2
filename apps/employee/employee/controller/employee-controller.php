@@ -144,14 +144,14 @@ class EmployeeController {
         }
 
         $userID = $_SESSION['user_account_id'];
-        $employeeName = filter_input(INPUT_POST, 'employee_name', FILTER_SANITIZE_STRING);
-        $parentEmployeeID = filter_input(INPUT_POST, 'parent_employee_id', FILTER_VALIDATE_INT);
-        $managerID = filter_input(INPUT_POST, 'manager_id', FILTER_VALIDATE_INT);
+        $firstName = filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING);
+        $middleName = filter_input(INPUT_POST, 'middle_name', FILTER_SANITIZE_STRING);
+        $lastName = filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING);
+        $suffix = filter_input(INPUT_POST, 'suffix', FILTER_SANITIZE_STRING);
 
-        $parentEmployeeDetails = $this->employeeModel->getEmployee($parentEmployeeID);
-        $parentEmployeeName = $parentEmployeeDetails['employee_name'] ?? '';
+        $fullName = $firstName . ' ' . $middleName . ' ' . $lastName . ' ' . $suffix;
         
-        $employeeID = $this->employeeModel->saveEmployee(null, $employeeName, $parentEmployeeID, $parentEmployeeName, $managerID, '', $userID);
+        $employeeID = $this->employeeModel->insertEmployee($fullName, $firstName, $middleName, $lastName, $suffix, $userID);
     
         $response = [
             'success' => true,

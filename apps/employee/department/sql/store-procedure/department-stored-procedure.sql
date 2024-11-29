@@ -23,7 +23,7 @@ CREATE PROCEDURE saveDepartment(
     IN p_parent_department_id INT, 
     IN p_parent_department_name VARCHAR(100), 
     IN p_manager_id INT, 
-    IN p_manager_name VARCHAR(500), 
+    IN p_manager_name VARCHAR(1000), 
     IN p_last_log_by INT, 
     OUT p_new_department_id INT
 )

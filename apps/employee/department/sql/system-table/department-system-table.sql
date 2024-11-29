@@ -7,7 +7,7 @@ CREATE TABLE department (
     parent_department_id INT,
     parent_department_name VARCHAR(100),
     manager_id INT,
-    manager_name VARCHAR(100),
+    manager_name VARCHAR(1000),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_log_by INT UNSIGNED DEFAULT 1,
     FOREIGN KEY (last_log_by) REFERENCES user_account(user_account_id)
