@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 29, 2024 at 10:32 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: Dec 01, 2024 at 12:52 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -4846,7 +4846,10 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (665, 'work_location', 2, 'Work location created.', 2, '2024-11-28 15:47:21', '2024-11-28 15:47:21'),
 (666, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-25 11:44:20 -> 2024-11-29 08:32:29<br/>', 2, '2024-11-29 08:32:29', '2024-11-29 08:32:29'),
 (667, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-29 08:32:29 -> 2024-11-29 11:00:08<br/>', 2, '2024-11-29 11:00:08', '2024-11-29 11:00:08'),
-(668, 'employee', 1, 'Employee created.', 2, '2024-11-29 16:03:49', '2024-11-29 16:03:49');
+(668, 'employee', 1, 'Employee created.', 2, '2024-11-29 16:03:49', '2024-11-29 16:03:49'),
+(669, 'employee', 2, 'Employee created.', 2, '2024-11-30 17:14:35', '2024-11-30 17:14:35'),
+(670, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-29 11:00:08 -> 2024-12-01 08:50:31<br/>', 2, '2024-12-01 08:50:31', '2024-12-01 08:50:31'),
+(671, 'employee', 3, 'Employee created.', 2, '2024-12-01 18:22:05', '2024-12-01 18:22:05');
 
 -- --------------------------------------------------------
 
@@ -5899,7 +5902,9 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`employee_id`, `full_name`, `first_name`, `middle_name`, `last_name`, `suffix`, `nickname`, `private_address`, `private_address_city_id`, `private_address_city_name`, `private_address_state_id`, `private_address_state_name`, `private_address_country_id`, `private_address_country_name`, `private_phone`, `private_telephone`, `private_email`, `civil_status_id`, `civil_status_name`, `dependents`, `nationality_id`, `nationality_name`, `gender_id`, `gender_name`, `religion_id`, `religion_name`, `blood_type_id`, `blood_type_name`, `birthday`, `place_of_birth`, `home_work_distance`, `height`, `weight`, `employment_status`, `company_id`, `company_name`, `department_id`, `department_name`, `job_position_id`, `job_position_name`, `work_phone`, `work_telephone`, `work_email`, `manager_id`, `manager_name`, `work_location_id`, `work_location_name`, `employment_type_id`, `employment_type_name`, `pin_code`, `badge_id`, `on_board_date`, `off_board_date`, `time_off_approver_id`, `time_off_approver_name`, `departure_reason_id`, `departure_reason_name`, `detailed_departure_reason`, `created_date`, `last_log_by`) VALUES
-(1, 'asdasd  asdasdas ', 'asdasd', '', 'asdasdas', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-29 16:03:49', 2);
+(1, 'asdasd  asdasdas ', 'asdasd', '', 'asdasdas', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-29 16:03:49', 2),
+(2, 'Lawrence De Vera Agulto ', 'Lawrence', 'De Vera', 'Agulto', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-30 17:14:35', 2),
+(3, 'lawre  asd ', 'lawre', '', 'asd', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-12-01 18:22:05', 2);
 
 --
 -- Triggers `employee`
@@ -6847,7 +6852,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (24, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-24 17:44:11'),
 (25, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-25 11:44:20'),
 (26, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-29 08:32:29'),
-(27, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-29 11:00:08');
+(27, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-29 11:00:08'),
+(28, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-12-01 08:50:31');
 
 -- --------------------------------------------------------
 
@@ -7843,7 +7849,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-11-29 11:00:08', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'l2p5JFbWtXnyVqvDAycj29IZHA2dGhVcysaaumJn8J8%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-12-01 08:50:31', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'S8r4OahMvaTSxCnqsZY8yFinSvtBOoYVuIlBYFLACYQ%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -8440,7 +8446,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=669;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=672;
 
 --
 -- AUTO_INCREMENT for table `bank`
@@ -8530,7 +8536,7 @@ ALTER TABLE `email_setting`
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `employee_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `employee_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `employment_location_type`
@@ -8584,7 +8590,7 @@ ALTER TABLE `language_proficiency`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -8950,62 +8956,12 @@ ALTER TABLE `role`
   ADD CONSTRAINT `role_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
--- Constraints for table `role_permission`
---
-ALTER TABLE `role_permission`
-  ADD CONSTRAINT `role_permission_ibfk_1` FOREIGN KEY (`menu_item_id`) REFERENCES `menu_item` (`menu_item_id`),
-  ADD CONSTRAINT `role_permission_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
-  ADD CONSTRAINT `role_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
 -- Constraints for table `role_system_action_permission`
 --
 ALTER TABLE `role_system_action_permission`
   ADD CONSTRAINT `role_system_action_permission_ibfk_1` FOREIGN KEY (`system_action_id`) REFERENCES `system_action` (`system_action_id`),
   ADD CONSTRAINT `role_system_action_permission_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
   ADD CONSTRAINT `role_system_action_permission_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `role_user_account`
---
-ALTER TABLE `role_user_account`
-  ADD CONSTRAINT `role_user_account_ibfk_1` FOREIGN KEY (`user_account_id`) REFERENCES `user_account` (`user_account_id`),
-  ADD CONSTRAINT `role_user_account_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
-  ADD CONSTRAINT `role_user_account_ibfk_3` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `state`
---
-ALTER TABLE `state`
-  ADD CONSTRAINT `state_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`),
-  ADD CONSTRAINT `state_ibfk_2` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
-
---
--- Constraints for table `system_action`
---
-ALTER TABLE `system_action`
-  ADD CONSTRAINT `system_action_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `upload_setting`
---
-ALTER TABLE `upload_setting`
-  ADD CONSTRAINT `upload_setting_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `user_account`
---
-ALTER TABLE `user_account`
-  ADD CONSTRAINT `user_account_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
-
---
--- Constraints for table `work_location`
---
-ALTER TABLE `work_location`
-  ADD CONSTRAINT `work_location_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`),
-  ADD CONSTRAINT `work_location_ibfk_2` FOREIGN KEY (`city_id`) REFERENCES `city` (`city_id`),
-  ADD CONSTRAINT `work_location_ibfk_3` FOREIGN KEY (`state_id`) REFERENCES `state` (`state_id`),
-  ADD CONSTRAINT `work_location_ibfk_4` FOREIGN KEY (`country_id`) REFERENCES `country` (`country_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

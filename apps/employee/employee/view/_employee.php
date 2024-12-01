@@ -81,7 +81,7 @@
                                 <label class="form-label fs-6 fw-semibold" for="employment_type_filter">Employment Type:</label>
                                 <select id="employment_type_filter" name="employment_type_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
                             </div>
-                            <div class="mb-10">
+                            <div class="mb-0">
                                 <label class="form-label fs-6 fw-semibold" for="gender_filter">Gender:</label>
                                 <select id="gender_filter" name="gender_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
                             </div>

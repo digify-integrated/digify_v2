@@ -60,17 +60,11 @@
             $('.daterange-picker').val('');
         }
 
-        if ($('.single-date-picker').length) {
-            $('.single-date-picker').daterangepicker({
-                    singleDatePicker: true,
-                    showDropdowns: true,
-                    autoApply: true,
-                    minYear: 1901,
-                    maxYear: parseInt(moment().format("YYYY"),12)
-                }
-            );
-
-            $('.single-date-picker').val('');
+        if ($('.datepicker').length) {
+            $('.datepicker').flatpickr({
+                enableTime: false,
+                dateFormat: "M d, Y"
+            });
         }
 
         $(document).on('click','.datatable-checkbox-children',function() {
