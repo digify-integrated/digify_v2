@@ -66,16 +66,6 @@
                                         </span>
                                     </a>
                                 </div>
-                                <div class="menu-item px-3 my-0">
-                                    <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="system">
-                                        <span class="menu-icon" data-kt-element="icon">
-                                            <i class="ki-outline ki-screen fs-2"></i>
-                                        </span>
-                                        <span class="menu-title">
-                                            System
-                                        </span>
-                                    </a>
-                                </div>
                             </div>
                         </div>
                         <div class="menu-item px-5 my-1">

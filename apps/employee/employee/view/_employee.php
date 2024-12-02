@@ -59,31 +59,34 @@
                         <div class="px-7 py-5 mh-300px overflow-auto" data-kt-user-table-filter="form">
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="company_filter">Company:</label>
-                                <select id="company_filter" name="company_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                <select id="company_filter" name="company_filter" multiple="multiple" class="form-select" data-control="select2" data-allow-clear="false"></select>
                             </div>
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="department_filter">Department:</label>
-                                <select id="department_filter" name="department_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                <select id="department_filter" name="department_filter" multiple="multiple" class="form-select" data-control="select2" data-allow-clear="false"></select>
                             </div>
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="department_filter">Job Position:</label>
-                                <select id="job_position_filter" name="job_position_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                <select id="job_position_filter" name="job_position_filter" multiple="multiple" class="form-select" data-control="select2" data-allow-clear="false"></select>
                             </div>
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="employee_status_filter">Employee Status:</label>
-                                <select id="employee_status_filter" name="employee_status_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                <select id="employee_status_filter" name="employee_status_filter" multiple="multiple" class="form-select" data-control="select2" data-allow-clear="false">
+                                    <option value="Active">Active</option>
+                                    <option value="Archived">Archived</option>
+                                </select>
                             </div>
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="work_location_filter">Work Location:</label>
-                                <select id="work_location_filter" name="work_location_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                <select id="work_location_filter" name="work_location_filter" multiple="multiple" class="form-select" data-control="select2" data-allow-clear="false"></select>
                             </div>
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="employment_type_filter">Employment Type:</label>
-                                <select id="employment_type_filter" name="employment_type_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                <select id="employment_type_filter" name="employment_type_filter" multiple="multiple" class="form-select" data-control="select2" data-allow-clear="false"></select>
                             </div>
                             <div class="mb-0">
                                 <label class="form-label fs-6 fw-semibold" for="gender_filter">Gender:</label>
-                                <select id="gender_filter" name="gender_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                <select id="gender_filter" name="gender_filter" multiple="multiple" class="form-select" data-control="select2" data-allow-clear="false"></select>
                             </div>
                         </div>
                         <div class="px-7 py-5" data-kt-user-table-filter="form">                            
@@ -102,20 +105,7 @@
 <div class="tab-content">
     <div id="tab_card_view" class="tab-pane fade active show" role="tabpanel">
         <div class="row g-6 g-xl-9" id="employee-card">
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body d-flex flex-center flex-column pt-12 p-9">
-                        <div class="symbol symbol-65px symbol-circle mb-5">
-                            <img src="/metronic8/demo34/assets/media//avatars/300-2.jpg" alt="image">
-                            <div class="bg-success position-absolute border border-4 border-body h-15px w-15px rounded-circle translate-middle start-100 top-100 ms-n3 mt-n3"></div>
-                        </div>
-
-                        <a href="#" class="fs-4 text-gray-800 text-hover-primary fw-bold mb-0">Karina Clark</a>
-
-                        <div class="fw-semibold text-gray-500 mb-6">Art Director at Novica Co.</div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 

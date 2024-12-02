@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 01, 2024 at 12:52 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Dec 02, 2024 at 10:32 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -1390,6 +1390,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateDepartmentTable` (IN `p_fil
     END IF;
 
     IF p_filter_by_manager IS NOT NULL AND p_filter_by_manager <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+
         SET filter_conditions = CONCAT(filter_conditions, ' manager_id IN (', p_filter_by_manager, ')');
     END IF;
 
@@ -1444,6 +1448,94 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmailSettingTable` ()   BEG
 	SELECT email_setting_id, email_setting_name, email_setting_description
     FROM email_setting 
     ORDER BY email_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateEmployeeCard`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmployeeCard` (IN `p_search_value` TEXT, IN `p_filter_by_company` TEXT, IN `p_filter_by_department` TEXT, IN `p_filter_by_job_position` TEXT, IN `p_filter_by_employee_status` TEXT, IN `p_filter_by_work_location` TEXT, IN `p_filter_by_employment_type` TEXT, IN `p_filter_by_gender` TEXT, IN `p_limit` INT, IN `p_offset` INT)   BEGIN
+    DECLARE query TEXT;
+    DECLARE filter_conditions TEXT DEFAULT '';
+
+    SET query = 'SELECT employee_id, employee_image, full_name, department_name, job_position_name, employment_status
+                FROM employee WHERE 1';
+
+    IF p_search_value IS NOT NULL AND p_search_value <> '' THEN
+        SET query = CONCAT(query, ' AND (
+            first_name LIKE ? OR
+            middle_name LIKE ? OR
+            last_name LIKE ? OR
+            suffix LIKE ? OR
+            department_name LIKE ? OR
+            job_position_name LIKE ? OR
+            employment_status LIKE ?
+        )');
+    END IF;
+
+    IF p_filter_by_company IS NOT NULL AND p_filter_by_company <> '' THEN
+        SET filter_conditions = CONCAT(filter_conditions, ' company_id IN (', p_filter_by_company, ')');
+    END IF;
+
+    IF p_filter_by_department IS NOT NULL AND p_filter_by_department <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+
+        SET filter_conditions = CONCAT(filter_conditions, ' department_id IN (', p_filter_by_department, ')');
+    END IF;
+
+    IF p_filter_by_job_position IS NOT NULL AND p_filter_by_job_position <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+
+        SET filter_conditions = CONCAT(filter_conditions, ' job_position_id IN (', p_filter_by_job_position, ')');
+    END IF;
+
+    IF p_filter_by_employee_status IS NOT NULL AND p_filter_by_employee_status <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+
+        SET filter_conditions = CONCAT(filter_conditions, ' employment_status IN (', p_filter_by_employee_status, ')');
+    END IF;
+
+    IF p_filter_by_work_location IS NOT NULL AND p_filter_by_work_location <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+
+        SET filter_conditions = CONCAT(filter_conditions, ' work_location_id IN (', p_filter_by_work_location, ')');
+    END IF;
+
+    IF p_filter_by_employment_type IS NOT NULL AND p_filter_by_employment_type <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+
+        SET filter_conditions = CONCAT(filter_conditions, ' employment_type_id IN (', p_filter_by_employment_type, ')');
+    END IF;
+
+    IF p_filter_by_gender IS NOT NULL AND p_filter_by_gender <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+
+        SET filter_conditions = CONCAT(filter_conditions, ' gender_id IN (', p_filter_by_gender, ')');
+    END IF;
+
+    IF filter_conditions <> '' THEN
+        SET query = CONCAT(query, ' WHERE ', filter_conditions);
+    END IF;
+
+    SET query = CONCAT(query, ' ORDER BY full_name LIMIT ?, ?;');
+
+    PREPARE stmt FROM query;
+    IF p_search_value IS NOT NULL AND p_search_value <> '' THEN
+        EXECUTE stmt USING CONCAT("%", p_search_value, "%"), CONCAT("%", p_search_value, "%"), CONCAT("%", p_search_value, "%"), CONCAT("%", p_search_value, "%"), CONCAT("%", p_search_value, "%"), CONCAT("%", p_search_value, "%"), CONCAT("%", p_search_value, "%"), p_offset, p_limit;
+    ELSE
+        EXECUTE stmt USING p_offset, p_limit;
+    END IF;
+
+    DEALLOCATE PREPARE stmt;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateEmploymentLocationTypeOptions`$$
@@ -4849,7 +4941,9 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (668, 'employee', 1, 'Employee created.', 2, '2024-11-29 16:03:49', '2024-11-29 16:03:49'),
 (669, 'employee', 2, 'Employee created.', 2, '2024-11-30 17:14:35', '2024-11-30 17:14:35'),
 (670, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-29 11:00:08 -> 2024-12-01 08:50:31<br/>', 2, '2024-12-01 08:50:31', '2024-12-01 08:50:31'),
-(671, 'employee', 3, 'Employee created.', 2, '2024-12-01 18:22:05', '2024-12-01 18:22:05');
+(671, 'employee', 3, 'Employee created.', 2, '2024-12-01 18:22:05', '2024-12-01 18:22:05'),
+(672, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-01 08:50:31 -> 2024-12-02 13:43:52<br/>', 2, '2024-12-02 13:43:52', '2024-12-02 13:43:52'),
+(673, 'employee', 3, 'Employee changed.<br/><br/>Employment Status: Active -> Archived<br/>', 2, '2024-12-02 16:13:53', '2024-12-02 16:13:53');
 
 -- --------------------------------------------------------
 
@@ -5836,6 +5930,7 @@ DELIMITER ;
 DROP TABLE IF EXISTS `employee`;
 CREATE TABLE `employee` (
   `employee_id` int(10) UNSIGNED NOT NULL,
+  `employee_image` varchar(500) NOT NULL,
   `full_name` varchar(1000) NOT NULL,
   `first_name` varchar(300) NOT NULL,
   `middle_name` varchar(300) DEFAULT NULL,
@@ -5901,10 +5996,10 @@ CREATE TABLE `employee` (
 -- Dumping data for table `employee`
 --
 
-INSERT INTO `employee` (`employee_id`, `full_name`, `first_name`, `middle_name`, `last_name`, `suffix`, `nickname`, `private_address`, `private_address_city_id`, `private_address_city_name`, `private_address_state_id`, `private_address_state_name`, `private_address_country_id`, `private_address_country_name`, `private_phone`, `private_telephone`, `private_email`, `civil_status_id`, `civil_status_name`, `dependents`, `nationality_id`, `nationality_name`, `gender_id`, `gender_name`, `religion_id`, `religion_name`, `blood_type_id`, `blood_type_name`, `birthday`, `place_of_birth`, `home_work_distance`, `height`, `weight`, `employment_status`, `company_id`, `company_name`, `department_id`, `department_name`, `job_position_id`, `job_position_name`, `work_phone`, `work_telephone`, `work_email`, `manager_id`, `manager_name`, `work_location_id`, `work_location_name`, `employment_type_id`, `employment_type_name`, `pin_code`, `badge_id`, `on_board_date`, `off_board_date`, `time_off_approver_id`, `time_off_approver_name`, `departure_reason_id`, `departure_reason_name`, `detailed_departure_reason`, `created_date`, `last_log_by`) VALUES
-(1, 'asdasd  asdasdas ', 'asdasd', '', 'asdasdas', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-29 16:03:49', 2),
-(2, 'Lawrence De Vera Agulto ', 'Lawrence', 'De Vera', 'Agulto', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-30 17:14:35', 2),
-(3, 'lawre  asd ', 'lawre', '', 'asd', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-12-01 18:22:05', 2);
+INSERT INTO `employee` (`employee_id`, `employee_image`, `full_name`, `first_name`, `middle_name`, `last_name`, `suffix`, `nickname`, `private_address`, `private_address_city_id`, `private_address_city_name`, `private_address_state_id`, `private_address_state_name`, `private_address_country_id`, `private_address_country_name`, `private_phone`, `private_telephone`, `private_email`, `civil_status_id`, `civil_status_name`, `dependents`, `nationality_id`, `nationality_name`, `gender_id`, `gender_name`, `religion_id`, `religion_name`, `blood_type_id`, `blood_type_name`, `birthday`, `place_of_birth`, `home_work_distance`, `height`, `weight`, `employment_status`, `company_id`, `company_name`, `department_id`, `department_name`, `job_position_id`, `job_position_name`, `work_phone`, `work_telephone`, `work_email`, `manager_id`, `manager_name`, `work_location_id`, `work_location_name`, `employment_type_id`, `employment_type_name`, `pin_code`, `badge_id`, `on_board_date`, `off_board_date`, `time_off_approver_id`, `time_off_approver_name`, `departure_reason_id`, `departure_reason_name`, `detailed_departure_reason`, `created_date`, `last_log_by`) VALUES
+(1, '', 'asdasd  asdasdas ', 'asdasd', '', 'asdasdas', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-29 16:03:49', 2),
+(2, '', 'Lawrence De Vera Agulto ', 'Lawrence', 'De Vera', 'Agulto', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-30 17:14:35', 2),
+(3, '', 'lawre  asd ', 'lawre', '', 'asd', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Archived', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-12-01 18:22:05', 2);
 
 --
 -- Triggers `employee`
@@ -6853,7 +6948,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (25, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-11-25 11:44:20'),
 (26, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-29 08:32:29'),
 (27, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-29 11:00:08'),
-(28, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-12-01 08:50:31');
+(28, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-12-01 08:50:31'),
+(29, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-02 13:43:52');
 
 -- --------------------------------------------------------
 
@@ -7849,7 +7945,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-12-01 08:50:31', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'S8r4OahMvaTSxCnqsZY8yFinSvtBOoYVuIlBYFLACYQ%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-12-02 13:43:52', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'yYJkEW6tkyrj6G%2BYakvbVy1X15DgrCNg2DTsbJN%2BLIs%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -8446,7 +8542,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=672;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=674;
 
 --
 -- AUTO_INCREMENT for table `bank`
@@ -8590,7 +8686,7 @@ ALTER TABLE `language_proficiency`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `menu_group`

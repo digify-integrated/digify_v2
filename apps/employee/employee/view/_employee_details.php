@@ -1,52 +1,41 @@
+<div class="card mb-5 mb-xl-10">
+    <div class="card-body pt-9 pb-0">
+        <div class="d-flex flex-wrap flex-sm-nowrap">
+            <div class="me-7 mb-4">
+                <div class="symbol symbol-50px symbol-lg-75px symbol-fixed position-relative">
+                    <img src="./assets/images/default/default-avatar.jpg" alt="image">
+                    <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>
+                </div>
+            </div>
 
-<div class="d-flex flex-column flex-lg-row">
-    <div class="flex-column flex-lg-row-auto w-lg-250px w-xl-350px mb-10">
-        <div class="card mb-5 mb-xl-8">
-            <div class="card-body">
-                <div class="d-flex flex-center flex-column py-5">
-                    <div class="symbol symbol-100px symbol-circle mb-7">
-                        <img src="./assets/images/default/default-avatar.jpg" alt="image">
+            <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="text-gray-900 fs-2 fw-bold me-1">Max Smith</span>
+                        </div>
+
+                        <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
+                            <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
+                                <i class="ki-outline ki-profile-circle fs-4 me-1"></i> Developer
+                            </a>
+                            <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
+                                <i class="ki-outline ki-geolocation fs-4 me-1"></i> SF, Bay Area
+                            </a>
+                            <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary mb-2">
+                                <i class="ki-outline ki-sms fs-4"></i> max@kt.com
+                            </a>
+                        </div>
                     </div>
                     
-                    <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bold mb-3">
-                        Emma Smith
-                    </a>
-                        
-                    <div class="mb-9">
-                        <div class="badge badge-lg badge-light-primary d-inline">Administrator</div>
-                    </div>
-                </div>
-                <div class="d-flex flex-stack fs-4 py-3">
-                    <div class="fw-bold rotate">
-                        Employment Details
-                    </div>
-                </div>
-
-                <div class="separator"></div>
-
-                <div id="kt_user_view_details" class="collapse show">
-                    <div class="pb-5 fs-6">
-                        <div class="fw-bold mt-5">Account ID</div>
-                        <div class="text-gray-600">ID-45453423</div>
-                        
-                        <div class="fw-bold mt-5">Email</div>
-                        <div class="text-gray-600"><a href="#" class="text-gray-600 text-hover-primary">info@keenthemes.com</a></div>
-
-                        <div class="fw-bold mt-5">Address</div>
-                        <div class="text-gray-600">101 Collin Street, <br>Melbourne 3000 VIC<br>Australia</div>
-                            
-                        <div class="fw-bold mt-5">Language</div>
-                        <div class="text-gray-600">English</div>
-                            
-                        <div class="fw-bold mt-5">Last Login</div>
-                        <div class="text-gray-600">25 Oct 2024, 10:10 pm</div>
+                    <div class="d-flex my-4">
+                        <a href="#" class="btn btn-sm btn-primary me-3" data-bs-toggle="modal" data-bs-target="#kt_modal_offer_a_deal">Hire Me</a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="flex-lg-row-fluid ms-lg-15">
-        <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8" role="tablist">
+
+        <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
             <li class="nav-item" role="presentation">
                 <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#private-information-tab" aria-selected="false" role="tab" tabindex="-1">Private Information</a>
             </li>
@@ -57,7 +46,11 @@
                 <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab" href="#resume-tab" aria-selected="false" role="tab" tabindex="-1">Resume</a>
             </li>
         </ul>
-        <div class="tab-content" id="myTabContent">
+    </div>
+</div>
+
+
+<div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="private-information-tab" role="tabpanel">
                 <div class="card card-flush mb-6">
                     <div class="card-header border-0">
@@ -175,7 +168,7 @@
 
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class="card card-flush">
+                        <div class="card card-flush mb-6">
                             <div class="card-header border-0">
                                 <div class="card-title m-0">
                                     <h3 class="fw-bold m-0">Personal Contact</h3>
@@ -412,7 +405,7 @@
                 
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class="card card-flush">
+                        <div class="card card-flush mb-6">
                             <div class="card-header border-0">
                                 <div class="card-title m-0">
                                     <h3 class="fw-bold m-0">Work Contact</h3>
@@ -508,7 +501,5 @@
                 
             </div>
         </div>
-    </div>
-</div>
 
 <?php require_once('components/view/_log_notes_modal.php'); ?>
