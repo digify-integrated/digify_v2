@@ -44,6 +44,74 @@ END //
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 
+/* Update Stored Procedure */
+
+DROP PROCEDURE IF EXISTS updateEmployee//
+CREATE PROCEDURE updateEmployee(
+    IN p_employee_id INT,
+    IN p_full_name VARCHAR(1000),
+    IN p_first_name VARCHAR(300),
+    IN p_middle_name VARCHAR(300),
+    IN p_last_name VARCHAR(300),
+    IN p_suffix VARCHAR(10),
+    IN p_nickname VARCHAR(100),
+    IN p_private_address VARCHAR(500),
+    IN p_private_address_city_id INT,
+	IN p_private_address_city_name VARCHAR(100),
+	IN p_private_address_state_id INT,
+	IN p_private_address_state_name VARCHAR(100),
+	IN p_private_address_country_id INT,
+	IN p_private_address_country_name VARCHAR(100),
+    IN p_civil_status_id INT,
+    IN p_civil_status_name VARCHAR(100),
+    IN p_dependents INT,
+    IN p_religion_id INT,
+    IN p_religion_name VARCHAR(100),
+    IN p_blood_type_id INT,
+    IN p_blood_type_name VARCHAR(100),
+    IN p_height FLOAT,
+    IN p_weight FLOAT,
+    IN p_last_log_by INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET full_name = p_full_name,
+        first_name = p_first_name,
+        middle_name = p_middle_name,
+        last_name = p_last_name,
+        suffix = p_suffix,
+        nickname = p_nickname,
+        private_address = p_private_address,
+        private_address_city_id = p_private_address_city_id,
+        private_address_city_name = p_private_address_city_name,
+        private_address_state_id = p_private_address_state_id,
+        private_address_state_name = p_private_address_state_name,
+        private_address_country_id = p_private_address_country_id,
+        private_address_country_name = p_private_address_country_name,
+        civil_status_id = p_civil_status_id,
+        civil_status_name = p_civil_status_name,
+        dependents = p_dependents,
+        religion_id = p_religion_id,
+        religion_name = p_religion_name,
+        blood_type_id = p_blood_type_id,
+        blood_type_name = p_blood_type_name,
+        height = p_height,
+        weight = p_weight,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END //
+
+/* ----------------------------------------------------------------------------------------------------------------------------- */
+
 /* Delete Stored Procedure */
 
 DROP PROCEDURE IF EXISTS deleteEmployee//

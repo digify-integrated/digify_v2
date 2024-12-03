@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 02, 2024 at 10:32 AM
+-- Generation Time: Dec 03, 2024 at 10:38 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -3698,6 +3698,44 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmailNotificationTemplate` (I
     COMMIT;
 END$$
 
+DROP PROCEDURE IF EXISTS `updateEmployee`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployee` (IN `p_employee_id` INT, IN `p_full_name` VARCHAR(1000), IN `p_first_name` VARCHAR(300), IN `p_middle_name` VARCHAR(300), IN `p_last_name` VARCHAR(300), IN `p_suffix` VARCHAR(10), IN `p_nickname` VARCHAR(100), IN `p_private_address` VARCHAR(500), IN `p_private_address_city_id` INT, IN `p_private_address_city_name` VARCHAR(100), IN `p_private_address_state_id` INT, IN `p_private_address_state_name` VARCHAR(100), IN `p_private_address_country_id` INT, IN `p_private_address_country_name` VARCHAR(100), IN `p_civil_status_id` INT, IN `p_civil_status_name` VARCHAR(100), IN `p_dependents` INT, IN `p_religion_id` INT, IN `p_religion_name` VARCHAR(100), IN `p_blood_type_id` INT, IN `p_blood_type_name` VARCHAR(100), IN `p_height` FLOAT, IN `p_weight` FLOAT, IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET full_name = p_full_name,
+        first_name = p_first_name,
+        middle_name = p_middle_name,
+        last_name = p_last_name,
+        suffix = p_suffix,
+        nickname = p_nickname,
+        private_address = p_private_address,
+        private_address_city_id = p_private_address_city_id,
+        private_address_city_name = p_private_address_city_name,
+        private_address_state_id = p_private_address_state_id,
+        private_address_state_name = p_private_address_state_name,
+        private_address_country_id = p_private_address_country_id,
+        private_address_country_name = p_private_address_country_name,
+        civil_status_id = p_civil_status_id,
+        civil_status_name = p_civil_status_name,
+        dependents = p_dependents,
+        religion_id = p_religion_id,
+        religion_name = p_religion_name,
+        blood_type_id = p_blood_type_id,
+        blood_type_name = p_blood_type_name,
+        height = p_height,
+        weight = p_weight,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
 DROP PROCEDURE IF EXISTS `updateFailedOTPAttempts`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateFailedOTPAttempts` (IN `p_user_account_id` INT, IN `p_failed_otp_attempts` VARCHAR(255))   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -4943,7 +4981,11 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (670, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-11-29 11:00:08 -> 2024-12-01 08:50:31<br/>', 2, '2024-12-01 08:50:31', '2024-12-01 08:50:31'),
 (671, 'employee', 3, 'Employee created.', 2, '2024-12-01 18:22:05', '2024-12-01 18:22:05'),
 (672, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-01 08:50:31 -> 2024-12-02 13:43:52<br/>', 2, '2024-12-02 13:43:52', '2024-12-02 13:43:52'),
-(673, 'employee', 3, 'Employee changed.<br/><br/>Employment Status: Active -> Archived<br/>', 2, '2024-12-02 16:13:53', '2024-12-02 16:13:53');
+(673, 'employee', 3, 'Employee changed.<br/><br/>Employment Status: Active -> Archived<br/>', 2, '2024-12-02 16:13:53', '2024-12-02 16:13:53'),
+(674, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-02 13:43:52 -> 2024-12-03 08:41:50<br/>', 2, '2024-12-03 08:41:50', '2024-12-03 08:41:50'),
+(675, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-03 08:41:50 -> 2024-12-03 13:44:46<br/>', 2, '2024-12-03 13:44:46', '2024-12-03 13:44:46'),
+(676, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-03 13:44:46 -> 2024-12-03 13:54:19<br/>', 2, '2024-12-03 13:54:19', '2024-12-03 13:54:19'),
+(677, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-03 13:54:19 -> 2024-12-03 14:40:35<br/>', 2, '2024-12-03 14:40:35', '2024-12-03 14:40:35');
 
 -- --------------------------------------------------------
 
@@ -6949,7 +6991,11 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (26, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-29 08:32:29'),
 (27, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-11-29 11:00:08'),
 (28, 2, 'Tunasan, PH', 'Ok', 'Opera - Windows', '112.208.177.211', '2024-12-01 08:50:31'),
-(29, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-02 13:43:52');
+(29, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-02 13:43:52'),
+(30, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 08:41:50'),
+(31, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 13:44:46'),
+(32, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 13:54:19'),
+(33, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 14:40:35');
 
 -- --------------------------------------------------------
 
@@ -7945,7 +7991,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-12-02 13:43:52', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'yYJkEW6tkyrj6G%2BYakvbVy1X15DgrCNg2DTsbJN%2BLIs%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-12-03 14:40:35', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'u9ICbbTWo8x6IfW8tZKs1Q7YVLoUeIOrBa3BJP2eDBY%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -8542,7 +8588,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=674;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=678;
 
 --
 -- AUTO_INCREMENT for table `bank`
@@ -8686,7 +8732,7 @@ ALTER TABLE `language_proficiency`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `menu_group`

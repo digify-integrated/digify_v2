@@ -103,8 +103,8 @@ class EmployeeController {
                 case 'add employee':
                     $this->addEmployee();
                     break;
-                case 'update employee':
-                    $this->updateEmployee();
+                case 'update personal information':
+                    $this->updatePersonalInformation();
                     break;
                 case 'get employee details':
                     $this->getEmployeeDetails();
@@ -171,16 +171,26 @@ class EmployeeController {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
-    public function updateEmployee() {
+    public function updatePersonalInformation() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return;
         }
         
         $userID = $_SESSION['user_account_id'];
         $employeeID = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
-        $employeeName = filter_input(INPUT_POST, 'employee_name', FILTER_SANITIZE_STRING);
-        $parentEmployeeID = filter_input(INPUT_POST, 'parent_employee_id', FILTER_VALIDATE_INT);
-        $managerID = filter_input(INPUT_POST, 'manager_id', FILTER_VALIDATE_INT);
+        $firstName = filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING);
+        $middleName = filter_input(INPUT_POST, 'middle_name', FILTER_SANITIZE_STRING);
+        $lastName = filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING);
+        $suffix = filter_input(INPUT_POST, 'suffix', FILTER_SANITIZE_STRING);
+        $privateAddress = filter_input(INPUT_POST, 'private_address', FILTER_SANITIZE_STRING);
+        $privateAddressCityID = filter_input(INPUT_POST, 'private_address_city_id', FILTER_VALIDATE_INT);
+        $nickname = filter_input(INPUT_POST, 'nickname', FILTER_SANITIZE_STRING);
+        $civilStatusID = filter_input(INPUT_POST, 'civil_status_id', FILTER_VALIDATE_INT);
+        $dependents = filter_input(INPUT_POST, 'dependents', FILTER_VALIDATE_INT);
+        $religionID = filter_input(INPUT_POST, 'religion_id', FILTER_VALIDATE_INT);
+        $bloodTypeID = filter_input(INPUT_POST, 'blood_type_id', FILTER_VALIDATE_INT);
+        $height = filter_input(INPUT_POST, 'height', FILTER_SANITIZE_STRING);
+        $weight = filter_input(INPUT_POST, 'weight', FILTER_SANITIZE_STRING);
     
         $checkEmployeeExist = $this->employeeModel->checkEmployeeExist($employeeID);
         $total = $checkEmployeeExist['total'] ?? 0;
@@ -189,7 +199,7 @@ class EmployeeController {
             $response = [
                 'success' => false,
                 'notExist' => true,
-                'title' => 'Save Employee',
+                'title' => 'Save Personal Information',
                 'message' => 'The employee does not exist.',
                 'messageType' => 'error'
             ];
@@ -205,8 +215,8 @@ class EmployeeController {
             
         $response = [
             'success' => true,
-            'title' => 'Save Employee',
-            'message' => 'The employee has been saved successfully.',
+            'title' => 'Save Personal Information',
+            'message' => 'The personal information has been updated successfully.',
             'messageType' => 'success'
         ];
         

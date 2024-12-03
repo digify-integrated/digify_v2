@@ -2,12 +2,15 @@
     'use strict';
 
     $(function() {
-        //generateDropdownOptions('parent employee options');
+        generateDropdownOptions('city options');
+        generateDropdownOptions('civil status options');
+        generateDropdownOptions('religion options');
+        generateDropdownOptions('blood type options');
 
-        displayDetails('get employee details');
+        //displayDetails('get employee details');
 
-        if($('#employee-form').length){
-            employeeForm();
+        if($('#personal-details-form').length){
+            personalDetailsForm();
         }
 
         $(document).on('click','#delete-employee',function() {
@@ -65,6 +68,11 @@
             });
         });
 
+        $(document).on('click', '[data-toggle-section]', function () {
+            const section = $(this).data('toggle-section');
+            toggleSection(section);
+        });
+
         $(document).on('click','#log-notes-main',function() {
             const employee_id = $('#details-id').text();
 
@@ -73,28 +81,34 @@
     });
 })(jQuery);
 
-function employeeForm(){
-    $('#employee-form').validate({
+function personalDetailsForm(){
+    $('#personal-details-form').validate({
         rules: {
-            employee_name: {
+            first_name: {
                 required: true
             },
-            employee: {
+            last_name: {
                 required: true
             },
-            file_type_id: {
+            private_address: {
+                required: true
+            },
+            private_address_city_id: {
                 required: true
             }
         },
         messages: {
-            employee_name: {
-                required: 'Enter the display name'
+            first_name: {
+                required: 'Enter the first name'
             },
-            employee: {
-                required: 'Enter the employee'
+            last_name: {
+                required: 'Enter the last name'
             },
-            file_type_id: {
-                required: 'Select the file type'
+            private_address: {
+                required: 'Enter the address'
+            },
+            private_address_city_id: {
+                required: 'Choose the city'
             }
         },
         errorPlacement: function(error, element) {
@@ -113,7 +127,7 @@ function employeeForm(){
         submitHandler: function(form) {
             const employee_id = $('#details-id').text();
             const page_link = document.getElementById('page-link').getAttribute('href'); 
-            const transaction = 'update employee';
+            const transaction = 'update personal information';
           
             $.ajax({
                 type: 'POST',
@@ -121,7 +135,7 @@ function employeeForm(){
                 data: $(form).serialize() + '&transaction=' + transaction + '&employee_id=' + encodeURIComponent(employee_id),
                 dataType: 'json',
                 beforeSend: function() {
-                    disableFormSubmitButton('submit-data');
+                    disableFormSubmitButton('submit-personal-details');
                 },
                 success: function (response) {
                     if (response.success) {
@@ -145,7 +159,7 @@ function employeeForm(){
                     handleSystemError(xhr, status, error);
                 },
                 complete: function() {
-                    enableFormSubmitButton('submit-data');
+                    enableFormSubmitButton('submit-personal-details');
                     logNotesMain('employee', employee_id);
                 }
             });
@@ -203,19 +217,76 @@ function displayDetails(transaction){
 
 function generateDropdownOptions(type){
     switch (type) {
-        case 'parent employee options':
-            var employee_id = $('#details-id').text();
-            
+        case 'city options':
             $.ajax({
-                url: 'apps/employee/employee/view/_employee_generation.php',
+                url: 'apps/settings/city/view/_city_generation.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    type : type,
-                    employee_id : employee_id
+                    type : type
                 },
                 success: function(response) {
-                    $('#parent_employee_id').select2({
+                    $('#private_address_city_id').select2({
+                        data: response
+                    }).on('change', function (e) {
+                        $(this).valid()
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+        case 'civil status options':
+            $.ajax({
+                url: 'apps/settings/civil-status/view/_civil_status_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type
+                },
+                success: function(response) {
+                    $('#civil_status_id').select2({
+                        data: response
+                    }).on('change', function (e) {
+                        $(this).valid()
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+        case 'religion options':
+            $.ajax({
+                url: 'apps/settings/religion/view/_religion_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type
+                },
+                success: function(response) {
+                    $('#religion_id').select2({
+                        data: response
+                    }).on('change', function (e) {
+                        $(this).valid()
+                    });
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                }
+            });
+            break;
+        case 'blood type options':
+            $.ajax({
+                url: 'apps/settings/blood-type/view/_blood_type_generation.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    type : type
+                },
+                success: function(response) {
+                    $('#blood_type_id').select2({
                         data: response
                     }).on('change', function (e) {
                         $(this).valid()
@@ -227,4 +298,13 @@ function generateDropdownOptions(type){
             });
             break;
     }
+}
+
+function toggleSection(section) {
+    $(`#${section}_button`).toggleClass('d-none');
+    $(`#${section}`).toggleClass('d-none');
+    $(`#${section}_edit`).toggleClass('d-none');
+
+    const formName = section.replace(/^change_/, '').replace(/_/g, '-');
+    resetForm(`update-${formName}-form`);
 }
