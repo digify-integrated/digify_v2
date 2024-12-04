@@ -132,7 +132,7 @@ function religionForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('religion', religion_id);
+                    logNotes('religion', religion_id);
                 }
             });
         

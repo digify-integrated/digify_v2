@@ -169,7 +169,7 @@ function resetForm(form_id) {
     var form = document.getElementById(form_id);
 
     $(form).find('.select2').each(function() {
-        $(this).val('').trigger('change.select2');
+        $(this).val('').trigger('change');
     });
   
     form.querySelectorAll('.is-invalid').forEach(function(element) {

@@ -146,7 +146,7 @@ function departmentForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('department', department_id);
+                    logNotes('department', department_id);
                 }
             });
         

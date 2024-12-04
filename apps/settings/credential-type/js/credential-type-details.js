@@ -132,7 +132,7 @@ function credentialTypeForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('credential_type', credential_type_id);
+                    logNotes('credential_type', credential_type_id);
                 }
             });
         

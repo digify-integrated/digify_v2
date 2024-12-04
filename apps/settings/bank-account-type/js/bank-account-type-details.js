@@ -132,7 +132,7 @@ function bankAccountTypeForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('bank_account_type', bank_account_type_id);
+                    logNotes('bank_account_type', bank_account_type_id);
                 }
             });
         

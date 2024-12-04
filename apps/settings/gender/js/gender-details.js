@@ -132,7 +132,7 @@ function genderForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('gender', gender_id);
+                    logNotes('gender', gender_id);
                 }
             });
         

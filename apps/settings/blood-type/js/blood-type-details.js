@@ -132,7 +132,7 @@ function bloodTypeForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('blood_type', blood_type_id);
+                    logNotes('blood_type', blood_type_id);
                 }
             });
         

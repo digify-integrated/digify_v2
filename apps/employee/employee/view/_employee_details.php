@@ -14,10 +14,10 @@
                         ?>
                     </div>
 
-                    <span class="fs-3 text-gray-800 fw-bold mb-3" id="employee_name">Emma Smith</span>
+                    <span class="fs-3 text-gray-800 fw-bold mb-3" id="employee-name-summary"></span>
 
                     <div class="mb-0">
-                        <div class="badge badge-lg badge-light-primary d-inline">Data Center Staff</div>
+                        <div class="badge badge-lg badge-light-primary d-inline" id="job-position-summary"></div>
                     </div>
                 </div>
                 
@@ -40,32 +40,50 @@
 
                 <div id="employee_view_details" class="collapse show">
                     <div class="pb-5 fs-6">
-                        <div class="fw-bold mt-5">Nickname</div>
-                        <div class="text-gray-600" id="nickname-summary">--</div>
+                        <div class="personal-information-group d-none">
+                            <div class="fw-bold mt-5">Nickname</div>
+                            <div class="text-gray-600" id="nickname-summary">--</div>
+                        </div>
+
+                        <div class="personal-information-group d-none">
+                            <div class="fw-bold mt-5">Private Address</div>
+                            <div class="text-gray-600" id="private-address-summary">--</div>
+                        </div>
+
+                        <div class="personal-information-group d-none">
+                            <div class="fw-bold mt-5">Civil Status</div>
+                            <div class="text-gray-600" id="civil-status-summary">--</div>
+                        </div>
+
+                        <div class="personal-information-group d-none">
+                            <div class="fw-bold mt-5">Number of Dependents</div>
+                            <div class="text-gray-600" id="dependents-summary">--</div>
+                        </div>
+
+                        <div class="personal-information-group d-none">
+                            <div class="fw-bold mt-5">Religion</div>
+                            <div class="text-gray-600" id="religion-summary">--</div>
+                        </div>
+
+                        <div class="personal-information-group d-none">
+                            <div class="fw-bold mt-5">Blood Type</div>
+                            <div class="text-gray-600" id="blood-type-summary">--</div>
+                        </div>
                         
-                        <div class="fw-bold mt-5">Private Address</div>
-                        <div class="text-gray-600" id="private-address-summary">--</div>
-                        
-                        <div class="fw-bold mt-5">Home-Work Distance</div>
-                        <div class="text-gray-600" id="home-work-distance-summary">--</div>
-                        
-                        <div class="fw-bold mt-5">Civil Status</div>
-                        <div class="text-gray-600" id="civil-status-summary">--</div>
-                        
-                        <div class="fw-bold mt-5">Number of Dependents</div>
-                        <div class="text-gray-600" id="dependents-summary">--</div>
-                        
-                        <div class="fw-bold mt-5">Religion</div>
-                        <div class="text-gray-600" id="religion-summary">--</div>
-                        
-                        <div class="fw-bold mt-5">Blood Type</div>
-                        <div class="text-gray-600" id="blood-type-summary">--</div>
-                        
-                        <div class="fw-bold mt-5">Height</div>
-                        <div class="text-gray-600" id="height-summary">--</div>
-                        
-                        <div class="fw-bold mt-5">Weight</div>
-                        <div class="text-gray-600" id="weight-summary">--</div>
+                        <div class="personal-information-group d-none">
+                            <div class="fw-bold mt-5">Home-Work Distance</div>
+                            <div class="text-gray-600" id="home-work-distance-summary">--</div>
+                        </div>
+
+                        <div class="personal-information-group d-none">
+                            <div class="fw-bold mt-5">Height</div>
+                            <div class="text-gray-600" id="height-summary">--</div>
+                        </div>
+
+                        <div class="personal-information-group d-none">
+                            <div class="fw-bold mt-5">Weight</div>
+                            <div class="text-gray-600" id="weight-summary">--</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -86,7 +104,7 @@
                     </div>
                                         
                     <div id="change_pin_code_edit" class="flex-row-fluid d-none">
-                        <form id="update-pin-code-form">
+                        <form id="update-pin-code-form" method="post" action="#">
                             <div class="row mb-6">
                                 <div class="col-lg-12 mb-4 mb-lg-0">
                                     <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -121,7 +139,7 @@
                     </div>
                                         
                     <div id="change_badge_id_edit" class="flex-row-fluid d-none">
-                        <form id="update-badge-id-form">
+                        <form id="update-badge-id-form" method="post" action="#">
                             <div class="row mb-6">
                                 <div class="col-lg-12 mb-4 mb-lg-0">
                                     <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -347,7 +365,7 @@
                             </div>
                                         
                             <div id="change_private_email_edit" class="flex-row-fluid d-none">
-                                <form id="update-private-email-form">
+                                <form id="update-private-email-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -382,7 +400,7 @@
                             </div>
                                         
                             <div id="change_private_phone_edit" class="flex-row-fluid d-none">
-                                <form id="update-private-phone-form">
+                                <form id="update-private-phone-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -417,7 +435,7 @@
                             </div>
                                         
                             <div id="change_private_telephone_edit" class="flex-row-fluid d-none">
-                                <form id="update-private-telephone-form">
+                                <form id="update-private-telephone-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -460,7 +478,7 @@
                             </div>
                                         
                             <div id="change_nationality_edit" class="flex-row-fluid d-none">
-                                <form id="update-nationality-form">
+                                <form id="update-nationality-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -495,7 +513,7 @@
                             </div>
                                         
                             <div id="change_gender_edit" class="flex-row-fluid d-none">
-                                <form id="update-gender-form">
+                                <form id="update-gender-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -530,7 +548,7 @@
                             </div>
                                         
                             <div id="change_birthday_edit" class="flex-row-fluid d-none">
-                                <form id="update-birthday-form">
+                                <form id="update-birthday-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -565,7 +583,7 @@
                             </div>
                                         
                             <div id="change_place_of_birth_edit" class="flex-row-fluid d-none">
-                                <form id="update-place-of-birth-form">
+                                <form id="update-place-of-birth-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -763,7 +781,7 @@
                             </div>
                                                 
                             <div id="change_company_edit" class="flex-row-fluid d-none">
-                                <form id="update-company-form">
+                                <form id="update-company-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -798,7 +816,7 @@
                             </div>
                                                 
                             <div id="change_department_edit" class="flex-row-fluid d-none">
-                                <form id="update-department-form">
+                                <form id="update-department-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -833,7 +851,7 @@
                             </div>
                                                 
                             <div id="change_job_position_edit" class="flex-row-fluid d-none">
-                                <form id="update-job-position-form">
+                                <form id="update-job-position-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -868,7 +886,7 @@
                             </div>
                                                 
                             <div id="change_manager_edit" class="flex-row-fluid d-none">
-                                <form id="update-manager-form">
+                                <form id="update-manager-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -903,7 +921,7 @@
                             </div>
                                                 
                             <div id="change_time_off_approver_edit" class="flex-row-fluid d-none">
-                                <form id="update-time-off-approver-form">
+                                <form id="update-time-off-approver-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -938,7 +956,7 @@
                             </div>
                                                 
                             <div id="change_work_location_edit" class="flex-row-fluid d-none">
-                                <form id="update-work-location-form">
+                                <form id="update-work-location-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -973,7 +991,7 @@
                             </div>
                                                 
                             <div id="change_on_board_date_edit" class="flex-row-fluid d-none">
-                                <form id="update-on-board-date-form">
+                                <form id="update-on-board-date-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -1016,7 +1034,7 @@
                             </div>
                                         
                             <div id="change_work_email_edit" class="flex-row-fluid d-none">
-                                <form id="update-work-email-form">
+                                <form id="update-work-email-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -1051,7 +1069,7 @@
                             </div>
                                         
                             <div id="change_work_phone_edit" class="flex-row-fluid d-none">
-                                <form id="update-work-phone-form">
+                                <form id="update-work-phone-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -1086,7 +1104,7 @@
                             </div>
                                         
                             <div id="change_work_telephone_edit" class="flex-row-fluid d-none">
-                                <form id="update-work-telephone-form">
+                                <form id="update-work-telephone-form" method="post" action="#">
                                     <div class="row mb-6">
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
@@ -1299,6 +1317,20 @@
                             <div class="row">
                                 <div class="col-lg-12 fv-row fv-plugins-icon-container">
                                     <select id="blood_type_id" name="blood_type_id" class="form-select" data-control="select2" data-allow-clear="false"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="home_work_distance">Home-Work Distance</label>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <div class="input-group mb-5">
+                                        <input type="number" class="form-control" id="home_work_distance" name="home_work_distance" min="0" step="0.01">
+                                        <span class="input-group-text">km</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

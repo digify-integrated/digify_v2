@@ -174,7 +174,7 @@ function emailSettingForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('email_setting', email_setting_id);
+                    logNotes('email_setting', email_setting_id);
                 }
             });
         

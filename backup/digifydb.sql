@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 03, 2024 at 10:38 AM
+-- Generation Time: Dec 04, 2024 at 10:35 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -309,6 +309,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `checkEmailSettingExist` (IN `p_emai
 	SELECT COUNT(*) AS total
     FROM email_setting
     WHERE email_setting_id = p_email_setting_id;
+END$$
+
+DROP PROCEDURE IF EXISTS `checkEmployeeExist`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `checkEmployeeExist` (IN `p_employee_id` INT)   BEGIN
+	SELECT COUNT(*) AS total
+    FROM employee
+    WHERE employee_id = p_employee_id;
 END$$
 
 DROP PROCEDURE IF EXISTS `checkEmploymentLocationTypeExist`$$
@@ -2184,6 +2191,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmailSetting` (IN `p_email_setti
 	WHERE email_setting_id = p_email_setting_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `getEmployee`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmployee` (IN `p_employee_id` INT)   BEGIN
+	SELECT * FROM employee
+	WHERE employee_id = p_employee_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `getEmploymentLocationType`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmploymentLocationType` (IN `p_employment_location_type_id` INT)   BEGIN
 	SELECT * FROM employment_location_type
@@ -3699,7 +3712,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmailNotificationTemplate` (I
 END$$
 
 DROP PROCEDURE IF EXISTS `updateEmployee`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployee` (IN `p_employee_id` INT, IN `p_full_name` VARCHAR(1000), IN `p_first_name` VARCHAR(300), IN `p_middle_name` VARCHAR(300), IN `p_last_name` VARCHAR(300), IN `p_suffix` VARCHAR(10), IN `p_nickname` VARCHAR(100), IN `p_private_address` VARCHAR(500), IN `p_private_address_city_id` INT, IN `p_private_address_city_name` VARCHAR(100), IN `p_private_address_state_id` INT, IN `p_private_address_state_name` VARCHAR(100), IN `p_private_address_country_id` INT, IN `p_private_address_country_name` VARCHAR(100), IN `p_civil_status_id` INT, IN `p_civil_status_name` VARCHAR(100), IN `p_dependents` INT, IN `p_religion_id` INT, IN `p_religion_name` VARCHAR(100), IN `p_blood_type_id` INT, IN `p_blood_type_name` VARCHAR(100), IN `p_height` FLOAT, IN `p_weight` FLOAT, IN `p_last_log_by` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployee` (IN `p_employee_id` INT, IN `p_full_name` VARCHAR(1000), IN `p_first_name` VARCHAR(300), IN `p_middle_name` VARCHAR(300), IN `p_last_name` VARCHAR(300), IN `p_suffix` VARCHAR(10), IN `p_nickname` VARCHAR(100), IN `p_private_address` VARCHAR(500), IN `p_private_address_city_id` INT, IN `p_private_address_city_name` VARCHAR(100), IN `p_private_address_state_id` INT, IN `p_private_address_state_name` VARCHAR(100), IN `p_private_address_country_id` INT, IN `p_private_address_country_name` VARCHAR(100), IN `p_civil_status_id` INT, IN `p_civil_status_name` VARCHAR(100), IN `p_dependents` INT, IN `p_religion_id` INT, IN `p_religion_name` VARCHAR(100), IN `p_blood_type_id` INT, IN `p_blood_type_name` VARCHAR(100), IN `p_home_work_distance` DOUBLE, IN `p_height` FLOAT, IN `p_weight` FLOAT, IN `p_last_log_by` INT)   BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
@@ -3728,8 +3741,164 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployee` (IN `p_employee_id`
         religion_name = p_religion_name,
         blood_type_id = p_blood_type_id,
         blood_type_name = p_blood_type_name,
+        home_work_distance = p_home_work_distance,
         height = p_height,
         weight = p_weight,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateEmployeeBadgeID`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployeeBadgeID` (IN `p_employee_id` INT, IN `p_badge_id` VARCHAR(100), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET badge_id = p_badge_id,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateEmployeeBirthday`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployeeBirthday` (IN `p_employee_id` INT, IN `p_birthday` DATE, IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET birthday = p_birthday,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateEmployeeGender`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployeeGender` (IN `p_employee_id` INT, IN `p_gender_id` INT, IN `p_gender_name` VARCHAR(100), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET gender_id = p_gender_id,
+        gender_name = p_gender_name,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateEmployeeNationality`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployeeNationality` (IN `p_employee_id` INT, IN `p_nationality_id` INT, IN `p_nationality_name` VARCHAR(100), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET nationality_id = p_nationality_id,
+        nationality_name = p_nationality_name,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateEmployeePINCode`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployeePINCode` (IN `p_employee_id` INT, IN `p_pin_code` VARCHAR(100), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET pin_code = p_pin_code,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateEmployeePlaceOfBirth`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployeePlaceOfBirth` (IN `p_employee_id` INT, IN `p_place_of_birth` VARCHAR(1000), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET place_of_birth = p_place_of_birth,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateEmployeePrivateEmail`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployeePrivateEmail` (IN `p_employee_id` INT, IN `p_private_email` VARCHAR(255), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET private_email = p_private_email,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateEmployeePrivatePhone`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployeePrivatePhone` (IN `p_employee_id` INT, IN `p_private_phone` VARCHAR(20), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET private_phone = p_private_phone,
+        last_log_by = p_last_log_by
+    WHERE employee_id = p_employee_id;
+
+    COMMIT;
+END$$
+
+DROP PROCEDURE IF EXISTS `updateEmployeePrivateTelephone`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateEmployeePrivateTelephone` (IN `p_employee_id` INT, IN `p_private_telephone` VARCHAR(20), IN `p_last_log_by` INT)   BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    UPDATE employee
+    SET private_telephone = p_private_telephone,
         last_log_by = p_last_log_by
     WHERE employee_id = p_employee_id;
 
@@ -4985,7 +5154,50 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (674, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-02 13:43:52 -> 2024-12-03 08:41:50<br/>', 2, '2024-12-03 08:41:50', '2024-12-03 08:41:50'),
 (675, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-03 08:41:50 -> 2024-12-03 13:44:46<br/>', 2, '2024-12-03 13:44:46', '2024-12-03 13:44:46'),
 (676, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-03 13:44:46 -> 2024-12-03 13:54:19<br/>', 2, '2024-12-03 13:54:19', '2024-12-03 13:54:19'),
-(677, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-03 13:54:19 -> 2024-12-03 14:40:35<br/>', 2, '2024-12-03 14:40:35', '2024-12-03 14:40:35');
+(677, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-03 13:54:19 -> 2024-12-03 14:40:35<br/>', 2, '2024-12-03 14:40:35', '2024-12-03 14:40:35'),
+(678, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-03 14:40:35 -> 2024-12-04 10:04:48<br/>', 2, '2024-12-04 10:04:48', '2024-12-04 10:04:48'),
+(679, 'employee', 2, 'Employee changed.<br/><br/>Religion:  -> Buddhism<br/>Blood Type:  -> AB+<br/>', 2, '2024-12-04 12:00:07', '2024-12-04 12:00:07'),
+(680, 'employee', 2, 'Employee changed.<br/><br/>Dependents: 0 -> 12<br/>Height: 0 cm -> 12 cm<br/>Weight: 0 kg -> 12 kg<br/>', 2, '2024-12-04 12:00:20', '2024-12-04 12:00:20'),
+(681, 'employee', 2, 'Employee changed.<br/><br/>Private Address City: test -> test2<br/>Civil Status: Divorced -> <br/>Religion: Buddhism -> Agnosticism<br/>Blood Type: AB+ -> B-<br/>', 2, '2024-12-04 12:02:16', '2024-12-04 12:02:16'),
+(682, 'employee', 2, 'Employee changed.<br/><br/>Private Address City: test2 -> test<br/>Religion: Agnosticism -> <br/>Blood Type: B- -> <br/>', 2, '2024-12-04 12:02:21', '2024-12-04 12:02:21'),
+(683, 'employee', 2, 'Employee changed.<br/><br/>Religion:  -> Christianity<br/>Blood Type:  -> AB+<br/>', 2, '2024-12-04 12:02:55', '2024-12-04 12:02:55'),
+(684, 'employee', 2, 'Employee changed.<br/><br/>Blood Type: AB+ -> B-<br/>', 2, '2024-12-04 12:04:48', '2024-12-04 12:04:48'),
+(685, 'employee', 2, 'Employee changed.<br/><br/>Religion: Christianity -> <br/>', 2, '2024-12-04 12:10:00', '2024-12-04 12:10:00'),
+(686, 'employee', 2, 'Employee changed.<br/><br/>Nickname:  -> Enzo<br/>Civil Status:  -> Married<br/>Religion:  -> Christianity<br/>', 2, '2024-12-04 12:14:24', '2024-12-04 12:14:24'),
+(687, 'employee', 2, 'Employee changed.<br/><br/>Full Name: Lawrence De Vera Agulto  -> Lawrence De Vera Agulto Jr.<br/>Suffix:  -> Jr.<br/>', 2, '2024-12-04 12:14:36', '2024-12-04 12:14:36'),
+(688, 'employee', 2, 'Employee changed.<br/><br/>Nickname: Enzo -> Enzos<br/>', 2, '2024-12-04 12:18:33', '2024-12-04 12:18:33'),
+(689, 'employee', 2, 'Employee changed.<br/><br/>Blood Type: B- -> AB+<br/>', 2, '2024-12-04 12:20:18', '2024-12-04 12:20:18'),
+(690, 'employee', 2, 'Employee changed.<br/><br/>Full Name: Lawrence De Vera Agulto Jr. -> Lawrence De Vera Agulto <br/>Suffix: Jr. -> <br/>', 2, '2024-12-04 12:21:01', '2024-12-04 12:21:01'),
+(691, 'employee', 2, 'Employee changed.<br/><br/>Home-Work Distance: 0 km -> 12 km<br/>', 2, '2024-12-04 12:30:05', '2024-12-04 12:30:05'),
+(692, 'employee', 2, 'Employee changed.<br/><br/>Pin Code: 12312 -> asd<br/>', 2, '2024-12-04 14:00:31', '2024-12-04 14:00:31'),
+(693, 'employee', 2, 'Employee changed.<br/><br/>Pin Code: asd -> asdasd<br/>', 2, '2024-12-04 14:03:48', '2024-12-04 14:03:48'),
+(694, 'employee', 2, 'Employee changed.<br/><br/>Pin Code: asdasd -> asd<br/>', 2, '2024-12-04 14:07:51', '2024-12-04 14:07:51'),
+(695, 'employee', 2, 'Employee changed.<br/><br/>Pin Code: asd -> asdasd<br/>', 2, '2024-12-04 14:08:30', '2024-12-04 14:08:30'),
+(696, 'employee', 2, 'Employee changed.<br/><br/>Pin Code: asdasd -> aasdasd<br/>', 2, '2024-12-04 14:11:52', '2024-12-04 14:11:52'),
+(697, 'employee', 2, 'Employee changed.<br/><br/>Pin Code: aasdasd -> asd<br/>', 2, '2024-12-04 14:11:58', '2024-12-04 14:11:58'),
+(698, 'employee', 2, 'Employee changed.<br/><br/>Pin Code: asd -> asdasdasd<br/>', 2, '2024-12-04 14:22:21', '2024-12-04 14:22:21'),
+(699, 'employee', 2, 'Employee changed.<br/><br/>Private Phone: 084189 -> asdasdasd<br/>', 2, '2024-12-04 15:19:47', '2024-12-04 15:19:47'),
+(700, 'employee', 2, 'Employee changed.<br/><br/>Private Telephone: asda -> asdasdasdasd<br/>', 2, '2024-12-04 15:27:51', '2024-12-04 15:27:51'),
+(701, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Japan -> Philippines<br/>', 2, '2024-12-04 16:25:59', '2024-12-04 16:25:59'),
+(702, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Philippines -> Japan<br/>', 2, '2024-12-04 16:29:10', '2024-12-04 16:29:10'),
+(703, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Japan -> Philippines<br/>', 2, '2024-12-04 16:29:26', '2024-12-04 16:29:26'),
+(704, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Philippines -> Japan<br/>', 2, '2024-12-04 16:30:53', '2024-12-04 16:30:53'),
+(705, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Japan -> Philippines<br/>', 2, '2024-12-04 16:30:57', '2024-12-04 16:30:57'),
+(706, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Philippines -> Japan<br/>', 2, '2024-12-04 16:31:55', '2024-12-04 16:31:55'),
+(707, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Japan -> Philippines<br/>', 2, '2024-12-04 16:32:00', '2024-12-04 16:32:00'),
+(708, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Philippines -> Japan<br/>', 2, '2024-12-04 16:33:24', '2024-12-04 16:33:24'),
+(709, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Japan -> Philippines<br/>', 2, '2024-12-04 16:36:13', '2024-12-04 16:36:13'),
+(710, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Philippines -> Japan<br/>', 2, '2024-12-04 16:38:40', '2024-12-04 16:38:40'),
+(711, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Japan -> Philippines<br/>', 2, '2024-12-04 16:38:45', '2024-12-04 16:38:45'),
+(712, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Philippines -> Japan<br/>', 2, '2024-12-04 16:40:07', '2024-12-04 16:40:07'),
+(713, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Japan -> Philippines<br/>', 2, '2024-12-04 16:40:09', '2024-12-04 16:40:09'),
+(714, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Philippines -> Japan<br/>', 2, '2024-12-04 16:40:18', '2024-12-04 16:40:18'),
+(715, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Japan -> Philippines<br/>', 2, '2024-12-04 16:45:09', '2024-12-04 16:45:09'),
+(716, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Philippines -> Japan<br/>', 2, '2024-12-04 16:48:16', '2024-12-04 16:48:16'),
+(717, 'employee', 2, 'Employee changed.<br/><br/>Nationality: Japan -> Philippines<br/>', 2, '2024-12-04 16:48:20', '2024-12-04 16:48:20'),
+(718, 'employee', 2, 'Employee changed.<br/><br/>Gender: Female -> Male<br/>', 2, '2024-12-04 17:01:30', '2024-12-04 17:01:30'),
+(719, 'employee', 2, 'Employee changed.<br/><br/>Birthday: 2024-12-26 -> 2024-12-27<br/>', 2, '2024-12-04 17:27:43', '2024-12-04 17:27:43'),
+(720, 'employee', 2, 'Employee changed.<br/><br/>Birthday: 2024-12-27 -> 2024-12-31<br/>', 2, '2024-12-04 17:27:47', '2024-12-04 17:27:47');
 
 -- --------------------------------------------------------
 
@@ -6040,7 +6252,7 @@ CREATE TABLE `employee` (
 
 INSERT INTO `employee` (`employee_id`, `employee_image`, `full_name`, `first_name`, `middle_name`, `last_name`, `suffix`, `nickname`, `private_address`, `private_address_city_id`, `private_address_city_name`, `private_address_state_id`, `private_address_state_name`, `private_address_country_id`, `private_address_country_name`, `private_phone`, `private_telephone`, `private_email`, `civil_status_id`, `civil_status_name`, `dependents`, `nationality_id`, `nationality_name`, `gender_id`, `gender_name`, `religion_id`, `religion_name`, `blood_type_id`, `blood_type_name`, `birthday`, `place_of_birth`, `home_work_distance`, `height`, `weight`, `employment_status`, `company_id`, `company_name`, `department_id`, `department_name`, `job_position_id`, `job_position_name`, `work_phone`, `work_telephone`, `work_email`, `manager_id`, `manager_name`, `work_location_id`, `work_location_name`, `employment_type_id`, `employment_type_name`, `pin_code`, `badge_id`, `on_board_date`, `off_board_date`, `time_off_approver_id`, `time_off_approver_name`, `departure_reason_id`, `departure_reason_name`, `detailed_departure_reason`, `created_date`, `last_log_by`) VALUES
 (1, '', 'asdasd  asdasdas ', 'asdasd', '', 'asdasdas', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-29 16:03:49', 2),
-(2, '', 'Lawrence De Vera Agulto ', 'Lawrence', 'De Vera', 'Agulto', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-30 17:14:35', 2),
+(2, '', 'Lawrence De Vera Agulto ', 'Lawrence', 'De Vera', 'Agulto', '', 'Enzos', '237 San Juan Accfa', 2, 'test', 4, 'Nueva Ecija', 4, 'Philippines', 'asdasdasd', 'asdasdasdasd', 'asdasd@gmail.com', 2, 'Married', 12, 4, 'Philippines', 1, 'Male', 1, 'Christianity', 5, 'AB+', '2024-12-31', NULL, 12, 12, 12, 'Active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'asdasdasd', 'asdasdasd', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-11-30 17:14:35', 2),
 (3, '', 'lawre  asd ', 'lawre', '', 'asd', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 'Archived', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2024-12-01 18:22:05', 2);
 
 --
@@ -6995,7 +7207,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (30, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 08:41:50'),
 (31, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 13:44:46'),
 (32, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 13:54:19'),
-(33, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 14:40:35');
+(33, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 14:40:35'),
+(34, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-04 10:04:48');
 
 -- --------------------------------------------------------
 
@@ -7991,7 +8204,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-12-03 14:40:35', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'u9ICbbTWo8x6IfW8tZKs1Q7YVLoUeIOrBa3BJP2eDBY%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-12-04 10:04:48', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'kqbe08zRx5QbHTnm%2BH2F1JJc5ZU8dwve1t0Wc6PKn4U%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -8588,7 +8801,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=678;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=721;
 
 --
 -- AUTO_INCREMENT for table `bank`
@@ -8732,7 +8945,7 @@ ALTER TABLE `language_proficiency`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `menu_group`

@@ -132,7 +132,7 @@ function employmentTypeForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('employment_type', employment_type_id);
+                    logNotes('employment_type', employment_type_id);
                 }
             });
         

@@ -132,7 +132,7 @@ function civilStatusForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('civil_status', civil_status_id);
+                    logNotes('civil_status', civil_status_id);
                 }
             });
         

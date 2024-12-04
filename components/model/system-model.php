@@ -84,8 +84,9 @@ class SystemModel {
                 return $systemDate;
             case 'empty':
             case 'attendance empty':
-            case 'summary':
                 return null;
+            case 'summary':
+                return '--';
             case 'na':
                 return 'N/A';
             case 'complete':

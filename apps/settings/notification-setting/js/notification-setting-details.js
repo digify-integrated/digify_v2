@@ -273,7 +273,7 @@ function notificationSettingForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('notification_setting', notification_setting_id);
+                    logNotes('notification_setting', notification_setting_id);
                 }
             });
         
