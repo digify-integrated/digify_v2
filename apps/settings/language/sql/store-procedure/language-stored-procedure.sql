@@ -102,4 +102,15 @@ BEGIN
     ORDER BY language_name;
 END //
 
+DROP PROCEDURE IF EXISTS generateEmployeeLanguageOptions//
+CREATE PROCEDURE generateEmployeeLanguageOptions(
+    IN p_employee_id INT
+)
+BEGIN
+	SELECT language_id, language_name 
+    FROM language
+    WHERE language_id NOT IN (SELECT language_id FROM employee_language WHERE employee_id = p_employee_id)
+    ORDER BY language_name;
+END //
+
 /* ----------------------------------------------------------------------------------------------------------------------------- */

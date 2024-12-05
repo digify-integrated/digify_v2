@@ -4,12 +4,15 @@ require('../../../../components/configurations/config.php');
 require('../../../../components/model/database-model.php');
 require('../../../../components/model/system-model.php');
 require('../../../../components/model/security-model.php');
+require('../../../settings/authentication/model/authentication-model.php');
 
 $databaseModel = new DatabaseModel();
 $systemModel = new SystemModel();
 $securityModel = new SecurityModel();
+$authenticationModel = new AuthenticationModel($databaseModel, $securityModel);
 
 if(isset($_POST['type']) && !empty($_POST['type'])){
+    $userID = $_SESSION['user_account_id'];
     $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
     $pageID = isset($_POST['page_id']) ? $_POST['page_id'] : null;
     $pageLink = isset($_POST['page_link']) ? $_POST['page_link'] : null;
@@ -105,6 +108,67 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
         # -------------------------------------------------------------
 
         # -------------------------------------------------------------
+        case 'language list':
+            if(isset($_POST['employee_id']) && !empty($_POST['employee_id'])){
+                $list = '';
+                $employeeID = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
+
+                $sql = $databaseModel->getConnection()->prepare('CALL generateEmployeeLanguageList(:employeeID)');
+                $sql->bindValue(':employeeID', $employeeID, PDO::PARAM_INT);
+                $sql->execute();
+                $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+                $sql->closeCursor();
+
+                $writeAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'write');
+
+                foreach ($options as $key => $row) {
+                    $employeeLanguageID = $row['employee_language_id'];
+                    $languageName = $row['language_name'];
+                    $languageProficiencyName = $row['language_proficiency_name'];
+
+                    $button = '';
+                    if($writeAccess['total'] > 0){
+                        $button = '<button type="button" class="btn btn-icon btn-active-light-primary w-30px h-30px ms-auto delete-employee-language" data-employee-language-id="' . $employeeLanguageID . '">
+                                        <i class="ki-outline ki-trash fs-3"></i>
+                                    </button>';
+                    }
+
+                    $list .= '<div class="d-flex flex-stack">
+                                    <div class="d-flex flex-column">
+                                        <span>'. $languageName .'</span>
+                                        <span class="text-muted fs-6">'. $languageProficiencyName .'</span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end align-items-center">
+                                        '. $button .'
+                                    </div>
+                                </div>';
+
+                    if ($row !== end($options)) {
+                        $list .= '<div class="separator separator-dashed my-5"></div>';
+                    }
+                }
+
+                if(empty($list)){
+                    $list = '<div class="d-flex flex-stack">
+                                    <div class="d-flex align-items-center flex-row-fluid flex-wrap mb-4">
+                                        <div class="flex-grow-1 me-2">
+                                            <div class="text-gray-800 fs-5 fw-bold">No language found</div>
+                                        </div>
+                                    </div>
+                                </div>';
+                }
+
+                $response[] = [
+                    'LANGUAGE_SUMMARY' => $list
+                ];
+
+                echo json_encode($response);
+            }
+        break;
+        # -------------------------------------------------------------
+
+        # -------------------------------------------------------------
         case 'parent employee options':
             $employeeID = (isset($_POST['employee_id'])) ? filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT) : null;
             $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;
@@ -125,7 +189,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $response[] = [
                     'id' => $row['employee_id'],
-                    'text' => $row['employee_name']
+                    'text' => $row['full_name']
                 ];
             }
 
@@ -152,7 +216,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $response[] = [
                     'id' => $row['employee_id'],
-                    'text' => $row['employee_name']
+                    'text' => $row['full_name']
                 ];
             }
 

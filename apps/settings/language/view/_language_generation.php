@@ -69,6 +69,35 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             echo json_encode($response);
         break;
         # -------------------------------------------------------------
+
+        # -------------------------------------------------------------
+        case 'employee language options':
+            $employeeID = (isset($_POST['employee_id'])) ? filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT) : null;
+            $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;
+
+            $sql = $databaseModel->getConnection()->prepare('CALL generateEmployeeLanguageOptions(:employeeID)');
+            $sql->bindValue(':employeeID', $employeeID, PDO::PARAM_INT);
+            $sql->execute();
+            $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+            $sql->closeCursor();
+
+            if(!$multiple){
+                $response[] = [
+                    'id' => '',
+                    'text' => '--'
+                ];
+            }            
+
+            foreach ($options as $row) {
+                $response[] = [
+                    'id' => $row['language_id'],
+                    'text' => $row['language_name']
+                ];
+            }
+
+            echo json_encode($response);
+        break;
+        # -------------------------------------------------------------
     }
 }
 

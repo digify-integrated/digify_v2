@@ -346,7 +346,6 @@ function rolePermissionTable(datatable_name) {
     const page_link = document.getElementById('page-link').getAttribute('href');
     const menu_item_id = $('#details-id').text();
 
-
     const columns = [ 
         { data: 'ROLE_NAME' },
         { data: 'READ_ACCESS' },

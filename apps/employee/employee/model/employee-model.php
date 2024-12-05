@@ -23,6 +23,17 @@ class EmployeeModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    public function checkEmployeeLanguageExist($p_employee_language_id) {
+        $stmt = $this->db->getConnection()->prepare('CALL checkEmployeeLanguageExist(:p_employee_language_id)');
+        $stmt->bindValue(':p_employee_language_id', $p_employee_language_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $result;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Insert methods
     # -------------------------------------------------------------
 
@@ -77,6 +88,17 @@ class EmployeeModel {
         $stmt->bindValue(':p_home_work_distance', $p_home_work_distance, PDO::PARAM_STR);
         $stmt->bindValue(':p_height', $p_height, PDO::PARAM_STR);
         $stmt->bindValue(':p_weight', $p_weight, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateEmployeeImage($p_employee_id, $p_employee_image, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeImage(:p_employee_id, :p_employee_image, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_employee_image', $p_employee_image, PDO::PARAM_STR);
         $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
         $stmt->execute();
         $stmt->closeCursor();
@@ -183,6 +205,141 @@ class EmployeeModel {
         $stmt->closeCursor();
     }
     # -------------------------------------------------------------
+    
+    # -------------------------------------------------------------
+    public function updateEmployeeCompany($p_employee_id, $p_company_id, $p_company_name, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeCompany(:p_employee_id, :p_company_id, :p_company_name, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_company_id', $p_company_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_company_name', $p_company_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+    
+    # -------------------------------------------------------------
+    public function updateEmployeeDepartment($p_employee_id, $p_department_id, $p_department_name, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeDepartment(:p_employee_id, :p_department_id, :p_department_name, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_department_id', $p_department_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_department_name', $p_department_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+    
+    # -------------------------------------------------------------
+    public function updateEmployeeJobPosition($p_employee_id, $p_job_position_id, $p_job_position_name, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeJobPosition(:p_employee_id, :p_job_position_id, :p_job_position_name, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_job_position_id', $p_job_position_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_job_position_name', $p_job_position_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+    
+    # -------------------------------------------------------------
+    public function updateEmployeeManager($p_employee_id, $p_manager_id, $p_manager_name, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeManager(:p_employee_id, :p_manager_id, :p_manager_name, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_manager_id', $p_manager_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_manager_name', $p_manager_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+    
+    # -------------------------------------------------------------
+    public function updateEmployeeTimeOffApprover($p_employee_id, $p_time_off_approver_id, $p_time_off_approver_name, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeTimeOffApprover(:p_employee_id, :p_time_off_approver_id, :p_time_off_approver_name, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_time_off_approver_id', $p_time_off_approver_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_time_off_approver_name', $p_time_off_approver_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+    
+    # -------------------------------------------------------------
+    public function updateEmployeeWorkLocation($p_employee_id, $p_work_location_id, $p_work_location_name, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeWorkLocation(:p_employee_id, :p_work_location_id, :p_work_location_name, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_work_location_id', $p_work_location_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_work_location_name', $p_work_location_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateEmployeeOnBoardDate($p_employee_id, $p_on_board_date, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeOnBoardDate(:p_employee_id, :p_on_board_date, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_on_board_date', $p_on_board_date, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateEmployeeWorkEmail($p_employee_id, $p_work_email, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeWorkEmail(:p_employee_id, :p_work_email, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_work_email', $p_work_email, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateEmployeeWorkPhone($p_employee_id, $p_work_phone, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeWorkPhone(:p_employee_id, :p_work_phone, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_work_phone', $p_work_phone, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function updateEmployeeWorkTelephone($p_employee_id, $p_work_telephone, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL updateEmployeeWorkTelephone(:p_employee_id, :p_work_telephone, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_work_telephone', $p_work_telephone, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    #   Save methods
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function saveEmployeeLanguage($p_employee_language_id, $p_employee_id, $p_language_id, $p_language_name, $p_language_proficiency_id, $p_language_proficiency_name, $p_last_log_by) {
+        $stmt = $this->db->getConnection()->prepare('CALL saveEmployeeLanguage(:p_employee_language_id, :p_employee_id, :p_language_id, :p_language_name, :p_language_proficiency_id, :p_language_proficiency_name, :p_last_log_by)');
+        $stmt->bindValue(':p_employee_language_id', $p_employee_language_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_language_id', $p_language_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_language_name', $p_language_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_language_proficiency_id', $p_language_proficiency_id, PDO::PARAM_INT);
+        $stmt->bindValue(':p_language_proficiency_name', $p_language_proficiency_name, PDO::PARAM_STR);
+        $stmt->bindValue(':p_last_log_by', $p_last_log_by, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
 
     # -------------------------------------------------------------
     #   Delete methods
@@ -198,6 +355,15 @@ class EmployeeModel {
     # -------------------------------------------------------------
 
     # -------------------------------------------------------------
+    public function deleteEmployeeLanguage($p_employee_language_id) {
+        $stmt = $this->db->getConnection()->prepare('CALL deleteEmployeeLanguage(:p_employee_language_id)');
+        $stmt->bindValue(':p_employee_language_id', $p_employee_language_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
     #   Get methods
     # -------------------------------------------------------------
 
@@ -205,6 +371,17 @@ class EmployeeModel {
     public function getEmployee($p_employee_id) {
         $stmt = $this->db->getConnection()->prepare('CALL getEmployee(:p_employee_id)');
         $stmt->bindValue(':p_employee_id', $p_employee_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $result;
+    }
+    # -------------------------------------------------------------
+
+    # -------------------------------------------------------------
+    public function getEmployeeLanguage($p_employee_language_id) {
+        $stmt = $this->db->getConnection()->prepare('CALL getEmployeeLanguage(:p_employee_language_id)');
+        $stmt->bindValue(':p_employee_language_id', $p_employee_language_id, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();

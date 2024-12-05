@@ -4,7 +4,7 @@
             <div class="card-body">
                 <div class="d-flex flex-center flex-column py-5">
                     <div class="image-input image-input-outline mb-7" data-kt-image-input="true">
-                        <div class="image-input-wrapper w-120px h-120px" id="app_thumbnail" style="background-image: url(./assets/images/default/default-avatar.jpg)"></div>
+                        <div class="image-input-wrapper w-120px h-120px" id="employee_image_thumbnail" style="background-image: url(./assets/images/default/default-avatar.jpg)"></div>
 
                         <?php
                             echo ($writeAccess['total'] > 0) ? '<label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" aria-label="Change employee image" data-bs-original-title="Change employee image" data-kt-initialized="1">
@@ -28,11 +28,11 @@
                     </div>
 
                     <?php
-                            echo ($writeAccess['total'] > 0) ? '<span data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-original-title="Edit employee details" data-kt-initialized="1">
-                                                                    <a href="javascript:void(0);" class="btn btn-sm btn-light-primary" id="update-personal-details-button" data-bs-toggle="modal" data-bs-target="#update_personal_details_modal">
-                                                                        Edit
-                                                                    </a>
-                                                                </span>' : '';
+                        echo ($writeAccess['total'] > 0) ? '<span data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-original-title="Edit employee details" data-kt-initialized="1">
+                                                                <a href="javascript:void(0);" class="btn btn-sm btn-light-primary" id="update-personal-details-button" data-bs-toggle="modal" data-bs-target="#update_personal_details_modal">
+                                                                    Edit
+                                                                </a>
+                                                            </span>' : '';
                     ?>
                 </div>
 
@@ -174,32 +174,15 @@
                 </div>
 
                 <div class="card-toolbar">
-                    <button type="button" class="btn btn-light-primary btn-sm">
-                        Add Language
-                    </button>
+                    <?php
+                        echo ($writeAccess['total'] > 0) ? '<button type="button" class="btn btn-light-primary btn-sm" id="add-language" data-bs-toggle="modal" data-bs-target="#employee_language_modal">
+                                                                Add Language
+                                                            </button>' : '';
+                    ?>
                 </div>
             </div>
             
-            <div class="card-body pb-5">
-                <div class="d-flex flex-stack">
-                    <div class="d-flex flex-column">
-                        <span>English</span>
-                        <span class="text-muted fs-6">Native</span>
-                    </div>
-
-                    <div class="d-flex justify-content-end align-items-center">
-                        <button type="button" class="btn btn-icon btn-active-light-primary w-30px h-30px ms-auto me-5" data-bs-toggle="modal" data-bs-target="#kt_modal_add_one_time_password">
-                            <i class="ki-outline ki-pencil fs-3"></i>
-                        </button>
-                        
-                        <button type="button" class="btn btn-icon btn-active-light-primary w-30px h-30px ms-auto" id="kt_users_delete_two_step">
-                            <i class="ki-outline ki-trash fs-3"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="separator separator-dashed my-5"></div>
-            </div>
+            <div class="card-body pb-5" id="language-summary"></div>
         </div>
     </div>
     
@@ -428,7 +411,7 @@
 
                         <div class="separator separator-dashed my-6"></div>
 
-                        <div class="d-flex flex-wrap align-items-center">
+                        <div class="d-flex flex-wrap align-items-center mb-6">
                             <div id="change_private_telephone">
                                 <div class="fs-6 fw-bold mb-1">Private Telephone</div>
                                 <div class="fw-semibold text-gray-600" id="private_telephone_summary"></div>
@@ -576,7 +559,7 @@
 
                         <div class="separator separator-dashed my-6"></div>
 
-                        <div class="d-flex flex-wrap align-items-center">
+                        <div class="d-flex flex-wrap align-items-center mb-6">
                             <div id="change_place_of_birth">
                                 <div class="fs-6 fw-bold mb-1">Place of Birth</div>
                                 <div class="fw-semibold text-gray-600" id="place_of_birth_summary"></div>
@@ -984,7 +967,7 @@
 
                         <div class="separator separator-dashed my-6"></div>
 
-                        <div class="d-flex flex-wrap align-items-center">
+                        <div class="d-flex flex-wrap align-items-center mb-6">
                             <div id="change_on_board_date">
                                 <div class="fs-6 fw-bold mb-1">On-Board Date</div>
                                 <div class="fw-semibold text-gray-600" id="on_board_date_summary"></div>
@@ -1039,7 +1022,7 @@
                                         <div class="col-lg-12 mb-4 mb-lg-0">
                                             <div class="fv-row mb-0 fv-plugins-icon-container">
                                                 <label for="work_email" class="form-label fs-6 fw-bold mb-3">Enter New Work Email</label>
-                                                <input type="text" class="form-control" maxlength="300" id="work_email" name="work_email" autocomplete="off" <?php echo $disabled; ?>>
+                                                <input type="email" class="form-control" maxlength="300" id="work_email" name="work_email" autocomplete="off" <?php echo $disabled; ?>>
                                             </div>
                                         </div>
                                     </div>
@@ -1097,7 +1080,7 @@
 
                         <div class="separator separator-dashed my-6"></div>
 
-                        <div class="d-flex flex-wrap align-items-center">
+                        <div class="d-flex flex-wrap align-items-center mb-6">
                             <div id="change_work_telephone">
                                 <div class="fs-6 fw-bold mb-1">Work Telephone</div>
                                 <div class="fw-semibold text-gray-600" id="work_telephone_summary"></div>
@@ -1350,7 +1333,7 @@
                         </div>
                     </div>
 
-                    <div class="row mb-6">
+                    <div class="row">
                         <label class="col-lg-4 col-form-label fw-semibold fs-6" for="weight">Weight</label>
                         <div class="col-lg-8">
                             <div class="row">
@@ -1374,5 +1357,49 @@
     </div>
 </div>
 
+<div id="employee_language_modal" class="modal fade" tabindex="-1" aria-labelledby="employee_language_modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Employee Language</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form id="employee-language-form" method="post" action="#">
+                    <input type="hidden" id="employee_language_id" name="employee_language_id">
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label required fw-semibold fs-6" for="language_id">Language</label>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <select id="language_id" name="language_id" class="form-select" data-control="select2" data-allow-clear="false"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-lg-4 col-form-label required fw-semibold fs-6" for="language_proficiency_id">Language Proficiency</label>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <select id="language_proficiency_id" name="language_proficiency_id" class="form-select" data-control="select2" data-allow-clear="false"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="employee-language-form" class="btn btn-primary" id="submit-employee-language">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <?php require_once('components/view/_log_notes_modal.php'); ?>
