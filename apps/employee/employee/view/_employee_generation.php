@@ -169,6 +169,96 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
         # -------------------------------------------------------------
 
         # -------------------------------------------------------------
+        case 'educational background list':
+            if(isset($_POST['employee_id']) && !empty($_POST['employee_id'])){
+                $list = '';
+                $employeeID = filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT);
+
+                $sql = $databaseModel->getConnection()->prepare('CALL generateEmployeeEducationalBackgroundList(:employeeID)');
+                $sql->bindValue(':employeeID', $employeeID, PDO::PARAM_INT);
+                $sql->execute();
+                $options = $sql->fetchAll(PDO::FETCH_ASSOC);
+                $sql->closeCursor();
+
+                $writeAccess = $authenticationModel->checkAccessRights($userID, $pageID, 'write');
+
+                foreach ($options as $key => $row) {
+                    $employeeEducationID = $row['employee_education_id'];
+                    $school = $row['school'];
+                    $degree = $row['degree'];
+                    $fieldOfStudy = $row['field_of_study'];
+                    $startMonth = $row['start_month'];
+                    $startYear = $row['start_year'];
+                    $endMonth = $row['end_month'];
+                    $endYear = $row['end_year'];
+                    $activitiesSocieties = $row['activities_societies'];
+                    $educationDescription = $row['education_description'];
+
+                    $degreeFieldOfStudy = (!empty($degree) || !empty($fieldOfStudy)) ?
+                    '<div class="fs-6 fw-semibold text-gray-600">' . trim($degree . (!empty($degree) && !empty($fieldOfStudy) ? ' · ' : '') . $fieldOfStudy) . '</div>' : '';
+
+                    $activitiesSocieties = !empty($activitiesSocieties) ? '<div class="fs-6 fw-semibold text-gray-600">Activities and societies: ' . $activitiesSocieties . '</div>' : '';
+                    $educationDescription = !empty($educationDescription) ? '<div class="fs-6 fw-semibold text-gray-600">' . $educationDescription . '</div>' : '';
+            
+                    $startDateFormatted = date('F', mktime(0, 0, 0, $startMonth, 1));
+                    $startDate = $startDateFormatted . ' ' . $startYear;                
+    
+                    $endDate = (!empty($endMonth) && !empty($endYear)) ? date('F', mktime(0, 0, 0, $endMonth, 1)) . ' ' . $endYear : 'Present';
+
+                    $button = '';
+                    if($writeAccess['total'] > 0){
+                        $button = '<button class="btn btn-sm btn-light btn-active-light-primary me-3" data-employee-education-id="' . $employeeEducationID . '">
+                                            <span class="indicator-label"> Delete</span>
+                                        </button>
+                                        <button class="btn btn-sm btn-light btn-active-light-primary" data-bs-toggle="modal" data-bs-target="#employee_education_modal" data-employee-education-id="' . $employeeEducationID . '">
+                                            Edit
+                                        </button>';
+                    }
+
+                    $list .= '<div class="col-xl-12">
+                                <div class="card card-dashed h-xl-100 flex-row flex-stack flex-wrap p-6">
+                                    <div class="d-flex flex-column py-2">
+                                        <div class="d-flex align-items-center fs-5 fw-bold mb-5">
+                                           '. $school .'
+                                        </div>
+                                        '. $degreeFieldOfStudy .'
+                                        <div class="fs-6 fw-semibold text-gray-600">'. $startDate .' - '. $endDate .'</div>
+                                        '. $activitiesSocieties .'
+                                        '. $educationDescription .'
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center py-2">
+                                        '. $button .'
+                                    </div>
+                                </div>
+                            </div>';
+                }
+
+                if($writeAccess['total'] > 0){
+                    $list .= ' <div class="col-xl-12">
+                                    <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed flex-stack h-xl-100 mb-10 p-6">
+                                        <div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
+                                            <div class="mb-3 mb-md-0 fw-semibold">
+                                                <h4 class="text-gray-900 fw-bold">Add New Educational Background for Employee</h4>
+                                                <div class="fs-6 text-gray-700 pe-7">Provide detailed information about the employee\'s educational background, including school, degree, and field of study.</div>
+                                            </div>
+                                            <a href="#" class="btn btn-primary px-6 align-self-center text-nowrap" data-bs-toggle="modal" data-bs-target="#employee_education_modal"> New Educational Background</a>
+                                        </div>
+                                    </div>
+                                </div>';
+
+                }
+
+                $response[] = [
+                    'EDUCATIONAL_BACKGROUND_SUMMARY' => $list
+                ];
+
+                echo json_encode($response);
+            }
+        break;
+        # -------------------------------------------------------------
+
+        # -------------------------------------------------------------
         case 'parent employee options':
             $employeeID = (isset($_POST['employee_id'])) ? filter_input(INPUT_POST, 'employee_id', FILTER_VALIDATE_INT) : null;
             $multiple = (isset($_POST['multiple'])) ? filter_input(INPUT_POST, 'multiple', FILTER_VALIDATE_INT) : false;

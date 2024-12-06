@@ -2,125 +2,81 @@
     'use strict';
 
     $(function() {
-        generateDropdownOptions('city options');
-        generateDropdownOptions('country options');
-        generateDropdownOptions('civil status options');
-        generateDropdownOptions('religion options');
-        generateDropdownOptions('blood type options');
-        generateDropdownOptions('gender options');
-        generateDropdownOptions('company options');
-        generateDropdownOptions('department options');
-        generateDropdownOptions('job position options');
-        generateDropdownOptions('parent employee options');
-        generateDropdownOptions('work location options');
-        generateDropdownOptions('employee language options');
-        generateDropdownOptions('language proficiency options');
-
-        displayDetails('get employee personal details');
-        displayDetails('get employee image details');
-        displayDetails('get employee pin code details');
-        displayDetails('get employee badge id details');
-        displayDetails('get employee private email details');
-        displayDetails('get employee private phone details');
-        displayDetails('get employee private telephone details');
-        displayDetails('get employee nationality details');
-        displayDetails('get employee gender details');
-        displayDetails('get employee birthday details');
-        displayDetails('get employee place of birth details');
-        displayDetails('get employee company details');
-        displayDetails('get employee department details');
-        displayDetails('get employee job position details');
-        displayDetails('get employee manager details');
-        displayDetails('get employee time-off approver details');
-        displayDetails('get employee work location details');
-        displayDetails('get employee on-board date details');
-        displayDetails('get employee work email details');
-        displayDetails('get employee work phone details');
-        displayDetails('get employee work telephone details');
-
-        if($('#personal-details-form').length){
-            personalDetailsForm();
-        }
-
-        if($('#update-pin-code-form').length){
-            updatePINCodeForm();
-        }
-
-        if($('#update-badge-id-form').length){
-            updateBadgeIDForm();
-        }
-
-        if($('#update-private-email-form').length){
-            updatePrivateEmailForm();
-        }
-
-        if($('#update-private-phone-form').length){
-            updatePrivatePhoneForm();
-        }
-
-        if($('#update-private-telephone-form').length){
-            updatePrivateTelephoneForm();
-        }
-
-        if($('#update-nationality-form').length){
-            updateNationalityForm();
-        }
-
-        if($('#update-gender-form').length){
-            updateGenderForm();
-        }
-
-        if($('#update-birthday-form').length){
-            updateBirthdayForm();
-        }
-
-        if($('#update-place-of-birth-form').length){
-            updatePlaceOfBirthForm();
-        }
+        const dropdownOptions = [
+            'city options',
+            'country options',
+            'civil status options',
+            'religion options',
+            'blood type options',
+            'gender options',
+            'company options',
+            'department options',
+            'job position options',
+            'parent employee options',
+            'work location options',
+            'employee language options',
+            'language proficiency options'
+        ];
         
-        if($('#update-company-form').length){
-            updateCompanyForm();
-        }
-        
-        if($('#update-department-form').length){
-            updateDepartmentForm();
-        }
-        
-        if($('#update-job-position-form').length){
-            updateJobPositionForm();
-        }
-        
-        if($('#update-manager-form').length){
-            updateManagerForm();
-        }
-        
-        if($('#update-time-off-approver-form').length){
-            updateTimeOffApproverForm();
-        }
-        
-        if($('#update-work-location-form').length){
-            updateWorkLocationForm();
-        }
-        
-        if($('#update-on-board-date-form').length){
-            updateOnBoardDateForm();
-        }
+        const detailOptions = [
+            'get employee personal details',
+            'get employee image details',
+            'get employee pin code details',
+            'get employee badge id details',
+            'get employee private email details',
+            'get employee private phone details',
+            'get employee private telephone details',
+            'get employee nationality details',
+            'get employee gender details',
+            'get employee birthday details',
+            'get employee place of birth details',
+            'get employee company details',
+            'get employee department details',
+            'get employee job position details',
+            'get employee manager details',
+            'get employee time-off approver details',
+            'get employee work location details',
+            'get employee on-board date details',
+            'get employee work email details',
+            'get employee work phone details',
+            'get employee work telephone details'
+        ];
 
-        if($('#update-work-email-form').length){
-            updateWorkEmailForm();
-        }
-
-        if($('#update-work-phone-form').length){
-            updateWorkPhoneForm();
-        }
-
-        if($('#update-work-telephone-form').length){
-            updateWorkTelephoneForm();
-        }
-
-        if($('#employee-language-form').length){
-            saveEmployeeLanguage();
-        }
+        const formFunctionMap = {
+            '#personal-details-form': personalDetailsForm,
+            '#update-pin-code-form': updatePINCodeForm,
+            '#update-badge-id-form': updateBadgeIDForm,
+            '#update-private-email-form': updatePrivateEmailForm,
+            '#update-private-phone-form': updatePrivatePhoneForm,
+            '#update-private-telephone-form': updatePrivateTelephoneForm,
+            '#update-nationality-form': updateNationalityForm,
+            '#update-gender-form': updateGenderForm,
+            '#update-birthday-form': updateBirthdayForm,
+            '#update-place-of-birth-form': updatePlaceOfBirthForm,
+            '#update-company-form': updateCompanyForm,
+            '#update-department-form': updateDepartmentForm,
+            '#update-job-position-form': updateJobPositionForm,
+            '#update-manager-form': updateManagerForm,
+            '#update-time-off-approver-form': updateTimeOffApproverForm,
+            '#update-work-location-form': updateWorkLocationForm,
+            '#update-on-board-date-form': updateOnBoardDateForm,
+            '#update-work-email-form': updateWorkEmailForm,
+            '#update-work-phone-form': updateWorkPhoneForm,
+            '#update-work-telephone-form': updateWorkTelephoneForm,
+            '#employee-language-form': saveEmployeeLanguage,
+            '#language-summary': languageSummary,
+            '#educational-background-summary': educationalBackgroundSummary
+        };
+        
+        dropdownOptions.forEach(option => generateDropdownOptions(option));
+        
+        detailOptions.forEach(detail => displayDetails(detail));
+        
+        Object.entries(formFunctionMap).forEach(([selector, func]) => {
+            if ($(selector).length) {
+                func();
+            }
+        });
 
         $(document).on('change','#employee_image',function() {
             if ($(this).val() !== '' && $(this)[0].files.length > 0) {
@@ -277,10 +233,6 @@
             });
         });
 
-        if($('#language-summary').length){
-            languageSummary();
-        }
-
         $(document).on('click', '[data-toggle-section]', function () {
             const section = $(this).data('toggle-section');
             toggleSection(section);
@@ -312,6 +264,28 @@ function languageSummary(){
         },
         success: function (result) {
             document.getElementById('language-summary').innerHTML = result[0].LANGUAGE_SUMMARY;
+        }
+    });
+}
+
+function educationalBackgroundSummary(){
+    const employee_id = $('#details-id').text();
+    const type = 'educational background list';
+    const page_id = $('#page-id').val();
+    const page_link = document.getElementById('page-link').getAttribute('href');
+
+    $.ajax({
+        type: 'POST',
+        url: 'apps/employee/employee/view/_employee_generation.php',
+        dataType: 'json',
+        data: { 
+            type : type, 
+            employee_id : employee_id,
+            page_id : page_id,
+            page_link : page_link
+        },
+        success: function (result) {
+            document.getElementById('educational-background-summary').innerHTML = result[0].EDUCATIONAL_BACKGROUND_SUMMARY;
         }
     });
 }
@@ -1873,6 +1847,91 @@ function saveEmployeeLanguage(){
     });
 }
 
+function saveEmployeeEducation(){
+    $('#employee-education-form').validate({
+        rules: {
+            school: {
+                required: true
+            },
+            start_month: {
+                required: true
+            },
+            start_year: {
+                required: true
+            },
+        },
+        messages: {
+            school: {
+                required: 'Choose the language'
+            },
+            start_month: {
+                required: 'Choose the language proficiency'
+            },
+            start_year: {
+                required: 'Choose the language proficiency'
+            }
+        },
+        errorPlacement: function(error, element) {
+            showNotification('Action Needed: Issue Detected', error, 'error', 2500);
+        },
+        highlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.addClass('is-invalid');
+        },
+        unhighlight: function(element) {
+            const $element = $(element);
+            const $target = $element.hasClass('select2-hidden-accessible') ? $element.next().find('.select2-selection') : $element;
+            $target.removeClass('is-invalid');
+        },
+        submitHandler: function(form) {
+            const employee_id = $('#details-id').text();
+            const page_link = document.getElementById('page-link').getAttribute('href'); 
+            const transaction = 'save employee language';
+          
+            $.ajax({
+                type: 'POST',
+                url: 'apps/employee/employee/controller/employee-controller.php',
+                data: $(form).serialize() + '&transaction=' + transaction + '&employee_id=' + encodeURIComponent(employee_id),
+                dataType: 'json',
+                beforeSend: function() {
+                    disableFormSubmitButton('submit-employee-language');
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showNotification(response.title, response.message, response.messageType);
+
+                        $('#employee_language_modal').modal('hide');
+                        languageSummary();
+                        generateDropdownOptions('employee language options');
+                    }
+                    else {
+                        if (response.isInactive || response.userNotExist || response.userInactive || response.userLocked || response.sessionExpired) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = 'logout.php?logout';
+                        }
+                        else if (response.notExist) {
+                            setNotification(response.title, response.message, response.messageType);
+                            window.location = page_link;
+                        }
+                        else {
+                            showNotification(response.title, response.message, response.messageType);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    handleSystemError(xhr, status, error);
+                },
+                complete: function() {
+                    enableFormSubmitButton('submit-employee-language');
+                }
+            });
+        
+            return false;
+        }
+    });
+}
+
 function displayDetails(transaction){
     switch (transaction) {
         case 'get employee personal details':
@@ -3008,15 +3067,15 @@ function viewPersonalInformationSummary(response) {
     };
 
     for (const key in summaries) {
-        if (response[key] !== null && response[key] !== undefined && String(response[key]).trim() !== "") {
+        if (response[key] !== null && response[key] !== undefined && String(response[key]).trim() !== '') {
             let value = response[key];
 
-            if (key === "homeWorkDistance") {
-                value += " km";
-            } else if (key === "height") {
-                value += " cm";
-            } else if (key === "weight") {
-                value += " kg";
+            if (key === 'homeWorkDistance') {
+                value += ' km';
+            } else if (key === 'height') {
+                value += ' cm';
+            } else if (key === 'weight') {
+                value += ' kg';
             }
 
             $(summaries[key]).text(value);

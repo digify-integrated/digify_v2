@@ -201,7 +201,6 @@
             </li>
             
             <li class="nav-item ms-auto">
-                <!--begin::Action menu-->
                 <a href="#" class="btn btn-primary ps-7" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
                     Actions
                     <i class="ki-outline ki-down fs-2 me-0"></i>
@@ -602,46 +601,7 @@
                     </div>
                     
                     <div class="card-body">
-                        <div class="row gx-9 gy-6">
-                            <div class="col-xl-12" data-kt-billing-element="address">
-                                <div class="card card-dashed h-xl-100 flex-row flex-stack flex-wrap p-6">
-                                    <div class="d-flex flex-column py-2">
-                                        <div class="d-flex align-items-center fs-5 fw-bold mb-5">
-                                            Address 1
-                                        </div>
-
-                                        <div class="fs-6 fw-semibold text-gray-600">
-                                            Ap #285-7193 Ullamcorper Avenue<br />
-                                            Amesbury HI 93373<br />
-                                            US
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="d-flex align-items-center py-2">
-                                        <button class="btn btn-sm btn-light btn-active-light-primary me-3" data-kt-billing-action="address-delete">
-                                            <span class="indicator-label"> Delete</span>
-                                            
-                                            <span class="indicator-progress"> Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span> </span>
-                                        </button>
-                                        <button class="btn btn-sm btn-light btn-active-light-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_new_address">Edit</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-xl-12">
-                                <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed flex-stack h-xl-100 mb-10 p-6">
-                                    <div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
-                                        <div class="mb-3 mb-md-0 fw-semibold">
-                                            <h4 class="text-gray-900 fw-bold">This is a very important note!</h4>
-
-                                            <div class="fs-6 text-gray-700 pe-7">Writing headlines for blog posts is much science and probably cool audience</div>
-                                        </div>
-                                        
-                                        <a href="#" class="btn btn-primary px-6 align-self-center text-nowrap" data-bs-toggle="modal" data-bs-target="#kt_modal_new_address"> New Educational Background</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="row gx-9 gy-6" id="educational-background-summary"></div>
                     </div>
                 </div>
 
@@ -1375,7 +1335,7 @@
                         <div class="col-lg-8">
                             <div class="row">
                                 <div class="col-lg-12 fv-row fv-plugins-icon-container">
-                                    <select id="language_id" name="language_id" class="form-select" data-control="select2" data-allow-clear="false"></select>
+                                    <select id="language_id" name="language_id" class="form-select" data-dropdown-parent="#employee_language_modal" data-control="select2" data-allow-clear="false"></select>
                                 </div>
                             </div>
                         </div>
@@ -1386,7 +1346,7 @@
                         <div class="col-lg-8">
                             <div class="row">
                                 <div class="col-lg-12 fv-row fv-plugins-icon-container">
-                                    <select id="language_proficiency_id" name="language_proficiency_id" class="form-select" data-control="select2" data-allow-clear="false"></select>
+                                    <select id="language_proficiency_id" name="language_proficiency_id" data-dropdown-parent="#employee_language_modal" class="form-select" data-control="select2" data-allow-clear="false"></select>
                                 </div>
                             </div>
                         </div>
@@ -1397,6 +1357,132 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                 <button type="submit" form="employee-language-form" class="btn btn-primary" id="submit-employee-language">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="employee_education_modal" class="modal fade" tabindex="-1" aria-labelledby="employee_education_modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Employee Educational Background</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <form id="employee-education-form" method="post" action="#">
+                    <input type="hidden" id="employee_education_id" name="employee_education_id">
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label required fw-semibold fs-6" for="school">School</label>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <input type="text" class="form-control mb-3 mb-lg-0" id="school" name="school" maxlength="100" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="degree">Degree</label>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <input type="text" class="form-control mb-3 mb-lg-0" id="degree" name="degree" maxlength="100" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="field_of_study">Field of Study</label>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <input type="text" class="form-control mb-3 mb-lg-0" id="field_of_study" name="field_of_study" maxlength="100" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label required fw-semibold fs-6" for="start_month">Start Date</label>
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <select id="start_month" name="start_month" class="form-select" data-dropdown-parent="#employee_education_modal" data-control="select2" data-allow-clear="false">
+                                        <option value="">--</option>
+                                        <?php echo $systemModel->generateMonthOptions(); ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <select id="start_year" name="start_year" class="form-select" data-dropdown-parent="#employee_education_modal" data-control="select2" data-allow-clear="false">
+                                        <option value="">--</option>
+                                        <?php echo $systemModel->generateYearOptions(date('Y', strtotime('-100 years')), date('Y')); ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="end_month">End Date (or expected)</label>
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <select id="end_month" name="end_month" class="form-select" data-dropdown-parent="#employee_education_modal" data-control="select2" data-allow-clear="false">
+                                        <option value="">--</option>
+                                        <?php echo $systemModel->generateMonthOptions(); ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <select id="end_year" name="end_year" class="form-select" data-dropdown-parent="#employee_education_modal" data-control="select2" data-allow-clear="false">
+                                        <option value="">--</option>
+                                        <?php echo $systemModel->generateYearOptions(date('Y', strtotime('-100 years')), date('Y')); ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="activities_societies">Activities and Societies</label>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <textarea class="form-control" id="activities_societies" name="activities_societies" maxlength="5000"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-6">
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" for="education_description">Description</label>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container">
+                                    <textarea class="form-control" id="education_description" name="education_description" maxlength="5000"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="employee-education-form" class="btn btn-primary" id="submit-employee-education">Save</button>
             </div>
         </div>
     </div>

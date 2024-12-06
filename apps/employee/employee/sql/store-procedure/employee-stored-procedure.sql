@@ -726,6 +726,23 @@ BEGIN
     ORDER BY language_name;
 END //
 
+DROP PROCEDURE IF EXISTS generateEmployeeEducationalBackgroundList//
+CREATE PROCEDURE generateEmployeeEducationalBackgroundList(
+    IN p_employee_id INT
+)
+BEGIN
+	SELECT employee_education_id, school, degree, field_of_study, start_month, start_year, end_month, end_year, activities_societies, education_description
+    FROM employee_education 
+    WHERE employee_id = p_employee_id
+    ORDER BY 
+    CASE 
+        WHEN end_year IS NULL AND end_month IS NULL THEN 1  -- Ongoing education first
+        ELSE 0
+    END,
+    COALESCE(end_year, start_year) DESC, 
+    COALESCE(end_month, start_month) DESC;
+END //
+
 DROP PROCEDURE IF EXISTS generateEmployeeOptions//
 CREATE PROCEDURE generateEmployeeOptions()
 BEGIN

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 05, 2024 at 10:33 AM
+-- Generation Time: Dec 06, 2024 at 10:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -1564,6 +1564,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmployeeCard` (IN `p_search
     END IF;
 
     DEALLOCATE PREPARE stmt;
+END$$
+
+DROP PROCEDURE IF EXISTS `generateEmployeeEducationalBackgroundList`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `generateEmployeeEducationalBackgroundList` (IN `p_employee_id` INT)   BEGIN
+	SELECT employee_education_id, school, degree, field_of_study, start_month, start_year, end_month, end_year, activities_societies, education_description
+    FROM employee_education 
+    WHERE employee_id = p_employee_id
+    ORDER BY 
+    CASE 
+        WHEN end_year IS NULL AND end_month IS NULL THEN 1  -- Ongoing education first
+        ELSE 0
+    END,
+    COALESCE(end_year, start_year) DESC, 
+    COALESCE(end_month, start_month) DESC;
 END$$
 
 DROP PROCEDURE IF EXISTS `generateEmployeeLanguageList`$$
@@ -5494,7 +5508,8 @@ INSERT INTO `audit_log` (`audit_log_id`, `table_name`, `reference_id`, `log`, `c
 (737, 'employee', 2, 'Employee changed.<br/><br/>Work Location: asd -> trest<br/>', 2, '2024-12-05 11:15:30', '2024-12-05 11:15:30'),
 (738, 'employee', 2, 'Employee changed.<br/><br/>On-Board Date: 2024-12-04 -> 2024-12-19<br/>', 2, '2024-12-05 11:28:41', '2024-12-05 11:28:41'),
 (739, 'employee', 2, 'Employee changed.<br/><br/>Work Email: asdas@gmail.com -> asdasd<br/>', 2, '2024-12-05 11:42:15', '2024-12-05 11:42:15'),
-(740, 'employee', 2, 'Employee changed.<br/><br/>Work Phone: asdasd -> asdad<br/>', 2, '2024-12-05 11:42:16', '2024-12-05 11:42:16');
+(740, 'employee', 2, 'Employee changed.<br/><br/>Work Phone: asdasd -> asdad<br/>', 2, '2024-12-05 11:42:16', '2024-12-05 11:42:16'),
+(741, 'user_account', 2, 'User account changed.<br/><br/>Last Connection Date: 2024-12-05 08:44:13 -> 2024-12-06 08:37:13<br/>', 2, '2024-12-06 08:37:13', '2024-12-06 08:37:13');
 
 -- --------------------------------------------------------
 
@@ -6754,6 +6769,29 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `employee_education`
+--
+
+DROP TABLE IF EXISTS `employee_education`;
+CREATE TABLE `employee_education` (
+  `employee_education_id` int(10) UNSIGNED NOT NULL,
+  `employee_id` int(10) UNSIGNED NOT NULL,
+  `school` varchar(100) NOT NULL,
+  `degree` varchar(100) DEFAULT NULL,
+  `field_of_study` varchar(100) DEFAULT NULL,
+  `start_month` varchar(20) DEFAULT NULL,
+  `start_year` varchar(20) DEFAULT NULL,
+  `end_month` varchar(20) DEFAULT NULL,
+  `end_year` varchar(20) DEFAULT NULL,
+  `activities_societies` varchar(5000) DEFAULT NULL,
+  `education_description` varchar(5000) DEFAULT NULL,
+  `created_date` datetime DEFAULT current_timestamp(),
+  `last_log_by` int(10) UNSIGNED DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `employee_language`
 --
 
@@ -6768,13 +6806,6 @@ CREATE TABLE `employee_language` (
   `created_date` datetime DEFAULT current_timestamp(),
   `last_log_by` int(10) UNSIGNED DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `employee_language`
---
-
-INSERT INTO `employee_language` (`employee_language_id`, `employee_id`, `language_id`, `language_name`, `language_proficiency_id`, `language_proficiency_name`, `created_date`, `last_log_by`) VALUES
-(5, 2, 125, 'Albanian', 3, 'Advanced', '2024-12-05 16:58:25', 2);
 
 -- --------------------------------------------------------
 
@@ -7541,7 +7572,8 @@ INSERT INTO `login_session` (`login_session_id`, `user_account_id`, `location`, 
 (32, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 13:54:19'),
 (33, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-03 14:40:35'),
 (34, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-04 10:04:48'),
-(35, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-05 08:44:13');
+(35, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-05 08:44:13'),
+(36, 2, 'Cabanatuan City, PH', 'Ok', 'Opera - Windows', '124.106.204.254', '2024-12-06 08:37:13');
 
 -- --------------------------------------------------------
 
@@ -8541,7 +8573,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`user_account_id`, `file_as`, `email`, `username`, `password`, `profile_picture`, `phone`, `locked`, `active`, `last_failed_login_attempt`, `failed_login_attempts`, `last_connection_date`, `password_expiry_date`, `reset_token`, `reset_token_expiry_date`, `receive_notification`, `two_factor_auth`, `otp`, `otp_expiry_date`, `failed_otp_attempts`, `last_password_change`, `account_lock_duration`, `last_password_reset`, `multiple_session`, `session_token`, `created_date`, `last_log_by`) VALUES
 (1, 'Digify Bot', 'digifybot@gmail.com', 'digifybot', 'Lu%2Be%2BRZfTv%2F3T0GR%2Fwes8QPJvE3Etx1p7tmryi74LNk%3D', NULL, NULL, 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'hgS2I4DCVvc958Llg2PKCHdKnnfSLJu1zrJUL4SG0NI%3D', NULL, NULL, NULL, 'aUIRg2jhRcYVcr0%2BiRDl98xjv81aR4Ux63bP%2BF2hQbE%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', NULL, NULL, NULL, NULL, NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', NULL, '2024-11-07 14:09:59', 2),
-(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-12-05 08:44:13', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'UGYnYHvCUzaqixOusrUtHDEZqg6Tv575Ua8RA%2FnIXow%3D', '2024-11-07 14:09:59', 2);
+(2, 'Administrator', 'lawrenceagulto.317@gmail.com', 'ldagulto', 'SMg7mIbHqD17ZNzk4pUSHKxR2Nfkv8wVWoIhOMauCpA%3D', '../settings/user-account/profile_picture/2/TOzfy.png', '09399108659', 'WkgqlkcpSeEd7eWC8gl3iPwksfGbJYGy3VcisSyDeQ0', 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20', '0000-00-00 00:00:00', '', '2024-12-06 08:37:13', 'IdZyoPwFg7Zx6PdFQXTLnK4GDFGM%2F5%2B538NQXWe0fRw%3D', NULL, NULL, 'aVWoyO3aKYhOnVA8MwXfCaL4WrujDqvAPCHV3dY8F20%3D', 'KhYNEpk%2BfHBo7mnUZcNgkjIE4glzNH0tuertF2JjmgQ%3D', 'gXp3Xx315Z6mD5poPARBwk6LYfK1qH63jB14fwJVKys%3D', 'q3JpeTjLIph%2B43%2BzoWKSkp9sBJSwJQ2llzgDQXMG%2B5vVUhOOsArBjGo5a83MG7mh', 'DjTtk1lGlRza%2FA7zImkKgcjJJL%2FRT3XlgPhcbRx%2BfnM%3D', NULL, NULL, NULL, 'obZjVWYuZ2bMQotHXebKUp9kMtZzPxCtWBJ1%2BLbJKfU%3D', 'HfAPMPHMrfhU5Kp8Spob0PMqspbgP2OcqFGNPxE1yKM%3D', '2024-11-07 14:09:59', 2);
 
 --
 -- Triggers `user_account`
@@ -8862,6 +8894,15 @@ ALTER TABLE `employee`
   ADD KEY `employee_index_employment_status` (`employment_status`);
 
 --
+-- Indexes for table `employee_education`
+--
+ALTER TABLE `employee_education`
+  ADD PRIMARY KEY (`employee_education_id`),
+  ADD KEY `last_log_by` (`last_log_by`),
+  ADD KEY `employee_education_index_employee_education_id` (`employee_education_id`),
+  ADD KEY `employee_education_index_employee_id` (`employee_id`);
+
+--
 -- Indexes for table `employee_language`
 --
 ALTER TABLE `employee_language`
@@ -9157,7 +9198,7 @@ ALTER TABLE `app_module`
 -- AUTO_INCREMENT for table `audit_log`
 --
 ALTER TABLE `audit_log`
-  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=741;
+  MODIFY `audit_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=742;
 
 --
 -- AUTO_INCREMENT for table `bank`
@@ -9250,10 +9291,16 @@ ALTER TABLE `employee`
   MODIFY `employee_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `employee_education`
+--
+ALTER TABLE `employee_education`
+  MODIFY `employee_education_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `employee_language`
 --
 ALTER TABLE `employee_language`
-  MODIFY `employee_language_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `employee_language_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `employment_location_type`
@@ -9307,7 +9354,7 @@ ALTER TABLE `language_proficiency`
 -- AUTO_INCREMENT for table `login_session`
 --
 ALTER TABLE `login_session`
-  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `login_session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `menu_group`
@@ -9551,6 +9598,13 @@ ALTER TABLE `email_setting`
 --
 ALTER TABLE `employee`
   ADD CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
+
+--
+-- Constraints for table `employee_education`
+--
+ALTER TABLE `employee_education`
+  ADD CONSTRAINT `employee_education_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`employee_id`),
+  ADD CONSTRAINT `employee_education_ibfk_2` FOREIGN KEY (`last_log_by`) REFERENCES `user_account` (`user_account_id`);
 
 --
 -- Constraints for table `employee_language`
