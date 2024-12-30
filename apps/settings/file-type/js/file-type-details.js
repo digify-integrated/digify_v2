@@ -132,7 +132,7 @@ function fileTypeForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('file_type', file_type_id);
+                    logNotes('file_type', file_type_id);
                 }
             });
         

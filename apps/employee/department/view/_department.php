@@ -44,11 +44,11 @@
                         <div class="px-7 py-5" data-kt-user-table-filter="form">
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="parent_department_filter">Parent Department:</label>
-                                <select id="parent_department_filter" name="parent_department_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                <select id="parent_department_filter" name="parent_department_filter" multiple="multiple" class="form-select" data-control="select2" data-allow-clear="false"></select>
                             </div>
                             <div class="mb-10">
                                 <label class="form-label fs-6 fw-semibold" for="manager_filter">Manager:</label>
-                                <select id="manager_filter" name="manager_filter" multiple="multiple" class="form-select form-select-solid" data-control="select2" data-allow-clear="false"></select>
+                                <select id="manager_filter" name="manager_filter" multiple="multiple" class="form-select" data-control="select2" data-allow-clear="false"></select>
                             </div>
                             <div class="d-flex justify-content-end">
                                 <button type="reset" class="btn btn-light btn-active-light-primary fw-semibold me-2 px-6" id="reset-filter" data-kt-menu-dismiss="true" data-kt-user-table-filter="reset">Reset</button>

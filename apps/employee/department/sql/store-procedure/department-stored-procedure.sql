@@ -111,6 +111,10 @@ BEGIN
     END IF;
 
     IF p_filter_by_manager IS NOT NULL AND p_filter_by_manager <> '' THEN
+        IF filter_conditions <> '' THEN
+            SET filter_conditions = CONCAT(filter_conditions, ' AND ');
+        END IF;
+
         SET filter_conditions = CONCAT(filter_conditions, ' manager_id IN (', p_filter_by_manager, ')');
     END IF;
 

@@ -146,7 +146,7 @@ function fileExtensionForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('file_extension', file_extension_id);
+                    logNotes('file_extension', file_extension_id);
                 }
             });
         

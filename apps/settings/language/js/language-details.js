@@ -132,7 +132,7 @@ function languageForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('language', language_id);
+                    logNotes('language', language_id);
                 }
             });
         

@@ -194,7 +194,7 @@ function appModuleForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('app_module', app_module_id);
+                    logNotes('app_module', app_module_id);
                 }
             });
         

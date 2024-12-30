@@ -132,7 +132,7 @@ function educationalStageForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('educational_stage', educational_stage_id);
+                    logNotes('educational_stage', educational_stage_id);
                 }
             });
         

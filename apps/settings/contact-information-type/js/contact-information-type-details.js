@@ -132,7 +132,7 @@ function contactInformationTypeForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('contact_information_type', contact_information_type_id);
+                    logNotes('contact_information_type', contact_information_type_id);
                 }
             });
         

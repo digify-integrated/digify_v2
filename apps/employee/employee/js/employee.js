@@ -9,7 +9,7 @@
         //generateDropdownOptions('employee options');
 
         if($('#employee-table').length){
-            employeeTable('#employee-table');
+            //employeeTable('#employee-table');
         }
 
         if($('#employee-card').length){        

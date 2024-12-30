@@ -132,7 +132,7 @@ function departureReasonForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('departure_reason', departure_reason_id);
+                    logNotes('departure_reason', departure_reason_id);
                 }
             });
         

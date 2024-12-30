@@ -132,7 +132,7 @@ function relationshipForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('relationship', relationship_id);
+                    logNotes('relationship', relationship_id);
                 }
             });
         

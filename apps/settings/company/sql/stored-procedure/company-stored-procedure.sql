@@ -162,21 +162,24 @@ BEGIN
         IF filter_conditions <> '' THEN
             SET filter_conditions = CONCAT(filter_conditions, ' AND ');
         END IF;
-         SET filter_conditions = CONCAT(filter_conditions, ' state_id IN (', p_filter_by_state, ')');
+
+        SET filter_conditions = CONCAT(filter_conditions, ' state_id IN (', p_filter_by_state, ')');
     END IF;
 
     IF p_filter_by_country IS NOT NULL AND p_filter_by_country <> '' THEN
         IF filter_conditions <> '' THEN
             SET filter_conditions = CONCAT(filter_conditions, ' AND ');
         END IF;
-         SET filter_conditions = CONCAT(filter_conditions, ' country_id IN (', p_filter_by_country, ')');
+
+        SET filter_conditions = CONCAT(filter_conditions, ' country_id IN (', p_filter_by_country, ')');
     END IF;
 
     IF p_filter_by_currency IS NOT NULL AND p_filter_by_currency <> '' THEN
         IF filter_conditions <> '' THEN
             SET filter_conditions = CONCAT(filter_conditions, ' AND ');
         END IF;
-         SET filter_conditions = CONCAT(filter_conditions, ' currency_id IN (', p_filter_by_currency, ')');
+
+        SET filter_conditions = CONCAT(filter_conditions, ' currency_id IN (', p_filter_by_currency, ')');
     END IF;
 
     IF filter_conditions <> '' THEN

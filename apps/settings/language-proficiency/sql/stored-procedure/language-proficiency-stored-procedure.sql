@@ -99,7 +99,7 @@ END //
 DROP PROCEDURE IF EXISTS generateLanguageProficiencyOptions//
 CREATE PROCEDURE generateLanguageProficiencyOptions()
 BEGIN
-    SELECT language_proficiency_id, language_proficiency_name 
+    SELECT language_proficiency_id, language_proficiency_name, language_proficiency_description
     FROM language_proficiency 
     ORDER BY language_proficiency_name;
 END //

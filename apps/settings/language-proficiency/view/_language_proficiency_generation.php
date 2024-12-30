@@ -69,7 +69,7 @@ if(isset($_POST['type']) && !empty($_POST['type'])){
             foreach ($options as $row) {
                 $response[] = [
                     'id' => $row['language_proficiency_id'],
-                    'text' => $row['language_proficiency_name']
+                    'text' => $row['language_proficiency_name'] . ' - ' . $row['language_proficiency_description']
                 ];
             }
 

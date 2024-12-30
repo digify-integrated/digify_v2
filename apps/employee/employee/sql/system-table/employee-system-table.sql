@@ -189,7 +189,7 @@ CREATE INDEX employee_emergency_contact_index_relationship_id ON employee_emerge
 
 DROP TABLE IF EXISTS employee_language;
 CREATE TABLE employee_language (
-    employee_emergency_contact_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    employee_language_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
     employee_id INT UNSIGNED NOT NULL,
     language_id INT UNSIGNED NOT NULL,
     language_name VARCHAR(100) NOT NULL,
@@ -203,8 +203,8 @@ CREATE TABLE employee_language (
     FOREIGN KEY (last_log_by) REFERENCES user_account(user_account_id)
 );
 
-CREATE INDEX employee_language_index_employee_emergency_contact_id ON employee_language(employee_emergency_contact_id);
+CREATE INDEX employee_language_index_employee_language_id ON employee_language(employee_language_id);
 CREATE INDEX employee_language_index_employee_id ON employee_language(employee_id);
-CREATE INDEX employee_language_index_relationship_id ON employee_language(relationship_id);
+CREATE INDEX employee_language_index_language_proficiency_id ON employee_language(language_proficiency_id);
 
 /* ----------------------------------------------------------------------------------------------------------------------------- */

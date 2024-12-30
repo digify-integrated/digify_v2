@@ -991,7 +991,10 @@ function roleList(){
         type: 'POST',
         url: 'apps/settings/role/view/_role_generation.php',
         dataType: 'json',
-        data: { type: type, 'user_account_id': user_account_id },
+        data: { 
+            type : type,
+            user_account_id : user_account_id
+        },
         success: function (result) {
             document.getElementById('role-list').innerHTML = result[0].ROLE_USER_ACCOUNT;
         }

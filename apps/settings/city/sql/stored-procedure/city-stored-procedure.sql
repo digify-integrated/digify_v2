@@ -120,7 +120,8 @@ BEGIN
         IF filter_conditions <> '' THEN
             SET filter_conditions = CONCAT(filter_conditions, ' AND ');
         END IF;
-         SET filter_conditions = CONCAT(filter_conditions, ' country_id IN (', p_filter_by_country, ')');
+
+        SET filter_conditions = CONCAT(filter_conditions, ' country_id IN (', p_filter_by_country, ')');
     END IF;
 
     IF filter_conditions <> '' THEN

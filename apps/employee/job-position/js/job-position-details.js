@@ -132,7 +132,7 @@ function jobPositionForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('job_position', job_position_id);
+                    logNotes('job_position', job_position_id);
                 }
             });
         

@@ -373,9 +373,6 @@ function userAccountTable(datatable_name) {
     const page_link = document.getElementById('page-link').getAttribute('href');
     const user_account_status_filter = $('#user_account_status_filter').val();
     const user_account_lock_status_filter = $('#user_account_lock_status_filter').val();
-    const password_expiry_date_filter = $('#password_expiry_date_filter').val();
-    const last_connection_date_filter = $('#last_connection_date_filter').val();
-
 
     const columns = [ 
         { data: 'CHECK_BOX' },
@@ -405,9 +402,7 @@ function userAccountTable(datatable_name) {
                 page_id: page_id,
                 page_link: page_link,
                 user_account_status_filter: user_account_status_filter,
-                user_account_lock_status_filter: user_account_lock_status_filter,
-                password_expiry_date_filter: password_expiry_date_filter,
-                last_connection_date_filter: last_connection_date_filter
+                user_account_lock_status_filter: user_account_lock_status_filter
                 
             },
             dataSrc: '',

@@ -132,7 +132,7 @@ function addressTypeForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('address_type', address_type_id);
+                    logNotes('address_type', address_type_id);
                 }
             });
         

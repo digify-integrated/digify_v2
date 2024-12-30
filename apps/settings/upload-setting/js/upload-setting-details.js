@@ -135,7 +135,7 @@ function uploadSettingForm(){
                 },
                 complete: function() {
                     enableFormSubmitButton('submit-data');
-                    logNotesMain('upload_setting', upload_setting_id);
+                    logNotes('upload_setting', upload_setting_id);
                 }
             });
         

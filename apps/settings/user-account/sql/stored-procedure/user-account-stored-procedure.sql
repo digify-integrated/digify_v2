@@ -309,7 +309,7 @@ CREATE PROCEDURE generateUserAccountTable()
 BEGIN
 	SELECT user_account_id, file_as, username, email, profile_picture, locked, active, password_expiry_date, last_connection_date 
     FROM user_account
-    /*WHERE user_account_id NOT IN (1, 2)*/
+    WHERE user_account_id NOT IN (1, 2)
     ORDER BY user_account_id;
 END //
 
