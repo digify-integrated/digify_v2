@@ -30,13 +30,12 @@ $(document).ready(function () {
             $target.removeClass('is-invalid');
         },
         submitHandler: function(form) {
-            const transaction = 'authenticate';
             const device_info = getDeviceInfo();
     
             $.ajax({
                 type: 'POST',
                 url: 'apps/settings/authentication/controller/authentication-controller.php',
-                data: $(form).serialize() + '&transaction=' + transaction + '&device_info=' + device_info,
+                data: $(form).serialize() + '&device_info=' + device_info,
                 dataType: 'JSON',
                 beforeSend: function() {
                     disableFormSubmitButton('signin');

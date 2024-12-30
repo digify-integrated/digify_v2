@@ -61,7 +61,7 @@ class AuthenticationModel {
     # -------------------------------------------------------------
     public function checkSignUpEmailExist($p_email) {
         $stmt = $this->db->getConnection()->prepare('CALL checkSignUpEmailExist(:p_email)');
-        $stmt->bindValue(':p_credentials', $p_credentials, PDO::PARAM_STR);
+        $stmt->bindValue(':p_email', $p_email, PDO::PARAM_STR);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
